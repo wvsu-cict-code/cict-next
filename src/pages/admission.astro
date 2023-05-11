@@ -1,0 +1,47 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import Table from "../components/Table.jsx";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <style>
+      table {
+        border-spacing: 0;
+        border: 1px solid black;
+
+        tr {
+          :last-child {
+            td {
+              border-bottom: 0;
+            }
+          }
+        }
+
+        th,
+        td {
+          margin: 0;
+          padding: 0.5rem;
+          border-bottom: 1px solid black;
+          border-right: 1px solid black;
+
+          :last-child {
+            border-right: 0;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <main class="mx-auto container">
+      <Table />
+    </main>
+    <Footer />
+  </body>
+</html>
