@@ -7,16 +7,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-
-const defaultData = [
-  {
-    name: 'a',
-    time: 'b',
-    room: 'c',
-    day: 'd'
-  }
-]
-
 const columnHelper = createColumnHelper()
 
 const columns = [
@@ -42,8 +32,8 @@ const columns = [
   }),
 ]
 
-export default function App() {
-  const [data, setData] = React.useState(() => [...defaultData])
+export default function App({dataset}) {
+  const [data, setData] = React.useState(() => [...dataset])
   const rerender = React.useReducer(() => ({}), {})[1]
 
   const table = useReactTable({
@@ -53,13 +43,13 @@ export default function App() {
   })
 
   return (
-    <div className="p-2">
+    <div className="p-2 text-sm">
       <table>
         <thead>
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <th className="p-2 border" key={header.id}>
+                <th className="p-2 border text-left" key={header.id}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
