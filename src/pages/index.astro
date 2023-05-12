@@ -3,6 +3,7 @@ import BaseHead from "../components/BaseHead.astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { FaSearch } from "react-icons/fa";
 ---
 
 <!DOCTYPE html>
@@ -12,9 +13,9 @@ import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
   </head>
   <body>
     <div class="grid h-screen place-items-center">
-		<div class="text-center items-center justify-items-center">
+		<div class="grid text-center items-center justify-items-center">
       <img class="brand-icon mx-auto" src="/assets/brand.svg" alt="">
-      <a class="underline" href="/admission">Interview Schedule 2023</a>
+      <a class="underline flex place-content-center" href="/admission"><FaSearch className={"my-1 mr-1"} /> Interview 2023</a>
     </div>
     </div>
     <main></main>
