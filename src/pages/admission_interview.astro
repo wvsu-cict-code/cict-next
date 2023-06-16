@@ -20,7 +20,7 @@ const dataset = await response.json();
     <main class="mx-auto container">
       <div class="max-w-7xl mx-auto mt-4 px-4">
         <h2 class="p-2 text-lg font-bold">Interview Schedule 2023</h2>
-        <Table {dataset} client:load />
+        <Table course={null} {dataset} status={null} client:load />
         <p class="mt-4 mb-2">
           Please be reminded of the following for your interview:
         </p>
