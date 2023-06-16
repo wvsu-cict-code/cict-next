@@ -11,7 +11,7 @@ const columnHelper = createColumnHelper();
 
 const columns_qualified = [
   columnHelper.accessor("fullname", {
-    header: (indicator) => `${indicator.toUpperCase()} Qualified Applicant`,
+    header: (indicator) => `${indicator.toUpperCase()} Qualified Applicants`,
     cell: (info) => info.getValue(),
     footer: (info) => info.column.id,
   }),
@@ -24,7 +24,7 @@ const columns_waitlisted = [
     footer: (info) => info.column.id,
   }),
   columnHelper.accessor("fullname", {
-    header: (indicator) => `${indicator.toUpperCase()} Waitlisted Applicant`,
+    header: (indicator) => `${indicator.toUpperCase()} Waitlisted Applicants`,
     cell: (info) => info.getValue(),
     footer: (info) => info.column.id,
   }),
@@ -32,7 +32,7 @@ const columns_waitlisted = [
 
 const columns_recommended = [
   columnHelper.accessor("fullname", {
-    header: (indicator) => `${indicator.toUpperCase()} Recommended Applicant`,
+    header: (indicator) => `${indicator.toUpperCase()} Recommended Applicants`,
     cell: (info) => info.getValue(),
     footer: (info) => info.column.id,
   }),

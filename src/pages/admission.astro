@@ -103,10 +103,34 @@ const bsemc_recommended_data = await bsemc_recommended_response.json();
         client:load
       />
     </div>
+    <div id="bscsw">
+      <Table
+        dataset={bscs_waitlisted_data}
+        course={"bscs"}
+        status={"waitlisted"}
+        client:load
+      />
+    </div>
     <div id="bsitq">
       <Table
         dataset={bsit_qualified_data}
         course={"bsit"}
+        status={"qualified"}
+        client:load
+      />
+    </div>
+    <div id="bsitw">
+      <Table
+        dataset={bsit_waitlisted_data}
+        course={"bsit"}
+        status={"waitlisted"}
+        client:load
+      />
+    </div>
+    <div id="blisq">
+      <Table
+        dataset={blis_qualified_data}
+        course={"blis"}
         status={"qualified"}
         client:load
       />
@@ -119,45 +143,19 @@ const bsemc_recommended_data = await bsemc_recommended_response.json();
         client:load
       />
     </div>
-    <div id="bsemcq">
-      <Table
-        dataset={bsemc_qualified_data}
-        course={"bsemc"}
-        status={"qualified"}
-        client:load
-      />
-    </div>
-    <div id="blisq">
-      <Table
-        dataset={blis_qualified_data}
-        course={"blis"}
-        status={"qualified"}
-        client:load
-      />
-    </div>
-
-    <div id="bscsw">
-      <Table
-        dataset={bscs_waitlisted_data}
-        course={"bscs"}
-        status={"waitlisted"}
-        client:load
-      />
-    </div>
-    <div id="bsitw">
-      <Table
-        dataset={bsit_waitlisted_data}
-        course={"bsit"}
-        status={"waitlisted"}
-        client:load
-      />
-    </div>
-
     <div id="bsisr">
       <Table
         dataset={bsis_recommended_data}
         course={"bsis"}
         status={"recommended"}
+        client:load
+      />
+    </div>
+    <div id="bsemcq">
+      <Table
+        dataset={bsemc_qualified_data}
+        course={"bsemc"}
+        status={"qualified"}
         client:load
       />
     </div>
