@@ -1,0 +1,210 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import Table from "../components/Table";
+import Header from "../components/Header.astro";
+import BackToUp from '@uiw/react-back-to-top';
+
+const bsit_qualified_response = await fetch(
+  "https://api.npoint.io/18ec36ac3a13c856832e"
+);
+const bsit_qualified_data = await bsit_qualified_response.json();
+
+const bsis_qualified_response = await fetch(
+  "https://api.npoint.io/78c2436b5c8b338e18dd"
+);
+const bsis_qualified_data = await bsis_qualified_response.json();
+
+const bscs_qualified_response = await fetch(
+  "https://api.npoint.io/563e3efac470d2787ca9"
+);
+const bscs_qualified_data = await bscs_qualified_response.json();
+
+const bsemc_qualified_response = await fetch(
+  "https://api.npoint.io/3073af94a7d440c7d93b"
+);
+const bsemc_qualified_data = await bsemc_qualified_response.json();
+
+const blis_qualified_response = await fetch(
+  "https://api.npoint.io/e360076e92f91123a0f4"
+);
+const blis_qualified_data = await blis_qualified_response.json();
+
+const bsit_waitlisted_response = await fetch(
+  "https://api.npoint.io/2f0364cc3141fd15cc87"
+);
+const bsit_waitlisted_data = await bsit_waitlisted_response.json();
+
+const bscs_waitlisted_response = await fetch(
+  "https://api.npoint.io/47857f8dc34361be892a"
+);
+const bscs_waitlisted_data = await bscs_waitlisted_response.json();
+
+const bsis_recommended_response = await fetch(
+  "https://api.npoint.io/e02aa997402cee5bf6ab"
+);
+const bsis_recommended_data = await bsis_recommended_response.json();
+
+const bsemc_recommended_response = await fetch(
+  "https://api.npoint.io/a82fb2c902cec05350a6"
+);
+const bsemc_recommended_data = await bsemc_recommended_response.json();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <BackToUp client:only><span class="text-lg mb-1">&#9650;</span></BackToUp>
+    <Header />
+    <h2 class="text-center text-lg my-4 font-bold">Admission 2023 Final Result</h2>
+    <div class="max-w-md mx-auto mb-2">
+      <ul id="myUL" class="text-sm">
+        <li class="ml-4">
+          <span class="caret underline">Click to Jump to Sections</span>
+          <ul class="nested">
+            <li class="ml-4">
+              <span class="caret">Qualified</span>
+              <ul class="nested">
+                <li class="ml-8"><a class="underline" href="#bscsq">BSCS</a></li>
+                <li class="ml-8"><a class="underline" href="#bsitq">BSIT</a></li>
+                <li class="ml-8"><a class="underline" href="#bsisq">BSIS</a></li>
+                <li class="ml-8"><a class="underline" href="#bsemcq">BSEMC</a></li>
+                <li class="ml-8"><a class="underline" href="#blisq">BLIS</a></li>
+              </ul>
+            </li>
+            <li class="ml-4">
+              <span class="caret">Waitlisted</span>
+              <ul class="nested">
+                <li class="ml-8"><a class="underline" href="#bscsw">BSCS</a></li>
+                <li class="ml-8"><a class="underline" href="#bsitw">BSIT</a></li>
+              </ul>
+            </li>
+            <li class="ml-4">
+              <span class="caret">Recommended</span>
+              <ul class="nested">
+                <li class="ml-8"><a class="underline" href="#bsisr">BSIS</a></li>
+                <li class="ml-8"><a class="underline" href="#bsemcr">BSEMC</a></li>
+              </ul>
+            </li>
+            <li class="ml-4"><a href="#notes"><span class="caret">Notes</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <div id="bscsq">
+      <Table
+        dataset={bscs_qualified_data}
+        course={"bscs"}
+        status={"qualified"}
+        client:load
+      />
+    </div>
+    <div id="bscsw">
+      <Table
+        dataset={bscs_waitlisted_data}
+        course={"bscs"}
+        status={"waitlisted"}
+        client:load
+      />
+    </div>
+    <div id="bsitq">
+      <Table
+        dataset={bsit_qualified_data}
+        course={"bsit"}
+        status={"qualified"}
+        client:load
+      />
+    </div>
+    <div id="bsitw">
+      <Table
+        dataset={bsit_waitlisted_data}
+        course={"bsit"}
+        status={"waitlisted"}
+        client:load
+      />
+    </div>
+    <div id="blisq">
+      <Table
+        dataset={blis_qualified_data}
+        course={"blis"}
+        status={"qualified"}
+        client:load
+      />
+    </div>
+    <div id="bsisq">
+      <Table
+        dataset={bsis_qualified_data}
+        course={"bsis"}
+        status={"qualified"}
+        client:load
+      />
+    </div>
+    <div id="bsisr">
+      <Table
+        dataset={bsis_recommended_data}
+        course={"bsis"}
+        status={"recommended"}
+        client:load
+      />
+    </div>
+    <div id="bsemcq">
+      <Table
+        dataset={bsemc_qualified_data}
+        course={"bsemc"}
+        status={"qualified"}
+        client:load
+      />
+    </div>
+    <div id="bsemcr">
+      <Table
+        dataset={bsemc_recommended_data}
+        course={"bsemc"}
+        status={"recommended"}
+        client:load
+      />
+    </div>
+    <div class="mb-8">
+      <p id="notes" class="text-sm p-4">
+        <span class="font-bold">Notes:</span>
+        <ul class="text-sm px-4 list-disc">
+          <li class="ml-4">Names that are not on the list are not qualified.</li>
+          <li class="ml-4">Qualified applicants must confirm their slots on or before June 21. Unconfirmed slots will be given to waitlisted applicants after the deadline.</li>
+          <li class="ml-4">
+            <span>
+              List of requirements to submit (submit personally):
+            </span>
+            <ol class="list-decimal ml-4">
+              <li>Certificate of Confirmation of Slots <a class="underline" href="https://raw.githubusercontent.com/wvsu-cict-code/cict-next/b1149c6bf4e5230c183d6961cb976ad05df85a37/public/assets/SlotConfirmationLetter2023.pdf" target="_blank">(Download)</a></li>
+              <li>PSA (NSO) Birth Certificate (2-Photo copy)</li>
+              <li>Complete Grade 12 SHS Report Card (1-Original and 1 Photocopy)</li>
+              <li>Certificate of Good Moral Character (1-Original and 1 Photocopy)</li>
+              <li>Ordinary Folder Long Orange Color (2 pcs)</li>
+              <li>2x2 Photo (2 pcs)</li>
+            </ol>
+
+          </li>
+        </ul>
+      </p>
+    </div>
+
+    <main></main>
+    <Footer />
+    <script>
+      var toggler = document.getElementsByClassName("caret");
+      var i;
+
+      for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function (this:any) {
+          this.parentElement
+            .querySelector(".nested")
+            .classList.toggle("active");
+          this.classList.toggle("caret-down");
+        });
+      }
+    </script>
+  </body>
+</html>

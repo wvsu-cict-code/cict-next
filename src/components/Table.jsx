@@ -38,6 +38,29 @@ const columns_recommended = [
   }),
 ];
 
+const columns_interview = [
+  columnHelper.accessor("i_name", {
+    header: (indicator) => `${indicator.toUpperCase()} Applicant`,
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("i_date", {
+    header: (indicator) => `${indicator.toUpperCase()} Date`,
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("i_room", {
+    header: (indicator) => `${indicator.toUpperCase()} Room`,
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("i_time", {
+    header: (indicator) => `${indicator.toUpperCase()} Time`,
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+];
+
 export default function App({ dataset, course, status }) {
   const [data, setData] = React.useState(() => [...dataset]);
   const rerender = React.useReducer(() => ({}), {})[1];
@@ -49,6 +72,13 @@ export default function App({ dataset, course, status }) {
   });
 
   switch (status) {
+    case "interview":
+      table = useReactTable({
+        data,
+        columns: columns_interview,
+        getCoreRowModel: getCoreRowModel(),
+      });
+      break;    
     case "qualified":
       table = useReactTable({
         data,

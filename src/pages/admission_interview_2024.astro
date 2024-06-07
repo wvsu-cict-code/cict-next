@@ -1,0 +1,59 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import Table from "../components/Table";
+import Header from "../components/Header.astro";
+import BackToUp from '@uiw/react-back-to-top';
+
+
+const interview_response = await fetch(
+  "https://api.npoint.io/b846339c08b72c008440"
+);
+const interview_data = await interview_response.json();
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <BackToUp client:only><span class="text-lg mb-1">&#9650;</span></BackToUp>
+    <Header />
+    <h2 class="text-center text-lg my-4 font-bold">Qualified for Admission Interview (2024)</h2>
+    <div id="qualified">
+      <Table
+        dataset={interview_data}
+        course={""}
+        status={"interview"}
+        client:load
+      />
+    </div>
+    <div class="mb-8">
+      <p id="notes" class="text-sm p-4">
+        <span class="font-bold">Notes:</span>
+        <ul class="text-sm px-4 list-disc">
+          <li class="ml-4">Names that are not on the list are not qualified.</li>
+          <li class="ml-4">Please read carefully our <a class="underline font-bold" href="https://medium.com/cictwvsu-online/preparing-for-your-cict-2024-interview-65d1fceec200">post</a> for the interview guidelines and other information. </li>
+        </ul>
+      </p>
+    </div>
+
+    <main></main>
+    <Footer />
+    <script>
+      var toggler = document.getElementsByClassName("caret");
+      var i;
+
+      for (i = 0; i < toggler.length; i++) {
+        toggler[i].addEventListener("click", function (this:any) {
+          this.parentElement
+            .querySelector(".nested")
+            .classList.toggle("active");
+          this.classList.toggle("caret-down");
+        });
+      }
+    </script>
+  </body>
+</html>
