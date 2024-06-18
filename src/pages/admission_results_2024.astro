@@ -17,7 +17,7 @@ var bscs_waitlisted = "https://api.npoint.io/37a342c2605d2f0c6d08";
 var bsis_waitlisted = "https://api.npoint.io/d4c487631fe33765eb31";
 var bsemc_waitlisted = "https://api.npoint.io/7e99c571aed6cd788098";
 
-var blis_recommended = "https://api.npoint.io/a13cc73cebd37e7bbfea";
+//var blis_recommended = "https://api.npoint.io/a13cc73cebd37e7bbfea";
 
 const bsit_qualified_response = await fetch(bsit_qualified);
 const bsis_qualified_response = await fetch(bsis_qualified);
@@ -41,8 +41,8 @@ const bsemc_waitlisted_data = await bsemc_waitlisted_response.json();
 const bsit_waitlisted_data = await bsit_waitlisted_response.json();
 const bscs_waitlisted_data = await bscs_waitlisted_response.json();
 
-const blis_recommended_response = await fetch(blis_recommended);
-const blis_recommended_data = await blis_recommended_response.json();
+//const blis_recommended_response = await fetch(blis_recommended);
+//const blis_recommended_data = await blis_recommended_response.json();
 
 ---
 
@@ -100,14 +100,6 @@ const blis_recommended_data = await blis_recommended_response.json();
               </ul>
             </li>
             <li class="ml-4">
-              <span class="caret">Recommended</span>
-              <ul class="nested">
-                <li class="ml-8">
-                  <a class="underline" href="#blisr">BLIS</a>
-                </li>
-              </ul>
-            </li>
-            <li class="ml-4">
               <a href="#notes"><span class="caret">Notes</span></a>
             </li>
           </ul>
@@ -146,14 +138,6 @@ const blis_recommended_data = await blis_recommended_response.json();
         client:load
       />
     </div>
-    <div id="blisq">
-      <Table
-        dataset={blis_qualified_data}
-        course={"blis"}
-        status={"qualified"}
-        client:load
-      />
-    </div>
     <div id="bsisq">
       <Table
         dataset={bsis_qualified_data}
@@ -186,11 +170,11 @@ const blis_recommended_data = await blis_recommended_response.json();
         client:load
       />
     </div>
-    <div id="blisr">
+    <div id="blisq">
       <Table
-        dataset={blis_recommended_data}
+        dataset={blis_qualified_data}
         course={"blis"}
-        status={"recommended"}
+        status={"qualified"}
         client:load
       />
     </div>
@@ -202,8 +186,8 @@ const blis_recommended_data = await blis_recommended_response.json();
             Names that are not on the list are not qualified.
           </li>
           <li class="ml-4">
-            Qualified applicants must confirm their slots on or before June 21.
-            Unconfirmed slots will be given to waitlisted applicants after the
+            Qualified applicants <strong>must confirm their slots on or before June 24</strong>.
+            <strong>Unconfirmed slots will be given to waitlisted applicants</strong> after the
             deadline.
           </li>
           <li class="ml-4">
@@ -212,7 +196,7 @@ const blis_recommended_data = await blis_recommended_response.json();
               <li>
                 Certificate of Confirmation of Slots <a
                   class="underline"
-                  href="https://raw.githubusercontent.com/wvsu-cict-code/cict-next/b1149c6bf4e5230c183d6961cb976ad05df85a37/public/assets/SlotConfirmationLetter2023.pdf"
+                  href=""
                   target="_blank">(Download)</a
                 >
               </li>
