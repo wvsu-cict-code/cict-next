@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  --font-size-xs: 0.75rem; /* 12px - for small/legal */
+  --font-size-sm: 0.875rem; /* 14px - for h6/metadata */
+  --font-size-base: 1rem; /* 16px - for p/a/h5 */
+  --font-size-lg: 1.375rem; /* 22px - for h4 */
+  --font-size-xl: 1.875rem; /* 30px - for h3 */
+  --font-size-2xl: 2.25rem; /* 36px - for h2 */
+  --font-size-3xl: 3.75rem; /* 60px - for h1 */
+}
