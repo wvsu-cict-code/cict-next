@@ -11,14 +11,14 @@ export default function Header() {
 
   return (
     <header className="flex flex-row gap-x-4 text-lg justify-center px-6 py-4">
-      <Link href="/" className={(pathname === "/") ? active : inactive}>
-        Home
-      </Link>
-      <Link href="/about" className={(pathname === "/about") ? active : inactive}>
-        About
-      </Link>
       <Link href="/programs" className={(pathname === "/programs") ? active : inactive}>
         Programs
+      </Link>
+      <Link
+        href="/news-announcements"
+        className={(pathname === "/news-announcements") ? active : inactive}
+      >
+        News
       </Link>
       <Link
         href="/faculty-profiles"
@@ -28,12 +28,6 @@ export default function Header() {
       </Link>
       <Link href="/contact" className={(pathname === "/contact") ? active : inactive}>
         Contact
-      </Link>
-      <Link
-        href="/news-announcements"
-        className={(pathname === "/news-announcements") ? active : inactive}
-      >
-        News
       </Link>
     </header>
   );
