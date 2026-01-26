@@ -1,28 +1,37 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const active = "text-[var(--color-orange-dark)] underline";
+const inactive = "";
+
 export default function Header() {
+  const pathname = usePathname();
+
   return (
     <header className="flex flex-row gap-x-3 text-lg">
-      <Link href="/" className="hover:text-blue-800 hover:underline">
+      <Link href="/" className={(pathname === "/") ? active : inactive}>
         Home
       </Link>
-      <Link href="/about" className="hover:text-blue-800 hover:underline">
+      <Link href="/about" className={(pathname === "/about") ? active : inactive}>
         About
       </Link>
-      <Link href="/programs" className="hover:text-blue-800 hover:underline">
+      <Link href="/programs" className={(pathname === "/programs") ? active : inactive}>
         Programs
       </Link>
       <Link
         href="/faculty-profiles"
-        className="hover:text-blue-800 hover:underline"
+        className={(pathname === "/faculty-profiles") ? active : inactive}
       >
         Faculty
       </Link>
-      <Link href="/contact" className="hover:text-blue-800 hover:underline">
+      <Link href="/contact" className={(pathname === "/contact") ? active : inactive}>
         Contact
       </Link>
       <Link
         href="/news-announcements"
-        className="hover:text-blue-800 hover:underline"
+        className={(pathname === "/news-announcements") ? active : inactive}
       >
         News
       </Link>
