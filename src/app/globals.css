@@ -8,4 +8,7 @@
   --font-size-xl: 1.875rem; /* 30px - for h3 */
   --font-size-2xl: 2.25rem; /* 36px - for h2 */
   --font-size-3xl: 3.75rem; /* 60px - for h1 */
+
+  --color-orange-light: #ff6f42;
+  --color-orange-dark: #f48128;
 }
