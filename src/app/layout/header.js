@@ -10,7 +10,7 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="flex flex-row gap-x-3 text-lg">
+    <header className="flex flex-row gap-x-4 text-lg justify-center px-6 py-4">
       <Link href="/" className={(pathname === "/") ? active : inactive}>
         Home
       </Link>
