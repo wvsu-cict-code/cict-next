@@ -11,7 +11,7 @@ export default function Header({ inter }) {
   const pathname = usePathname();
 
   return (
-    <header className={`${inter.className} flex flex-row gap-x-4 text-lg justify-center px-6 py-4`}>
+    <header className={`${inter.className} flex flex-row gap-x-12 text-lg justify-center px-6 py-6 font-medium`}>
       <Link href="/programs" className={(pathname === "/programs") ? active : inactive}>
         PROGRAMS
       </Link>
