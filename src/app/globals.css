@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 @import "tailwindcss";
 
 @theme {
@@ -11,4 +14,36 @@
 
   --color-orange-light: #ff6f42;
   --color-orange-dark: #f48128;
+
+  --font-family-major: "Oswald", sans-serif;
+  --font-family-minor: "Inter", sans-serif;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-major);
+  }
+
+  p,
+  a,
+  li,
+  span,
+  button,
+  input,
+  optgroup,
+  select,
+  textarea,
+  article {
+    font-family: var(--font-family-minor);
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+  }
 }
