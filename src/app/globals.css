@@ -15,8 +15,8 @@
   --color-orange-light: #ff6f42;
   --color-orange-dark: #f48128;
 
-  --font-family-major: "Oswald", sans-serif;
-  --font-family-minor: "Inter", sans-serif;
+  --font-major: "Oswald", sans-serif;
+  --font-minor: "Inter", sans-serif;
 }
 
 @layer base {
@@ -26,7 +26,7 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-family-major);
+    font-family: var(--font-major);
   }
 
   p,
@@ -39,7 +39,7 @@
   select,
   textarea,
   article {
-    font-family: var(--font-family-minor);
+    font-family: var(--font-minor);
   }
 
   strong,
