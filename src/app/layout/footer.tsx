@@ -77,7 +77,12 @@ export default function Footer() {
             </nav>
           </div>
         </div>
-       
+        {/* Bottom Copyright Divider */}
+        <div className="mt-16 pt-6 border-t border-gray-700/60">
+          <p className="text-[13px] text-gray-300">
+            Copyright 2026 © WVSU CICT. All Rights Reserved
+          </p>
+        </div>
       </div>
     </footer>
   );
