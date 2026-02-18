@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-[#1e1e1e] relative overflow-hidden">
@@ -48,8 +50,34 @@ export default function Footer() {
               </div>
             </div>
           </div>
-          
+
+           {/* Right Column: Navigation */}
+          <div className="absolute mt-10 right-10 top-1/2 -translate-y-1/2 translate-x-10 opacity-90 pointer-events-none z-0">
+                <img 
+                  src="/footer_assets/cict-big-icon.svg" 
+                  alt="" 
+                  className="w-170 h-150" 
+                  />
+          </div>
+          <div className="flex flex-col items-end text-right mt-15 mr-40">
+            <h1 className="text-2xl font-extrabold font-minor mb-6 tracking-tight text-white z-10">NAVIGATION</h1>
+            <nav className="flex flex-col items-end gap-4 z-10">
+              <Link href="/programs" className="text-white hover:text-white transition-colors uppercase text-xl tracking-wider">
+                PROGRAM
+              </Link>
+              <Link href="/news-announcements" className="text-white hover:text-white transition-colors uppercase text-xl tracking-wider">
+                NEWS
+              </Link>
+              <Link href="/faculty-profiles" className="text-white hover:text-white transition-colors uppercase text-xl tracking-wider">
+                FACULTY
+              </Link>
+              <Link href="/contact" className="text-white hover:text-white transition-colors uppercase text-xl tracking-wider">
+                CONTACT
+              </Link>
+            </nav>
+          </div>
         </div>
+       
       </div>
     </footer>
   );
