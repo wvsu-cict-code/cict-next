@@ -4,11 +4,11 @@ export default function Footer() {
   return (
     <footer className="bg-[#1e1e1e] relative overflow-hidden">
     
-      <div className="w-auto mx-auto px-8 py-12 relative z-10">
+      <div className="w-auto mx-auto py-12 relative z-10">
         <div className="grid grid-cols-[2fr_1fr] justify-between">
           
           {/* Left Column: Branding and Contact */}
-          <div>
+          <div className="pl-15">
             {/* Logo Section */}
             <div className="flex items-center mb-2 ml-32">
               {/* Logo SVG Placeholder */}
@@ -56,11 +56,11 @@ export default function Footer() {
                 <img 
                   src="/footer_assets/cict-big-icon.svg" 
                   alt="" 
-                  className="w-170 h-150" 
+                  className="w-180 h-170" 
                   />
           </div>
-          <div className="flex flex-col items-end text-right mt-15 mr-40">
-            <h1 className="text-2xl font-extrabold font-minor mb-6 tracking-tight text-white z-10">NAVIGATION</h1>
+          <div className="flex flex-col items-end text-right pt-18 pr-44">
+            <p className="text-2xl font-extrabold font-minor mb-6 tracking-tight text-white z-10">NAVIGATION</p>
             <nav className="flex flex-col items-end gap-4 z-10">
               <Link href="/programs" className="text-white hover:text-white transition-colors uppercase text-xl tracking-wider">
                 PROGRAM
@@ -76,14 +76,16 @@ export default function Footer() {
               </Link>
             </nav>
           </div>
-        </div>
+
         {/* Bottom Copyright Divider */}
-        <div className="mt-16 pt-6 border-t border-gray-700/60">
-          <p className="text-[13px] text-gray-300">
-            Copyright 2026 © WVSU CICT. All Rights Reserved
-          </p>
-        </div>
-      </div>
+          <div className="mt-15 mb-20">
+            <div className="h-0.5 w-6xl translate-x-50 justify-center bg-[#4D4D4D] mb-4"></div>
+              <p className="text-base font-medium text-white translate-x-55">
+                Copyright 2026 © WVSU CICT. All Rights Reserved
+              </p>
+            </div>
+            </div>
+          </div>
     </footer>
   );
 }
