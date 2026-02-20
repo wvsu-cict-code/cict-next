@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-[2fr_1fr] justify-between">
           
           {/* Left Column: Branding and Contact */}
-          <div className="pl-15">
+          <div className="pl-10">
             {/* Logo Section */}
             <div className="flex items-center mb-2 ml-32">
               {/* Logo SVG Placeholder */}
@@ -79,7 +79,7 @@ export default function Footer() {
 
         {/* Bottom Copyright Divider */}
           <div className="mt-15 mb-20">
-            <div className="h-0.5 w-6xl translate-x-50 justify-center bg-[#4D4D4D] mb-4"></div>
+            <div className="h-0.5 w-295 translate-x-45 justify-center bg-[#4D4D4D] mb-4"></div>
               <p className="text-base font-medium text-white translate-x-55">
                 Copyright 2026 © WVSU CICT. All Rights Reserved
               </p>
