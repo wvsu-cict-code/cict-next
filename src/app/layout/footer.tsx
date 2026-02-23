@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1e1e1e] relative overflow-hidden min-h-dvh md:min-h-0">
+    <footer className="bg-[#1e1e1e] relative overflow-hidden pb-2 md:pb-0">
       
       <div className="w-auto mx-auto px-6 pt-10 md:px-0 md:py-12 relative z-10">
         
@@ -95,7 +95,7 @@ export default function Footer() {
           {/* Bottom Copyright Divider */}
           {/* Stretches full width on mobile, centers text */}
           <div className="mt-10 md:mt-15 md:mb-20 w-full md:col-span-2 relative z-10">
-            <div className="h-px w-screen -ml-6 md:ml-0 md:w-291 md:translate-x-45 justify-center bg-[#4D4D4D] mb-5 md:mb-4"></div>
+            <div className="h-px w-screen -ml-6 md:ml-0 md:w-291 md:translate-x-45 justify-center bg-[#4D4D4D] mb-4 md:mb-4"></div>
             <p className="text-sm md:text-base font-medium text-center md:text-left text-white md:translate-x-55">
               Copyright 2026 © WVSU CICT. All Rights Reserved
             </p>
