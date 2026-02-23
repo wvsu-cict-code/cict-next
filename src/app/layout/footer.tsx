@@ -24,14 +24,14 @@ export default function Footer() {
             </div>
 
             {/* Description */}
-            <p className="text-sm md:text-base text-left font-minor text-white md:max-w-170 md:ml-35 mb-12 md:mb-18 leading-6 relative z-10">
-              The official website of the <span className="text-orange-light font-minor">WVSU College of Information and Communications Technology. </span>
+            <p className="text-sm md:text-base text-left text-white md:max-w-170 md:ml-35 mb-12 md:mb-18 leading-6 relative z-10">
+              The official website of the <span className="text-orange-light">WVSU College of Information and Communications Technology. </span>
               We aim to foster a resilient, innovative, and digitally-ready Western Visayas - producing competent, globally competitive, and technologically skilled harbingers of change.
             </p>
 
             {/* Social Media Section */}
             <div className="relative z-10">
-              <h3 className="text-xl md:text-2xl font-normal mb-2 md:mb-4 md:ml-35 text-white tracking-wide">
+              <h3 className="text-xl md:text-2xl mb-2 md:mb-4 md:ml-35 text-white tracking-wide">
                 Get in touch with <span className="text-orange-light font-major">us</span>
               </h3>
               
