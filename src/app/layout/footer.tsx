@@ -1,6 +1,15 @@
 import Link from "next/link";
 
+const NAV_LINKS = [
+  { href: "/programs", label: "PROGRAM" },
+  { href: "/news-announcements", label: "NEWS" },
+  { href: "/faculty-profiles", label: "FACULTY" },
+  { href: "/contact", label: "CONTACT" },
+];
+
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-[#1e1e1e] relative overflow-hidden pb-2 md:pb-0">
       
@@ -37,18 +46,20 @@ export default function Footer() {
               
               {/* Added gap for mobile spacing */}
               <div className="flex md:ml-33 gap-2 md:gap-0 items-center">
-                <a href="https://web.facebook.com/cictwvsu" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <a href="https://web.facebook.com/cictwvsu" target="_blank" rel="noopener noreferrer" aria-label="Visit WVSU CICT Facebook Page" className="text-gray-300 hover:text-white transition-colors duration-200">
                   <img
                     src="/footer_assets/footer-fb.svg" 
                     className="w-5 h-6 md:w-7 md:h-5 object-contain"
-                    alt="Facebook"
+                    alt=""
+                    aria-hidden="true"
                   />
                 </a>
-                <a href="mailto:cict@wvsu.edu.ph" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <a href="mailto:cict@wvsu.edu.ph" aria-label="Email WVSU CICT" className="text-gray-300 hover:text-white transition-colors duration-200">
                   <img
                     src="/footer_assets/footer-mail.svg" 
                     className="w-8 h-8 md:w-10 md:h-7 object-contain brightness-0 invert pt-1"
-                    alt="Email"
+                    alt=""
+                    aria-hidden="true"
                   />
                 </a>
               </div>
@@ -56,19 +67,21 @@ export default function Footer() {
           </div>
 
           {/* Mobile SVG Background */}
-          <div className="absolute -left-10 top-60 opacity-60 pointer-events-none z-0">
+          <div className="absolute -left-10 top-60 opacity-60 pointer-events-none z-0" aria-hidden="true">
             <img 
               src="/footer_assets/cict-icon-mobile.svg" 
               alt="" 
+              loading="lazy"
               className="block md:hidden w-130 h-125" 
             />
           </div>
 
           {/* Desktop SVG Background */}
-          <div className="absolute mt-10 right-10 top-1/2 -translate-y-1/2 translate-x-10 opacity-60 pointer-events-none z-0">
+          <div className="absolute mt-10 right-10 top-1/2 -translate-y-1/2 translate-x-10 opacity-60 pointer-events-none z-0" aria-hidden="true">
             <img 
               src="/footer_assets/cict-big-icon.svg" 
               alt="" 
+              loading="lazy"
               className="hidden md:block w-180 h-170 object-contain" 
             />
           </div>
@@ -77,18 +90,15 @@ export default function Footer() {
           <div className="flex flex-col items-start md:items-end text-left md:text-right pt-12 md:pt-18 pr-0 md:pr-44 relative z-10">
             <p className="text-base md:text-2xl font-extrabold font-minor mb-4 tracking-tight text-white">NAVIGATION</p>
             <nav className="flex flex-col items-start md:items-end gap-5 md:gap-4 text-sm md:text-xl">
-              <Link href="/programs" className="text-white hover:text-gray-300 transition-colors uppercase tracking-wide">
-                PROGRAM
-              </Link>
-              <Link href="/news-announcements" className="text-white hover:text-gray-300 transition-colors uppercase tracking-wide">
-                NEWS
-              </Link>
-              <Link href="/faculty-profiles" className="text-white hover:text-gray-300 transition-colors uppercase tracking-wide">
-                FACULTY
-              </Link>
-              <Link href="/contact" className="text-white hover:text-gray-300 transition-colors uppercase tracking-wide">
-                CONTACT
-              </Link>
+              {NAV_LINKS.map((link) => (
+                <Link 
+                  key={link.href} 
+                  href={link.href} 
+                  className="text-white hover:text-gray-300 transition-colors uppercase tracking-wide"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </nav>
           </div>
 
@@ -97,7 +107,7 @@ export default function Footer() {
           <div className="mt-10 md:mt-15 md:mb-20 w-full md:col-span-2 relative z-10">
             <div className="h-px w-screen -ml-6 md:ml-0 md:w-291 md:translate-x-45 justify-center bg-[#4D4D4D] mb-4 md:mb-4"></div>
             <p className="text-sm md:text-base font-medium text-center md:text-left text-white md:translate-x-55">
-              Copyright 2026 © WVSU CICT. All Rights Reserved
+              Copyright {currentYear} © WVSU CICT. All Rights Reserved
             </p>
           </div>
           
