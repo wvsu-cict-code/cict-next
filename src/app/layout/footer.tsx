@@ -23,7 +23,7 @@ export default function Footer() {
             {/* Logo Section */}
             <div className="flex items-center mb-6 md:mb-2 md:ml-32 relative z-10">
               <img
-                src="/footer_assets/cict-small-icon.svg" 
+                src="/footer_assets/cict-icon.svg" 
                 className="w-14 h-14 md:w-18 md:h-18 md:mr-0"
                 alt="WVSU CICT Logo"
               />
@@ -66,23 +66,24 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Mobile SVG Background */}
-          <div className="absolute -left-10 top-60 opacity-60 pointer-events-none z-0" aria-hidden="true">
+         {/* Mobile SVG Background */}
+          <div className="absolute -left-65 top-32 sm:top-21 opacity-8 pointer-events-none z-0" aria-hidden="true">
             <img 
-              src="/footer_assets/cict-icon-mobile.svg" 
+              src="/footer_assets/cict-icon.svg" 
               alt="" 
               loading="lazy"
-              className="block md:hidden w-130 h-125" 
+              /* max-w-none is required so it can grow larger than the screen */
+              className="block md:hidden max-w-none w-210" 
             />
           </div>
 
           {/* Desktop SVG Background */}
-          <div className="absolute mt-10 right-10 top-1/2 -translate-y-1/2 translate-x-10 opacity-60 pointer-events-none z-0" aria-hidden="true">
+          <div className="absolute mt-50 right-0 top-1/2 -translate-y-1/2 translate-x-70 opacity-8 pointer-events-none z-0" aria-hidden="true">
             <img 
-              src="/footer_assets/cict-big-icon.svg" 
+              src="/footer_assets/cict-icon.svg" 
               alt="" 
               loading="lazy"
-              className="hidden md:block w-180 h-170 object-contain" 
+              className="hidden md:block h-280 object-contain" 
             />
           </div>
 
