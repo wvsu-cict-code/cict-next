@@ -24,7 +24,7 @@ export default function Footer() {
             <div className="flex items-center mb-6 md:mb-2 md:ml-32 relative z-10">
               <img
                 src="/footer_assets/cict-icon.svg" 
-                className="w-14 h-14 md:w-18 md:h-18 md:mr-0"
+                className="w-10 h-10 md:w-14 md:h-14 md:mr-1"
                 alt="WVSU CICT Logo"
               />
               <h2 className="text-4xl md:text-5xl font-medium uppercase leading-4 flex gap-3 text-white">
@@ -67,23 +67,23 @@ export default function Footer() {
           </div>
 
          {/* Mobile SVG Background */}
-          <div className="absolute -left-65 top-32 sm:top-21 opacity-8 pointer-events-none z-0" aria-hidden="true">
+          <div className="absolute -left-42 top-60 sm:top-48 opacity-8 pointer-events-none z-0" aria-hidden="true">
             <img 
               src="/footer_assets/cict-icon.svg" 
               alt="" 
               loading="lazy"
               /* max-w-none is required so it can grow larger than the screen */
-              className="block md:hidden max-w-none w-210" 
+              className="block md:hidden max-w-none w-155" 
             />
           </div>
 
           {/* Desktop SVG Background */}
-          <div className="absolute mt-50 right-0 top-1/2 -translate-y-1/2 translate-x-70 opacity-8 pointer-events-none z-0" aria-hidden="true">
+          <div className="absolute mt-47 right-0 top-1/2 -translate-y-1/2 translate-x-35 opacity-8 pointer-events-none z-0" aria-hidden="true">
             <img 
               src="/footer_assets/cict-icon.svg" 
               alt="" 
               loading="lazy"
-              className="hidden md:block h-280 object-contain" 
+              className="hidden md:block h-200 object-contain" 
             />
           </div>
 
