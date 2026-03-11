@@ -72,7 +72,6 @@ export default function Footer() {
               src="/footer_assets/cict-icon.svg" 
               alt="" 
               loading="lazy"
-              /* max-w-none is required so it can grow larger than the screen */
               className="block md:hidden max-w-none w-155" 
             />
           </div>
