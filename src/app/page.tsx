@@ -4,9 +4,9 @@ export default function Home() {
       {/*Landing Page*/}
       <section>
         {/*Header*/}
-        <div>
-          <h1>Building the Digital Leaders of Tomorrow</h1>
-          <h2>COLLEGE OF INFORMATION AND COMMUNICATIONS TECHNOLOGY</h2>
+        <div className="mt-36 text-[#373737] text-center gap-6">
+          <h1 className="text-8xl font-medium leading-22">Building the <span className="text-[var(--color-orange-light)]">Digital<br/>Leaders</span> of Tomorrow</h1>
+          <h2 className="text-2xl font-normal font-minor mt-6">COLLEGE OF INFORMATION AND COMMUNICATIONS TECHNOLOGY</h2>
         </div>
 
         {/*Buttons*/}
