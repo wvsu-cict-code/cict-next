@@ -19,7 +19,7 @@ export default function Home() {
         </div>
 
         {/*Tagline*/}
-        <p>We have been shaping careers for technological trailblazers across industries for 23 years.</p>
+        <p className="mt-44 font-major font-medium text-2xl text-[#373737] text-center">We have been shaping <span className="text-[var(--color-orange-light)]">careers</span> for technological trailblazers across <span className="text-[var(--color-orange-light)]">industries</span> for <span className="text-[var(--color-orange-light)]">23 years</span>.</p>
       </section>
     </main>
   );
