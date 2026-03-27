@@ -23,16 +23,24 @@ export default function Home() {
       </section>
 
       {/*News and Announcements*/}
-      <section className="mx-40 mt-[152px]">
+      <section className="mx-40 mt-[152px] mb-16">
         {/*Top Section*/}
         <div className="grid grid-cols-2">
-          <div>
-            <h1>NEWS AND ANNOUNCEMENTS</h1>
+          <div className="">
+            <div className="flex items-center">
+              <h1 className="text-[#585858] text-2xl font-medium flex">NEWS AND ANNOUNCEMENTS</h1>
+              <button className="ml-auto flex justify-center items-center border h-8 w-32  border-[#4D4D4D] text-[#4D4D4D] text-xs rounded-full">
+                READ MORE 
+                <img 
+                  src="/home-page_assets/grey-arrow-icon.png" 
+                  className="ml-2 w-4 h-3"
+                /> 
+              </button>
+            </div>
 
-            <button>READ MORE</button>
-
-            <h1>CHECK OUT THE LATEST COLLEGE UPDATES</h1>
-            <p>Stay informed with the latest updates, official announcements, and important notices</p>
+            <h1 className="mt-6 text-[#373737] text-5xl font-medium">CHECK OUT THE LATEST <br/><span className="text-[var(--color-orange-light)]">COLLEGE UPDATES</span></h1>
+            
+            <p className="mt-1 text-[#828282] text-base font-normal">Stay informed with the latest updates, official announcements, and <br/> important notices</p>
           </div>
 
           {/*Featured Card*/}
