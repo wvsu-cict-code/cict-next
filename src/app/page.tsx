@@ -23,9 +23,9 @@ export default function Home() {
       </section>
 
       {/*News and Announcements*/}
-      <section>
+      <section className="mx-40 mt-[152px]">
         {/*Top Section*/}
-        <div>
+        <div className="grid grid-cols-2">
           <div>
             <h1>NEWS AND ANNOUNCEMENTS</h1>
 
@@ -48,7 +48,7 @@ export default function Home() {
         </div>
         
         {/*Bottom Section*/}
-        <div>
+        <div className="grid grid-cols-4">
           <div>
             <p>December 26, 2025</p>
             <span>NEWS</span>
