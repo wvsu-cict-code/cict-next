@@ -1,6 +1,7 @@
 export default function Home() {
 
   const button_big = "inline-block border-8 rounded-2xl w-xs h-10";
+  const card_small = "w-3xs h-32 shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 w-3xs h-32 shadow-lg rounded-xl";
 
   return (
     <main>
@@ -70,30 +71,70 @@ export default function Home() {
         </div>
         
         {/*Bottom Section*/}
-        <div className="grid grid-cols-4">
-          <div>
-            <p>December 26, 2025</p>
-            <span>NEWS</span>
-            <h1>WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-            <button>Read More</button>
+        <div className="mt-8 grid grid-cols-4">
+          <div className={`${card_small}`}>
+            <div className="flex items-center">
+              <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
+              <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
+            </div>
+            <div className="mt-3 flex flex-col h-20">
+              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+                Read More
+                <img 
+                  src="/home-page_assets/orange-arrow-icon.png"  
+                  className="ml-1 w-3 h-2"
+                />
+              </button>
+            </div>
           </div>
-          <div>
-            <p>December 26, 2025</p>
-            <span>NEWS</span>
-            <h1>WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-            <button>Read More</button>
+          <div className={`${card_small}`}>
+            <div className="flex items-center">
+              <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
+              <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
+            </div>
+            <div className="mt-3 flex flex-col h-20">
+              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+                Read More
+                <img 
+                  src="/home-page_assets/orange-arrow-icon.png"  
+                  className="ml-1 w-3 h-2"
+                />
+              </button>
+            </div>
           </div>
-          <div>
-            <p>December 26, 2025</p>
-            <span>NEWS</span>
-            <h1>WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-            <button>Read More</button>
+          <div className={`${card_small}`}>
+            <div className="flex items-center">
+              <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
+              <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
+            </div>
+            <div className="mt-3 flex flex-col h-20">
+              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+                Read More
+                <img 
+                  src="/home-page_assets/orange-arrow-icon.png"  
+                  className="ml-1 w-3 h-2"
+                />
+              </button>
+            </div>
           </div>
-          <div>
-            <p>December 26, 2025</p>
-            <span>NEWS</span>
-            <h1>WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-            <button>Read More</button>
+          <div className={`${card_small}`}>
+            <div className="flex items-center">
+              <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
+              <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
+            </div>
+            <div className="mt-3 flex flex-col h-20">
+              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+                Read More
+                <img 
+                  src="/home-page_assets/orange-arrow-icon.png"  
+                  className="ml-1 w-3 h-2"
+                />
+              </button>
+            </div>
           </div>
         </div>
       </section>
