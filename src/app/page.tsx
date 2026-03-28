@@ -44,13 +44,27 @@ export default function Home() {
           </div>
 
           {/*Featured Card*/}
-          <div>
-            <img src="" alt="insert image here" />
-            <div>
-              <p>2 days ago |</p>
-              <span>ANNOUNCEMENT</span>
-              <h1>WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-              <button>Read Now</button>
+          <div className="ml-8 w-lg h-52 flex bg-white shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-lg">
+            <img 
+              src="/home-page_assets/featured-card-image.png" 
+              alt="insert image here" 
+              className="w-3xs mr-4" 
+            />
+            <div className="mt-4">
+              <div className="flex items-center h-6">
+                <p className="text-xs text-[#4D4D4D] font-normal">2 days ago |</p>
+                <span className="ml-1.5 text-white text-[8px] font-bold bg-orange-light border-orange-light rounded-sm px-2">ANNOUNCEMENT</span>
+              </div>
+              <div className="ml-2 mt-6 flex flex-col h-36">
+                <h1 className="text-xl font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+                <button className="ml-auto mt-auto mr-3 mb-3 flex justify-center items-center h-8 w-28 border border-orange-light rounded-full text-orange-light text-xs font-normal">
+                  Read Now
+                  <img 
+                    src="/home-page_assets/orange-arrow-icon.png"  
+                    className="ml-1.5 w-5"
+                  />
+                </button>
+              </div>
             </div>
           </div>
         </div>
