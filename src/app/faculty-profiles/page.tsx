@@ -58,15 +58,15 @@ export default function FacultyProfiles() {
     {
       name: "INFORMATION TECHNOLOGY",
       side: "left",
-      y: 450, x: 230,
+      y: 450, x: -100,
       link: "/faculty-profiles/it",
-      logoAnchor: { x: 370, y: 450 },
+      logoAnchor: { x: 170, y: 450 },
       zoomScale: 12,
     },
     {
       name: "INFORMATION SYSTEM",
       side: "left",
-      y: 650, x: 200,
+      y: 650, x: 0,
       link: "/faculty-profiles/is",
       logoAnchor: { x: 400, y: 650 },
       zoomScale: 12,
@@ -82,9 +82,9 @@ export default function FacultyProfiles() {
     {
       name: "COMPUTER SCIENCE",
       side: "right",
-      y: 340, x: 750,
+      y: 300, x: 1000,
       link: "/faculty-profiles/cs",
-      logoAnchor: { x: 620, y: 340 },
+      logoAnchor: { x: 800, y: 300 },
       zoomScale: 12,
     },
     {
@@ -126,24 +126,28 @@ export default function FacultyProfiles() {
       </header>
 
       <div 
-        className="absolute z-10 w-[min(58vh,80vw)] aspect-square transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1)"
+        className="absolute z-10 w-full max-w-[1600px] aspect-[16/10] transition-all duration-1000 cubic-bezier(0.16, 1, 0.3, 1)"
         style={{
           left: activeView === "detail" ? "22%" : "50%",
           top: activeView === "detail" ? "50%" : "55%", 
-          transform: `translate(-50%, -50%) scale(${currentScale})`,
+          transform: `translate(-50%, -50%) scale(${currentScale * (activeView === "detail" ? 1 : 0.6)})`,
           transformOrigin: zoomedIndex !== null 
-            ? `${(departments[zoomedIndex].logoAnchor.x / 1000) * 100}% ${(departments[zoomedIndex].logoAnchor.y / 1000) * 100}%` 
+            ? `${((departments[zoomedIndex].logoAnchor.x + 300) / 1600) * 100}% ${(departments[zoomedIndex].logoAnchor.y / 1000) * 100}%` 
             : "center center",
           opacity: activeView === "detail" ? 0.2 : 1,
         }}
       >
-        <div className="absolute inset-0 z-0">
-          <Image src="/icons/facultiylogo.svg" alt="CICT Logo" fill priority className="object-contain" />
+        {/* LOGO AREA (Centered at 0-1000 scale, but viewBox is wider) */}
+        <div className="absolute inset-x-0 top-0 bottom-0 z-0 flex justify-center items-center">
+           <div className="relative h-full aspect-square">
+             <Image src="/icons/facultiylogo.svg" alt="CICT Logo" fill priority className="object-contain" />
+           </div>
         </div>
 
+        {/* SVG LINES (WIDER VIEWBOX) */}
         <svg 
           className={`absolute inset-0 z-10 h-full w-full pointer-events-none transition-all duration-700 ${zoomedIndex !== null ? 'opacity-0' : 'opacity-100'}`} 
-          viewBox="0 0 1000 1000" 
+          viewBox="-300 0 1600 1000" 
           fill="none"
         >
           {departments.map((dept, index) => (
@@ -151,31 +155,35 @@ export default function FacultyProfiles() {
           ))}
         </svg>
 
+        {/* LABELS & DOTS (WIDER AREA) */}
         <div className={`absolute inset-0 z-20 pointer-events-none transition-all duration-700 ${zoomedIndex !== null ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}>
-          {departments.map((dept, index) => (
-            <div 
-              key={index} 
-              className="absolute pointer-events-auto transition-all duration-300" 
-              style={{ 
-                top: `${(dept.y / 1000) * 100}%`, 
-                left: `${(dept.x / 1000) * 100}%`, 
-                transform: `translate(${dept.side === "left" ? "-100%" : "0%"}, -50%) scale(${invScale})`, 
-                transformOrigin: dept.side === "left" ? "right center" : "left center" 
-              }} 
-              onMouseEnter={() => setHoveredIndex(index)} 
-              onMouseLeave={() => setHoveredIndex(null)}
-            >
-              <button 
-                onClick={(e) => handleDeptClick(e, index)} 
-                className={`flex items-center gap-3 ${dept.side === "left" ? "flex-row" : "flex-row-reverse"}`}
+          <div className="relative w-full h-full">
+            {/* The following coordinates are relative to the -300 to 1300 viewBox horizontally */}
+            {departments.map((dept, index) => (
+              <div 
+                key={index} 
+                className="absolute pointer-events-auto transition-all duration-300" 
+                style={{ 
+                  top: `${(dept.y / 1000) * 100}%`, 
+                  left: `${((dept.x + 300) / 1600) * 100}%`, 
+                  transform: `translate(${dept.side === "left" ? "-100%" : "0%"}, -50%) scale(${invScale * 1.5})`, 
+                  transformOrigin: dept.side === "left" ? "right center" : "left center" 
+                }} 
+                onMouseEnter={() => setHoveredIndex(index)} 
+                onMouseLeave={() => setHoveredIndex(null)}
               >
-                <span className={`font-minor text-[12px] md:text-[14px] font-bold tracking-[0.05em] uppercase whitespace-nowrap transition-all duration-300 text-[#BA3D1B] ${hoveredIndex === null || hoveredIndex === index ? "opacity-100" : "opacity-20"}`}>
-                  {dept.name}
-                </span>
-                <div className={`h-1.5 w-1.5 bg-[#BA3D1B] rounded-[1px] transition-all duration-300 shrink-0 ${hoveredIndex === index ? "scale-150 shadow-[0_0_12px_rgba(186,61,27,1)]" : "scale-100"}`} />
-              </button>
-            </div>
-          ))}
+                <button 
+                  onClick={(e) => handleDeptClick(e, index)} 
+                  className={`flex items-center gap-3 ${dept.side === "left" ? "flex-row" : "flex-row-reverse"}`}
+                >
+                  <span className={`font-minor text-[12px] md:text-[14px] font-bold tracking-[0.05em] uppercase whitespace-nowrap transition-all duration-300 text-[#BA3D1B] ${hoveredIndex === null || hoveredIndex === index ? "opacity-100" : "opacity-20"}`}>
+                    {dept.name}
+                  </span>
+                  <div className={`h-1.5 w-1.5 bg-[#BA3D1B] rounded-[1px] transition-all duration-300 shrink-0 ${hoveredIndex === index ? "scale-150 shadow-[0_0_12px_rgba(186,61,27,1)]" : "scale-100"}`} />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
