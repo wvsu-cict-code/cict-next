@@ -138,6 +138,18 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* About Section */}
+      <section>
+        <h1>ABOUT.</h1>
+        <p>Founded in 2002 under BOR Resolution No. 34, the College of Information and Communications Technology (CICT) began as the Institute of Information and Communications Technology (IICT) and launched the BS in Information Technology (BSIT) and BS in Information Management (BSIM) programs in AY 2002-2003, producing its first graduates soon after.</p>
+        
+        <h1>MISSION.</h1>
+        <p>The WVSU-CICT aims to develop professionals who shall be able to meet the growing manpower  demand by expanding the ICT industries in the country. Being the lead institution of higher learning in Western Visayas.</p>
+
+        <h1>VISION.</h1>
+        <p>To be the leading provider of ICT education in Western Visayas, aligned with the broader mandate of WVSU as the lead institution of higher learning in the region.</p>
+      </section>
     </main>
   );
 }
