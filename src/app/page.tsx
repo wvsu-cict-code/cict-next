@@ -140,7 +140,7 @@ export default function Home() {
       </section>
       
       {/* About Section */}
-      <section>
+      <section className="bg-[#1e1e1e] py-40 px-52">
         <h1>ABOUT.</h1>
         <p>Founded in 2002 under BOR Resolution No. 34, the College of Information and Communications Technology (CICT) began as the Institute of Information and Communications Technology (IICT) and launched the BS in Information Technology (BSIT) and BS in Information Management (BSIM) programs in AY 2002-2003, producing its first graduates soon after.</p>
         
