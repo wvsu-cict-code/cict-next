@@ -165,7 +165,7 @@ export default function Home() {
 
       {/* Why Choose Us Section */}
       <section>
-        <h1>Why Choose Us?</h1>
+        <h1 className="text-[#363636] font-medium text-[80px]">Why Choose <span className="text-orange-light">Us</span>?</h1>
         <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
         <p>ACCREDITATIONS</p>
         <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
