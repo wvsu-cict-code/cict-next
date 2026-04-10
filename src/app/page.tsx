@@ -162,6 +162,21 @@ export default function Home() {
           <p className="text-white font-medium text-4 leading-8 w-150">To be the leading provider of ICT education in <span className="text-orange-light font-bold">Western Visayas</span>, aligned with the broader mandate of WVSU as the lead institution of higher learning in the region.</p>
         </div>
       </section>
+
+      {/* Why Choose Us Section */}
+      <section>
+        <h1>Why Choose Us?</h1>
+        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        <p>ACCREDITATIONS</p>
+        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        <p>NATIONAL RANKINGS</p>
+        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        <p>INTERNATIONAL RELATIONS</p>
+        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        <p>COMPETITION RECOGNITIONS</p>
+        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        <p>INTERNATIONAL ENGAGEMENTS</p>
+      </section>
     </main>
   );
 }
