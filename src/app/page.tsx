@@ -208,27 +208,27 @@ export default function Home() {
             <div className="grid grid-cols-3 gap-8">
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
-                <h3>BSEMC</h3>
+                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSEMC</h3>
               </div>
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/bscs-icon.png" className="w-24 h-24" />
-                <h3>BSCS</h3>
+                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSCS</h3>
               </div>
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/blis-icon.png" className="w-24 h-24" />
-                <h3>BLIS</h3>
+                <h3 className="text-2xl font-medium text-[#1E1E1E]">BLIS</h3>
               </div>
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/bsis-icon.png" className="w-24 h-24" />
-                <h3>BSIS</h3>
+                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSIS</h3>
               </div>
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/bsit-icon.png" className="w-24 h-24" />
-                <h3>BSIT</h3>
+                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSIT</h3>
               </div>
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/mit-icon.png" className="w-24 h-24" />
-                <h3>MIT</h3>
+                <h3 className="text-2xl font-medium text-[#1E1E1E]">MIT</h3>
               </div>
             </div>
           </div>
