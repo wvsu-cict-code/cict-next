@@ -193,8 +193,8 @@ export default function Home() {
       {/* Offered Programs Section */}
       <section className="mx-40 my-20">
         <h1 className="text-[#363636] font-medium text-6xl">INTERESTED IN THE COLLEGE? SEE WHAT <span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
-        <div className="w-full h-176 bg-[#F0F0F0] rounded-[92px] p-20">
-          <div className="flex items-center">
+        <div className="w-full h-176 bg-[#F0F0F0] rounded-[92px] flex flex-col">
+          <div className="flex-1 flex justify-center items-center mt-16 mx-12">
             <h2 className="font-medium text-6xl text-[#1E1E1E]">Offered Programs</h2>
             <button className="ml-auto flex justify-center items-center border h-12 w-52 border-[#4D4D4D] text-[#4D4D4D] text-2xl font-medium rounded-full">
               Explore All
@@ -204,7 +204,7 @@ export default function Home() {
               /> 
             </button>
           </div>
-          <div className="flex justify-center items-center mt-20">
+          <div className="flex justify-center items-center h-152">
             <div className="grid grid-cols-3 gap-8">
               <div className={` ${course_container} `}>
                 <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
