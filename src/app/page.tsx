@@ -188,6 +188,39 @@ export default function Home() {
           <p className="font-medium text-5xl text-[#363636] ml-4">INTERNATIONAL ENGAGEMENTS</p>
         </div>
       </section>
+
+      {/* Offered Programs Section */}
+      <section>
+        <h1>INTERESTED IN THE COLLEGE? SEE WHAT WE OFFER IN THE TABLE</h1>
+        <div>
+          <h2>Offered Programs</h2>
+          <button>
+            READ MORE 
+            <img 
+              src="/home-page_assets/grey-arrow-icon.png"
+              className="w-4 h-3"
+            /> 
+          </button>
+          <div>
+            <h3>BSEMC</h3>
+          </div>
+          <div>
+            <h3>BSCS</h3>
+          </div>
+          <div>
+            <h3>BLIS</h3>
+          </div>
+          <div>
+            <h3>BSIS</h3>
+          </div>
+          <div>
+            <h3>BSIT</h3>
+          </div>
+          <div>
+            <h3>MIT</h3>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
