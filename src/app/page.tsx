@@ -192,7 +192,7 @@ export default function Home() {
 
       {/* Offered Programs Section */}
       <section className="mx-40 my-20">
-        <h1 className="text-[#363636] font-medium text-6xl">INTERESTED IN THE COLLEGE? SEE WHAT <span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
+        <h1 className="text-[#363636] font-medium text-6xl text-right mb-12">INTERESTED IN THE COLLEGE? SEE WHAT <br /><span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
         <div className="w-full h-176 bg-[#F0F0F0] rounded-[92px] flex flex-col">
           <div className="flex-1 flex justify-center items-center mt-16 mx-12">
             <h2 className="font-medium text-6xl text-[#1E1E1E]">Offered Programs</h2>
