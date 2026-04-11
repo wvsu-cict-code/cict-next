@@ -190,7 +190,7 @@ export default function Home() {
       </section>
 
       {/* Offered Programs Section */}
-      <section>
+      <section className="mx-40 my-20">
         <h1 className="text-[#363636] font-medium text-6xl">INTERESTED IN THE COLLEGE? SEE WHAT <span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
         <div>
           <h2>Offered Programs</h2>
