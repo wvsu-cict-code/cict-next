@@ -2,162 +2,165 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
+import { useEffect, useState } from "react";
 
 export default function DeansOffice() {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  const themeOrange = "#f48128"; // Based on globals.css --color-orange-dark
+
   const faculty = [
     {
       name: "DR. MA. BETH S. CONCEPCION",
       title: "College Dean",
       description: "Faculty in BSIS and MIT",
-      color: "bg-[#BA3D1B]",
+      image: "/images/dean.png",
+      role: "Leadership",
     },
     {
       name: "MR. NEILJAN C. RABORAR",
       title: "College Secretary",
       subtitle: "Quality Assurance Focal Person",
       description: "Faculty in BSIS",
-      color: "bg-neutral-300",
+      image: "/images/secretary.png",
+      role: "Administration",
     },
     {
       name: "MS. AUBREY V. BALAJADIA",
       title: "Administrative Aide Clerk",
-      description: "",
-      color: "bg-neutral-300",
+      description: "Office Administration",
+      image: "/images/clerk.png",
+      role: "Support",
     },
   ];
 
   return (
-    <main className="relative flex min-h-screen w-full overflow-hidden bg-white">
-      {/* 
-        LEFT SIDE: SYNCHRONIZED ZOOMED BACKGROUND
-      */}
-      <div className="relative flex h-screen w-[32%] shrink-0 flex-col items-start p-10 lg:p-14 overflow-hidden bg-white">
-        {/* The Synchronized Logo Fragment */}
-        <div className="absolute inset-0 z-0 pointer-events-none opacity-20">
-          <Image
-            src="/icons/facultiylogo.svg"
-            alt="Faculty Logo Fragment"
-            width={1200}
-            height={1200}
-            className="h-full w-full object-contain"
-            style={{
-              transform: "scale(15)",
-              transformOrigin: "39% 20%",
-            }}
-          />
-        </div>
-
-        {/* Glossy Overlay for depth */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20" />
-
-        {/* Back Button */}
+    <main className="relative flex min-h-screen w-full flex-col bg-white overflow-x-hidden selection:bg-[#f48128] selection:text-white">
+      {/* HEADER SECTION */}
+      <nav className="relative z-50 flex items-center justify-between px-8 py-10 lg:px-16 lg:py-12">
         <Link 
           href="/faculty-profiles" 
-          className="group relative z-20 flex items-center gap-3 rounded-full bg-[#BA3D1B] px-8 py-3 text-xs font-black tracking-widest text-white transition-all hover:bg-[#9a3216] shadow-[0_8px_24px_rgba(186,61,27,0.3)] active:scale-95"
+          className="group flex items-center gap-4 px-5 py-2.5 bg-white border border-neutral-200 rounded-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500"
         >
-          <svg 
-            width="14" 
-            height="14" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="4" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-            className="transition-transform group-hover:-translate-x-0.5"
-          >
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-          BACK TO DIRECTORY
-        </Link>
-      </div>
-
-      {/* RIGHT SIDE: MAIN CONTENT */}
-      <div className="relative flex flex-1 flex-col overflow-y-auto px-12 py-20 lg:px-24">
-        {/* Subtle vertical line separator */}
-        <div className="absolute left-0 top-0 h-full w-px bg-neutral-100/50" />
-
-        <header className="mb-24">
-          <h1 className="font-major text-[8rem] font-bold tracking-tighter text-neutral-900 uppercase leading-[0.75] italic">
-            DEANS <br /> OFFICE
-          </h1>
-        </header>
-
-        <div className="flex flex-col xl:flex-row gap-20 items-start">
-          {/* Photo Grid - Asymmetric Layout matching reference */}
-          <div className="relative flex gap-4">
-            {/* Left Column of Grid */}
-            <div className="flex flex-col gap-4">
-              <div className="relative h-[260px] w-[190px] overflow-hidden rounded-[2px] shadow-2xl transition-all duration-700 hover:scale-[1.02] cursor-pointer">
-                <Image
-                  src="/news-article-placeholder.jpg"
-                  alt="DR. MA. BETH S. CONCEPCION"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <div className="relative h-[260px] w-[190px] overflow-hidden rounded-[2px] shadow-xl grayscale transition-all duration-700 hover:grayscale-0 hover:scale-[1.02] cursor-pointer">
-                <Image
-                  src="/news-article-placeholder.jpg"
-                  alt="MS. AUBREY V. BALAJADIA"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
-
-            {/* Right Column of Grid - Shifted Down */}
-            <div className="mt-20 flex flex-col gap-4">
-              <div className="relative h-[220px] w-[210px] overflow-hidden rounded-[2px] shadow-xl grayscale transition-all duration-700 hover:grayscale-0 hover:scale-[1.02] cursor-pointer border-r-4 border-neutral-100/30">
-                <Image
-                  src="/news-article-placeholder.jpg"
-                  alt="MR. NEILJAN C. RABORAR"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </div>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#BA3D1B] text-white transition-transform group-hover:-rotate-45">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
           </div>
+          <span className="text-[10px] font-black tracking-[0.2em] text-neutral-900 uppercase">Return to Faculty</span>
+        </Link>
 
-          {/* FACULTY LIST */}
-          <div className="flex flex-1 flex-col gap-12 pt-4">
-            {faculty.map((member, idx) => (
-              <div key={idx} className="group flex items-start gap-8">
-                {/* Status/Color Block */}
-                <div className={`mt-2 h-4 w-12 shrink-0 ${member.color} transition-all duration-500 group-hover:w-16 shadow-sm`} />
-                
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-minor text-xl font-bold tracking-tight text-neutral-900 group-hover:text-[#BA3D1B] transition-colors duration-300">
-                    {member.name}
-                  </h2>
-                  <div className="flex flex-col">
-                    <span className="font-minor text-sm font-bold tracking-widest text-neutral-600 uppercase">
-                      {member.title}
-                    </span>
-                    {member.subtitle && (
-                      <span className="font-minor text-xs font-semibold text-neutral-400">
-                        {member.subtitle}
-                      </span>
-                    )}
-                    <span className="font-minor text-[0.65rem] font-bold text-neutral-400 mt-1 uppercase tracking-tight">
-                      {member.description}
-                    </span>
-                  </div>
-                </div>
+        <div className="flex flex-col items-end">
+          <span className="text-[10px] font-black tracking-[0.3em] text-[#BA3D1B] uppercase mb-1">Office of the Dean</span>
+          <div className="h-1 w-12 bg-[#BA3D1B]" />
+        </div>
+      </nav>
+
+      <section className="relative z-10 flex flex-col px-8 lg:px-24 pt-10 pb-32">
+        <div className="max-w-[1400px] mx-auto w-full">
+          {/* TITLE BLOCK */}
+          <header className={`mb-24 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <h1 className="font-major text-[70px] font-medium tracking-[-0.02em] text-neutral-900 uppercase leading-[85px]">
+              DEANS OFFICE
+            </h1>
+          </header>
+
+          <div className="flex flex-col xl:flex-row gap-20 items-start">
+            
+            {/* ASYMMETRIC GRID - LEFT SIDE */}
+            <div className="relative z-30 w-full xl:w-1/2 flex gap-6 h-[700px]">
+              {/* Primary Column */}
+              <div className="flex flex-col gap-6 w-1/2">
+                 {/* Dean Image */}
+                 <button 
+                  onMouseEnter={() => setActiveIndex(0)}
+                  onClick={() => setActiveIndex(0)}
+                  className={`relative h-[340px] w-full cursor-pointer transition-all duration-700 rounded-sm overflow-hidden shadow-lg outline-none
+                  ${activeIndex === 0 ? "scale-105 z-20 shadow-2xl" : "scale-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100"}`}
+                 >
+                    <Image src={faculty[0].image} alt={faculty[0].name} fill className="object-cover" />
+                    {activeIndex === 0 && <div className="absolute inset-0 bg-[#f48128]/10" />}
+                 </button>
+
+                 {/* Clerk Image */}
+                 <button 
+                  onMouseEnter={() => setActiveIndex(2)}
+                  onClick={() => setActiveIndex(2)}
+                  className={`relative h-[300px] w-full cursor-pointer transition-all duration-700 rounded-sm overflow-hidden shadow-lg outline-none
+                  ${activeIndex === 2 ? "scale-105 z-20 shadow-2xl ring-4 ring-[#f48128]" : "scale-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100"}`}
+                 >
+                    <Image src={faculty[2].image} alt={faculty[2].name} fill className="object-cover border-t-4 border-white" />
+                    {activeIndex === 2 && <div className="absolute inset-0 bg-[#f48128]/10" />}
+                 </button>
               </div>
-            ))}
+
+              {/* Offset Column */}
+              <div className="flex flex-col gap-6 w-1/2 pt-24">
+                 {/* Secretary Image */}
+                 <button 
+                  onMouseEnter={() => setActiveIndex(1)}
+                  onClick={() => setActiveIndex(1)}
+                  className={`relative h-[360px] w-full cursor-pointer transition-all duration-700 rounded-sm overflow-hidden shadow-lg outline-none
+                  ${activeIndex === 1 ? "scale-105 z-20 shadow-2xl ring-4 ring-[#f48128]" : "scale-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100"}`}
+                 >
+                    <Image src={faculty[1].image} alt={faculty[1].name} fill className="object-cover border-r-4 border-white" />
+                    {activeIndex === 1 && <div className="absolute inset-0 bg-[#f48128]/10" />}
+                 </button>
+
+                 <div className="h-[140px] w-full border border-neutral-100 rounded-sm flex items-center justify-center p-8 opacity-40">
+                    <div className="w-full h-full border-t border-l border-neutral-200" />
+                 </div>
+              </div>
+            </div>
+
+            {/* INTERACTIVE FACULTY LIST - RIGHT SIDE */}
+            <div className="relative z-30 flex flex-1 flex-col gap-14 pt-8 w-full">
+              {faculty.map((member, idx) => (
+                <button 
+                  key={idx} 
+                  onClick={() => setActiveIndex(idx)}
+                  className="group flex items-start gap-12 text-left outline-none"
+                >
+                  {/* Status/Color Block Indicator */}
+                  <div className={`mt-2 h-4 w-12 shrink-0 transition-all duration-500 shadow-sm ${activeIndex === idx ? 'bg-[#f48128] w-20' : 'bg-neutral-200'}`} />
+                  
+                  <div className="flex flex-col gap-3">
+                    <h2 className={`font-minor text-2xl font-bold tracking-tight transition-all duration-500 uppercase ${activeIndex === idx ? 'text-[#f48128]' : 'text-neutral-900'}`}>
+                      {member.name}
+                    </h2>
+                    
+                    <div className="flex flex-col">
+                      <span className={`font-minor text-[12px] font-black tracking-[0.2em] uppercase transition-colors duration-500 ${activeIndex === idx ? 'text-[#f48128]/70' : 'text-neutral-500'}`}>
+                        {member.title}
+                      </span>
+                      
+                      <span className={`font-minor text-[10px] font-bold mt-2 uppercase tracking-widest transition-opacity duration-500 ${activeIndex === idx ? 'opacity-100 text-neutral-400' : 'opacity-0'}`}>
+                        {member.description}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* Black indicator in bottom left like image */}
-      <div className="fixed bottom-4 left-4 h-6 w-6 rounded-full bg-neutral-900 flex items-center justify-center text-[10px] text-white font-bold opacity-80 z-50">
-        N
-      </div>
+      </section>
 
-      {/* Footer bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-4 bg-[#141414] z-50" />
+      {/* FOOTER ACCENT */}
+      <footer className="relative mt-20 pb-10 px-8 flex flex-col items-center">
+        <div className="w-full h-px bg-neutral-100 mb-10" />
+        <div className="flex items-center gap-6">
+          <div className="h-10 w-10 relative opacity-10 filter grayscale">
+             <Image src="/icons/facultiylogo.svg" alt="CICT Logo" fill className="object-contain" />
+          </div>
+          <span className="text-[10px] font-bold text-neutral-300 tracking-[0.4em] uppercase">College of Information and Computing Technology</span>
+        </div>
+      </footer>
     </main>
   );
 }

@@ -189,48 +189,72 @@ export default function FacultyProfiles() {
 
       <div className={`w-full min-h-screen fixed inset-0 z-40 flex items-stretch transition-all duration-1000 ${activeView === "detail" ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-20 pointer-events-none"}`}>
         <div className="relative w-[32%] shrink-0 flex flex-col p-14 lg:p-20">
-           <button onClick={handleBack} className="group relative z-20 flex items-center gap-3 rounded-full bg-[#BA3D1B] px-8 py-3 text-[10px] font-black tracking-widest text-white transition-all hover:bg-[#9a3216] shadow-xl active:scale-95">
-             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:-translate-x-1"><path d="M15 18l-6-6 6-6" /></svg>
-             BACK TO DIRECTORY
+           <button 
+            onClick={handleBack} 
+            className="group relative z-50 flex items-center gap-1.5 px-3.5 py-1.5 bg-white border border-neutral-200 rounded-full shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-500 w-fit cursor-pointer"
+           >
+             <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#BA3D1B] text-white transition-transform group-hover:-rotate-45">
+               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                 <path d="M19 12H5M12 19l-7-7 7-7" />
+               </svg>
+             </div>
+             <span className="text-[8px] font-black tracking-[0.2em] text-neutral-900 uppercase">Return to Faculty</span>
            </button>
         </div>
 
         <div className="flex-1 flex flex-col px-12 lg:px-24 py-24 bg-white relative shadow-[-60px_0_90px_rgba(0,0,0,0.05)] overflow-y-auto">
           <div className="absolute left-0 top-0 h-full w-px bg-neutral-100/60" />
           <header className="mb-24">
-            <h1 className="font-major text-[8.5rem] font-bold tracking-tighter text-neutral-900 uppercase leading-[0.7] italic">DEANS <br /> OFFICE</h1>
+            <h1 className="font-major text-[70px] font-medium tracking-[-0.02em] text-neutral-900 uppercase leading-[85px]">DEANS OFFICE</h1>
           </header>
 
           <div className="flex flex-col xl:flex-row gap-20 items-start">
-            <div className="relative flex gap-5">
+            <div className="relative flex gap-5 z-20">
               <div className="flex flex-col gap-5">
-                <div className="relative h-[280px] w-[210px] overflow-hidden rounded-[2px] shadow-2xl bg-neutral-100">
-                  <Image src="/news-article-placeholder.jpg" alt="Dean" fill className="object-cover" />
-                </div>
-                <div className="relative h-[280px] w-[210px] overflow-hidden rounded-[2px] shadow-xl grayscale bg-neutral-100">
-                  <Image src="/news-article-placeholder.jpg" alt="Aide" fill className="object-cover" />
-                </div>
+                <button
+                  onMouseEnter={() => setZoomedIndex(0)}
+                  onClick={() => setZoomedIndex(0)} 
+                  className={`relative h-[280px] w-[210px] overflow-hidden rounded-[2px] transition-all duration-500 cursor-pointer outline-none ${zoomedIndex === 0 ? 'scale-105 z-20 shadow-2xl' : 'grayscale opacity-50'}`}
+                >
+                  <Image src="/images/dean.png" alt="Dean" fill className="object-cover" />
+                </button>
+                <button 
+                  onMouseEnter={() => setZoomedIndex(2)}
+                  onClick={() => setZoomedIndex(2)}
+                  className={`relative h-[280px] w-[210px] overflow-hidden rounded-[2px] transition-all duration-500 cursor-pointer outline-none ${zoomedIndex === 2 ? "scale-105 z-20 shadow-2xl" : "scale-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100"}`}
+                >
+                  <Image src="/images/clerk.png" alt="Aide" fill className="object-cover" />
+                </button>
               </div>
               <div className="mt-28 flex flex-col gap-5">
-                <div className="relative h-[240px] w-[230px] overflow-hidden rounded-[2px] shadow-xl grayscale border-r-8 border-[#BA3D1B]/10 bg-neutral-100">
-                  <Image src="/news-article-placeholder.jpg" alt="Secretary" fill className="object-cover" />
-                </div>
+                <button 
+                  onMouseEnter={() => setZoomedIndex(1)}
+                  onClick={() => setZoomedIndex(1)}
+                  className={`relative h-[240px] w-[230px] overflow-hidden rounded-[2px] transition-all duration-500 border-r-8 border-[#BA3D1B]/10 cursor-pointer outline-none ${zoomedIndex === 1 ? "scale-105 z-20 shadow-2xl" : "scale-100 grayscale opacity-40 hover:grayscale-0 hover:opacity-100"}`}
+                >
+                  <Image src="/images/secretary.png" alt="Secretary" fill className="object-cover" />
+                </button>
               </div>
             </div>
 
-            <div className="flex flex-1 flex-col gap-12 pt-6">
+            <div className="flex flex-1 flex-col gap-12 pt-6 z-20">
               {faculty.map((member, idx) => (
-                <div key={idx} className="group flex items-start gap-10">
-                  <div className={`mt-2 h-4 w-12 shrink-0 ${member.color} transition-all duration-500 group-hover:w-20 shadow-sm`} />
+                <button 
+                  key={idx} 
+                  onClick={() => setZoomedIndex(idx)}
+                  className="group flex items-start gap-10 text-left outline-none cursor-pointer"
+                >
+                  <div className={`mt-2 h-4 shrink-0 transition-all duration-500 shadow-sm ${zoomedIndex === idx ? 'bg-[#f48128] w-20' : 'bg-neutral-200 w-12'}`} />
                   <div className="flex flex-col gap-2.5">
-                    <h2 className="font-minor text-2xl font-bold tracking-tight text-neutral-900 group-hover:text-[#BA3D1B] transition-colors duration-300">{member.name}</h2>
+                    <h2 className={`font-minor text-2xl font-bold tracking-tight transition-colors duration-300 ${zoomedIndex === idx ? 'text-[#f48128]' : 'text-neutral-900 group-hover:text-[#BA3D1B]'}`}>
+                      {member.name}
+                    </h2>
                     <div className="flex flex-col">
-                      <span className="font-minor text-sm font-black tracking-[0.15em] text-neutral-500 uppercase">{member.title}</span>
+                      <span className={`font-minor text-sm font-black tracking-[0.15em] uppercase transition-colors ${zoomedIndex === idx ? 'text-[#f48128]/70' : 'text-neutral-500'}`}>{member.title}</span>
                       {member.subtitle && <span className="font-minor text-xs font-semibold text-neutral-400 mt-1">{member.subtitle}</span>}
-                      <span className="font-minor text-[0.65rem] font-black text-neutral-300 mt-4 uppercase tracking-wide border-t border-neutral-100 pt-3">{member.description}</span>
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
           </div>
