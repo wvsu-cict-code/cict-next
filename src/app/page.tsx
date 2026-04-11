@@ -1,3 +1,5 @@
+import TestimonialCards from "../components/TestimonialCards";
+
 export default function Home() {
 
   const button_big = "inline-block border-8 rounded-2xl w-xs h-10";
@@ -234,6 +236,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      <TestimonialCards />
     </main>
   );
 }
