@@ -204,29 +204,33 @@ export default function Home() {
               /> 
             </button>
           </div>
-          <div className={` ${course_container} `}>
-            <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
-            <h3>BSEMC</h3>
-          </div>
-          <div className={` ${course_container} `}>
-            <img src="/home-page_assets/bscs-icon.png" className="w-24 h-24" />
-            <h3>BSCS</h3>
-          </div>
-          <div className={` ${course_container} `}>
-            <img src="/home-page_assets/blis-icon.png" className="w-24 h-24" />
-            <h3>BLIS</h3>
-          </div>
-          <div className={` ${course_container} `}>
-            <img src="/home-page_assets/bsis-icon.png" className="w-24 h-24" />
-            <h3>BSIS</h3>
-          </div>
-          <div className={` ${course_container} `}>
-            <img src="/home-page_assets/bsit-icon.png" className="w-24 h-24" />
-            <h3>BSIT</h3>
-          </div>
-          <div className={` ${course_container} `}>
-            <img src="/home-page_assets/mit-icon.png" className="w-24 h-24" />
-            <h3>MIT</h3>
+          <div className="flex justify-center items-center mt-20">
+            <div className="grid grid-cols-3 gap-8">
+              <div className={` ${course_container} `}>
+                <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
+                <h3>BSEMC</h3>
+              </div>
+              <div className={` ${course_container} `}>
+                <img src="/home-page_assets/bscs-icon.png" className="w-24 h-24" />
+                <h3>BSCS</h3>
+              </div>
+              <div className={` ${course_container} `}>
+                <img src="/home-page_assets/blis-icon.png" className="w-24 h-24" />
+                <h3>BLIS</h3>
+              </div>
+              <div className={` ${course_container} `}>
+                <img src="/home-page_assets/bsis-icon.png" className="w-24 h-24" />
+                <h3>BSIS</h3>
+              </div>
+              <div className={` ${course_container} `}>
+                <img src="/home-page_assets/bsit-icon.png" className="w-24 h-24" />
+                <h3>BSIT</h3>
+              </div>
+              <div className={` ${course_container} `}>
+                <img src="/home-page_assets/mit-icon.png" className="w-24 h-24" />
+                <h3>MIT</h3>
+              </div>
+            </div>
           </div>
         </div>
       </section>
