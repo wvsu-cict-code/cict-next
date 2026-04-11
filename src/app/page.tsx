@@ -2,6 +2,7 @@ export default function Home() {
 
   const button_big = "inline-block border-8 rounded-2xl w-xs h-10";
   const card_small = "w-3xs h-32 shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 w-3xs h-32 shadow-lg rounded-xl";
+  const divider = "border border-transparent border-b-[#363636] p-4"
 
   return (
     <main>
@@ -166,16 +167,26 @@ export default function Home() {
       {/* Why Choose Us Section */}
       <section>
         <h1 className="text-[#363636] font-medium text-[80px]">Why Choose <span className="text-orange-light">Us</span>?</h1>
-        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-        <p>ACCREDITATIONS</p>
-        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-        <p>NATIONAL RANKINGS</p>
-        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        <div className={` ${divider} flex items-center border-t-[#363636] `}>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+          <p>ACCREDITATIONS</p>
+        </div>
+        <div className={` ${divider} flex items-center `}>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+          <p>NATIONAL RANKINGS</p>
+        </div>
+        <div className={` ${divider} flex items-center `}>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
         <p>INTERNATIONAL RELATIONS</p>
-        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+        </div>
+        <div className={` ${divider} flex items-center `}>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
         <p>COMPETITION RECOGNITIONS</p>
-        <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-        <p>INTERNATIONAL ENGAGEMENTS</p>
+        </div>
+        <div className={` ${divider} flex items-center `}>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
+          <p>INTERNATIONAL ENGAGEMENTS</p>
+        </div>
       </section>
     </main>
   );
