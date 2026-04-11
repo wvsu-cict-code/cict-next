@@ -193,7 +193,7 @@ export default function Home() {
       <section className="mx-40 my-20">
         <h1 className="text-[#363636] font-medium text-6xl">INTERESTED IN THE COLLEGE? SEE WHAT <span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
         <div className="w-full h-176 bg-[#F0F0F0] rounded-[92px] p-20">
-          <h2>Offered Programs</h2>
+          <h2 className="font-medium text-6xl text-[#1E1E1E]">Offered Programs</h2>
           <button>
             READ MORE 
             <img 
