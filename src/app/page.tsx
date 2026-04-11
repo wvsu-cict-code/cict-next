@@ -169,23 +169,23 @@ export default function Home() {
         <h1 className="text-[#363636] font-medium text-[80px]">Why Choose <span className="text-orange-light">Us</span>?</h1>
         <div className={` ${divider} flex items-center border-t-[#363636] `}>
           <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p>ACCREDITATIONS</p>
+          <p className="font-medium text-5xl text-[#363636] ml-4">ACCREDITATIONS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
           <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p>NATIONAL RANKINGS</p>
+          <p className="font-medium text-5xl text-[#363636] ml-4">NATIONAL RANKINGS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
           <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-        <p>INTERNATIONAL RELATIONS</p>
+          <p className="font-medium text-5xl text-[#363636] ml-4">INTERNATIONAL RELATIONS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
           <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-        <p>COMPETITION RECOGNITIONS</p>
+          <p className="font-medium text-5xl text-[#363636] ml-4">COMPETITION RECOGNITIONS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
           <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p>INTERNATIONAL ENGAGEMENTS</p>
+          <p className="font-medium text-5xl text-[#363636] ml-4">INTERNATIONAL ENGAGEMENTS</p>
         </div>
       </section>
     </main>
