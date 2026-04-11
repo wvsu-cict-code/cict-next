@@ -165,7 +165,7 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section>
+      <section className="mx-40 my-20">
         <h1 className="text-[#363636] font-medium text-[80px]">Why Choose <span className="text-orange-light">Us</span>?</h1>
         <div className={` ${divider} flex items-center border-t-[#363636] `}>
           <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
