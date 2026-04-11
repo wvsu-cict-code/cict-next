@@ -191,7 +191,7 @@ export default function Home() {
 
       {/* Offered Programs Section */}
       <section>
-        <h1>INTERESTED IN THE COLLEGE? SEE WHAT WE OFFER IN THE TABLE</h1>
+        <h1 className="text-[#363636] font-medium text-6xl">INTERESTED IN THE COLLEGE? SEE WHAT <span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
         <div>
           <h2>Offered Programs</h2>
           <button>
