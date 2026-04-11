@@ -204,21 +204,27 @@ export default function Home() {
             </button>
           </div>
           <div>
+            <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
             <h3>BSEMC</h3>
           </div>
           <div>
+            <img src="/home-page_assets/bscs-icon.png" className="w-24 h-24" />
             <h3>BSCS</h3>
           </div>
           <div>
+            <img src="/home-page_assets/blis-icon.png" className="w-24 h-24" />
             <h3>BLIS</h3>
           </div>
           <div>
+            <img src="/home-page_assets/bsis-icon.png" className="w-24 h-24" />
             <h3>BSIS</h3>
           </div>
           <div>
+            <img src="/home-page_assets/bsit-icon.png" className="w-24 h-24" />
             <h3>BSIT</h3>
           </div>
           <div>
+            <img src="/home-page_assets/mit-icon.png" className="w-24 h-24" />
             <h3>MIT</h3>
           </div>
         </div>
