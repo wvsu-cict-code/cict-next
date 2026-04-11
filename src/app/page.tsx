@@ -2,7 +2,8 @@ export default function Home() {
 
   const button_big = "inline-block border-8 rounded-2xl w-xs h-10";
   const card_small = "w-3xs h-32 shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 w-3xs h-32 shadow-lg rounded-xl";
-  const divider = "border border-transparent border-b-[#363636] p-4"
+  const divider = "border border-transparent border-b-[#363636] p-4";
+  const course_container = "w-44 h-48 flex flex-col justify-center items-center gap-4 bg-white";
 
   return (
     <main>
@@ -203,27 +204,27 @@ export default function Home() {
               /> 
             </button>
           </div>
-          <div>
+          <div className={` ${course_container} `}>
             <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
             <h3>BSEMC</h3>
           </div>
-          <div>
+          <div className={` ${course_container} `}>
             <img src="/home-page_assets/bscs-icon.png" className="w-24 h-24" />
             <h3>BSCS</h3>
           </div>
-          <div>
+          <div className={` ${course_container} `}>
             <img src="/home-page_assets/blis-icon.png" className="w-24 h-24" />
             <h3>BLIS</h3>
           </div>
-          <div>
+          <div className={` ${course_container} `}>
             <img src="/home-page_assets/bsis-icon.png" className="w-24 h-24" />
             <h3>BSIS</h3>
           </div>
-          <div>
+          <div className={` ${course_container} `}>
             <img src="/home-page_assets/bsit-icon.png" className="w-24 h-24" />
             <h3>BSIT</h3>
           </div>
-          <div>
+          <div className={` ${course_container} `}>
             <img src="/home-page_assets/mit-icon.png" className="w-24 h-24" />
             <h3>MIT</h3>
           </div>
