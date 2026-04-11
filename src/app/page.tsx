@@ -3,7 +3,7 @@ export default function Home() {
   const button_big = "inline-block border-8 rounded-2xl w-xs h-10";
   const card_small = "w-3xs h-32 shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 w-3xs h-32 shadow-lg rounded-xl";
   const divider = "border border-transparent border-b-[#363636] p-4";
-  const course_container = "w-44 h-48 flex flex-col justify-center items-center gap-4 bg-white";
+  const course_container = "w-58 h-54 flex flex-col justify-center items-center gap-4 bg-white";
 
   return (
     <main>
