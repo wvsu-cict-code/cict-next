@@ -238,8 +238,8 @@ export default function Home() {
       </section>
       
       {/* Testimonial Cards Section */}
-      <section>
-        <h1 className="font-medium text-6xl text-white"><span className="text-orange-light">STUDENT LIFE</span> AND <span className="text-orange-light">COMMUNITY.</span></h1>
+      <section className="bg-[#1E1E1E] py-15">
+        <h1 className="font-medium text-6xl text-white ml-40"><span className="text-orange-light">STUDENT LIFE</span> AND <span className="text-orange-light">COMMUNITY.</span></h1>
         <TestimonialCards />
       </section>
     </main>
