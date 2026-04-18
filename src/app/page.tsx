@@ -237,7 +237,10 @@ export default function Home() {
         </div>
       </section>
       
-      <TestimonialCards />
+      {/* Testimonial Cards Section */}
+      <section>
+        <TestimonialCards />
+      </section>
     </main>
   );
 }
