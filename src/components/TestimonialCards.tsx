@@ -261,6 +261,7 @@ function Modal({
 function MobileTimeline({ onCardClick }: { onCardClick: (exp: Testimony) => void }) {
   return (
     <div className="px-6 sm:px-10 py-16 space-y-5">
+      <h1 className="font-medium text-6xl text-white ml-40 mb-8"><span className="text-orange-light">STUDENT LIFE</span> AND <span className="text-orange-light">COMMUNITY.</span></h1>
       {testimonies.map((exp, i) => (
         <button
           key={i}
@@ -417,6 +418,7 @@ function DesktopStack({
 
   return (
     <div ref={sectionRef} id="experience" style={{ height: totalH }} className="relative">
+      <h1 className="font-medium text-6xl text-white ml-40 relative top-4"><span className="text-orange-light">STUDENT LIFE</span> AND <span className="text-orange-light">COMMUNITY.</span></h1>
       <div
         ref={stageRef}
         className="relative w-full flex flex-col items-center justify-center"
