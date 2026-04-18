@@ -241,6 +241,15 @@ export default function Home() {
       <section className="flex flex-col bg-[#1E1E1E] py-12">
         <TestimonialCards />
       </section>
+
+      {/* Contact Us Section */}
+      <section>
+        <h1>Finding quality education is hard. We make it easy.</h1>
+        <button>
+          <h2>CONTACT US</h2>
+          <img src="/home-page_assets/orange-arrow-icon.png" className="w-8"/>
+        </button>
+      </section>
     </main>
   );
 }
