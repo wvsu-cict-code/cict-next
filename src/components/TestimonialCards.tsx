@@ -96,17 +96,12 @@ function getStackPos(i: number) {
   return { x: jx, y: -i * 3 + jy, rot };
 }
 
-// ─── Card inner (shared between desktop and mobile modal) ────────────────────
 function CardFace({ exp }: { exp: Testimony }) {
   return (
     <div
       className="w-full h-full rounded-3xl overflow-hidden flex flex-col"
-      style={{
-        background: "#898989",
-        padding: "24px",
-      }}
+      style={{ background: "#898989", padding: "24px" }}
     >
-      {/* Batch */}
       <p
         style={{
           fontFamily: "var(--font-major)",
@@ -122,7 +117,6 @@ function CardFace({ exp }: { exp: Testimony }) {
         {exp.batch}
       </p>
 
-      {/* Testimony */}
       <div style={{ flex: 1, overflow: "hidden" }}>
         <p
           style={{
@@ -138,7 +132,6 @@ function CardFace({ exp }: { exp: Testimony }) {
         </p>
       </div>
 
-      {/* Footer */}
       <div style={{ flexShrink: 0, paddingTop: "16px" }}>
         <h3
           style={{
@@ -171,7 +164,9 @@ function CardFace({ exp }: { exp: Testimony }) {
   );
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
+// Modal renders into a portal outside the GSAP-controlled DOM tree
+import { createPortal } from "react-dom";
+
 function Modal({
   exp,
   onClose,
@@ -214,7 +209,8 @@ function Modal({
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  return (
+  // Render into document.body so it's completely outside the GSAP-pinned subtree
+  return createPortal(
     <div
       ref={overlayRef}
       className="fixed inset-0 z-[300] flex"
@@ -236,7 +232,6 @@ function Modal({
           maxHeight: sheet ? "88vh" : undefined,
           borderRadius: sheet ? "1.5rem 1.5rem 0 0" : "1.5rem",
           overflow: "hidden",
-          boxShadow: "0 40px 100px rgba(0,0,0,0.5)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -255,11 +250,11 @@ function Modal({
         </button>
         <CardFace exp={exp} />
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
-// ─── Mobile Timeline ──────────────────────────────────────────────────────────
 function MobileTimeline({ onCardClick }: { onCardClick: (exp: Testimony) => void }) {
   return (
     <div className="px-6 sm:px-10 py-16 space-y-5">
@@ -273,7 +268,6 @@ function MobileTimeline({ onCardClick }: { onCardClick: (exp: Testimony) => void
             height: "280px",
             overflow: "hidden",
             display: "block",
-            boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
           }}
         >
           <CardFace exp={exp} />
@@ -283,7 +277,6 @@ function MobileTimeline({ onCardClick }: { onCardClick: (exp: Testimony) => void
   );
 }
 
-// ─── Desktop Stack ────────────────────────────────────────────────────────────
 function DesktopStack({
   bp,
   onCardClick,
@@ -294,7 +287,6 @@ function DesktopStack({
   const sectionRef = useRef<HTMLDivElement>(null);
   const stageRef   = useRef<HTMLDivElement>(null);
   const cardRefs   = useRef<(HTMLDivElement | null)[]>([]);
-  const hintRef    = useRef<HTMLParagraphElement>(null);
 
   const dragState = useRef(
     testimonies.map(() => ({
@@ -306,23 +298,16 @@ function DesktopStack({
   );
 
   const [zOrders, setZOrders]       = useState<number[]>(() => testimonies.map((_, i) => i + 10));
-  const [vh, setVh]                 = useState(0);
   const [scrollDone, setScrollDone] = useState(false);
 
-  const sc     = cardScale(bp);
-  const CARD_W = Math.round(CARD_BASE_W * sc);
-  const CARD_H = Math.round(CARD_BASE_H * sc);
+  const sc      = cardScale(bp);
+  const CARD_W  = Math.round(CARD_BASE_W * sc);
+  const CARD_H  = Math.round(CARD_BASE_H * sc);
+  const V_PAD   = 80;
+  const STAGE_H = CARD_H + V_PAD * 2;
+  const totalH  = STAGE_H + testimonies.length * SCROLL_PER_CARD;
 
   useEffect(() => {
-    const update = () => setVh(window.innerHeight);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
-  useEffect(() => {
-    if (!vh) return;
-
     const vw    = stageRef.current?.offsetWidth ?? window.innerWidth;
     const total = testimonies.length;
 
@@ -353,13 +338,13 @@ function DesktopStack({
     const st = ScrollTrigger.create({
       trigger: sectionRef.current,
       start: "top top",
-      end: `+=${total * SCROLL_PER_CARD}`,
-      pin: stageRef.current,
+      end: `+=${testimonies.length * SCROLL_PER_CARD}`,
+      pin: sectionRef.current,
+      pinSpacing: false,
       scrub: 1.2,
       animation: tl,
       onLeaveBack() {
         setScrollDone(false);
-        if (hintRef.current) gsap.to(hintRef.current, { opacity: 0, duration: 0.3 });
       },
       onLeave() {
         setScrollDone(true);
@@ -370,17 +355,11 @@ function DesktopStack({
           dragState.current[i].baseY   = matrix.m42;
           dragState.current[i].baseRot = getStackPos(i).rot;
         });
-        if (hintRef.current) {
-          gsap.fromTo(hintRef.current, { opacity: 0, y: 8 }, {
-            opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.3,
-          });
-        }
       },
     });
 
     return () => { st.kill(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vh, bp]);
+  }, [bp]);
 
   const bringToFront = useCallback((idx: number) => {
     setZOrders((prev) => {
@@ -433,25 +412,13 @@ function DesktopStack({
     [scrollDone, bringToFront, onCardClick]
   );
 
-  const totalH = vh > 0 ? vh + testimonies.length * SCROLL_PER_CARD : "200vh";
-
   return (
     <div ref={sectionRef} id="experience" style={{ height: totalH }} className="relative">
       <div
         ref={stageRef}
-        className="relative w-full flex flex-col items-center justify-center overflow-hidden"
-        style={{ height: vh > 0 ? vh : "100vh", background: "#1E1E1E" }}
+        className="relative w-full flex flex-col items-center justify-center"
+        style={{ height: STAGE_H }}
       >
-        {/* Hint */}
-        <p
-          ref={hintRef}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-0 text-[10px] tracking-[0.2em] uppercase pointer-events-none z-50 whitespace-nowrap"
-          style={{ color: "rgba(255,255,255,0.3)" }}
-        >
-          drag to rearrange · tap to expand
-        </p>
-
-        {/* Card stack */}
         <div className="relative" style={{ width: CARD_W, height: CARD_H }}>
           {testimonies.map((exp, i) => {
             const handlers = makeHandlers(i);
@@ -468,8 +435,8 @@ function DesktopStack({
                   cursor: scrollDone ? "grab" : "default",
                   touchAction: "none",
                   borderRadius: "1.5rem",
-                  boxShadow: "0 24px 64px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3)",
                   overflow: "hidden",
+                  boxShadow: "0px 6px 6.3px 3px #0000006E",
                 }}
                 onPointerDown={handlers.onPointerDown}
                 onPointerMove={handlers.onPointerMove}
@@ -480,21 +447,6 @@ function DesktopStack({
             );
           })}
         </div>
-
-        {/* Scroll indicator */}
-        {!scrollDone && (
-          <div className="absolute bottom-7 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 opacity-40 pointer-events-none z-50">
-            <div
-              className="w-5 h-8 rounded-full flex items-start justify-center pt-1.5"
-              style={{ border: "1px solid rgba(255,255,255,0.25)" }}
-            >
-              <div className="w-1 h-2 rounded-full animate-bounce" style={{ background: "rgba(255,255,255,0.5)" }} />
-            </div>
-            <p className="text-[8px] tracking-[0.2em] uppercase" style={{ color: "rgba(255,255,255,0.4)" }}>
-              scroll
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -512,7 +464,7 @@ export default function TestimonialCards() {
       )}
 
       {sheet ? (
-        <section id="experience" style={{ background: "#1E1E1E" }}>
+        <section id="experience">
           <MobileTimeline onCardClick={setActiveModal} />
         </section>
       ) : (
