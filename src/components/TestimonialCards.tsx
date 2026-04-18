@@ -417,7 +417,7 @@ function DesktopStack({
       <div
         ref={stageRef}
         className="relative w-full flex flex-col items-center justify-center"
-        style={{ height: STAGE_H }}
+        style={{ height: STAGE_H, bottom: 64 }}
       >
         <div className="relative" style={{ width: CARD_W, height: CARD_H }}>
           {testimonies.map((exp, i) => {
