@@ -132,33 +132,36 @@ function CardFace({ exp }: { exp: Testimony }) {
         </p>
       </div>
 
-      <div style={{ flexShrink: 0, paddingTop: "16px" }}>
-        <h3
-          style={{
-            fontFamily: "var(--font-major)",
-            fontWeight: 600,
-            fontSize: "16px",
-            lineHeight: "16px",
-            letterSpacing: "0.01em",
-            color: "#ffffff",
-            margin: 0,
-          }}
-        >
-          {exp.name}
-        </h3>
-        <p
-          style={{
-            fontFamily: "var(--font-major)",
-            fontWeight: 400,
-            fontSize: "16px",
-            lineHeight: "16px",
-            letterSpacing: "0.01em",
-            color: "#ffffff",
-            marginTop: "4px",
-          }}
-        >
-          {exp.position}, {exp.company}
-        </p>
+      <div className="flex items-center">
+        <img src="/home-page_assets/grinch.png" className="w-16 h-16" />
+        <div className="ml-2">
+          <h3
+            style={{
+              fontFamily: "var(--font-major)",
+              fontWeight: 600,
+              fontSize: "16px",
+              lineHeight: "16px",
+              letterSpacing: "0.01em",
+              color: "#ffffff",
+              margin: 0,
+            }}
+          >
+            {exp.name}
+          </h3>
+          <p
+            style={{
+              fontFamily: "var(--font-major)",
+              fontWeight: 400,
+              fontSize: "16px",
+              lineHeight: "16px",
+              letterSpacing: "0.01em",
+              color: "#ffffff",
+              marginTop: "4px",
+            }}
+          >
+            {exp.position}, {exp.company}
+          </p>
+        </div>
       </div>
     </div>
   );
