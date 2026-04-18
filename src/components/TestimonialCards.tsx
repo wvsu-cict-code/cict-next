@@ -99,35 +99,15 @@ function getStackPos(i: number) {
 function CardFace({ exp }: { exp: Testimony }) {
   return (
     <div
-      className="w-full h-full rounded-3xl overflow-hidden flex flex-col"
-      style={{ background: "#898989", padding: "24px" }}
+      className="w-full h-full rounded-4xl overflow-hidden flex flex-col"
+      style={{ background: "#898989", padding: "12px" }}
     >
-      <p
-        style={{
-          fontFamily: "var(--font-major)",
-          fontWeight: 600,
-          fontSize: "24px",
-          lineHeight: "22px",
-          letterSpacing: "0.01em",
-          color: "#ffffff",
-          flexShrink: 0,
-          marginBottom: "16px",
-        }}
-      >
+      <h2 className="font-semibold text-2xl leading-5.5 text-white mt-12 mb-10 px-3 tracking-normal">
         {exp.batch}
-      </p>
+      </h2>
 
       <div style={{ flex: 1, overflow: "hidden" }}>
-        <p
-          style={{
-            fontFamily: "var(--font-minor)",
-            fontWeight: 500,
-            fontSize: "24px",
-            lineHeight: "22px",
-            letterSpacing: "0.01em",
-            color: "#ffffff",
-          }}
-        >
+        <p className="font-medium text-2xl leading-5.5 text-white px-6 tracking-normal">
           "{exp.testimony}"
         </p>
       </div>
@@ -439,7 +419,7 @@ function DesktopStack({
                   zIndex: zOrders[i],
                   cursor: scrollDone ? "grab" : "default",
                   touchAction: "none",
-                  borderRadius: "1.5rem",
+                  borderRadius: "32px",
                   overflow: "hidden",
                   boxShadow: "0px 6px 6.3px 3px #0000006E",
                 }}
