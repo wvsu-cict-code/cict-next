@@ -243,8 +243,8 @@ export default function Home() {
       </section>
 
       {/* Contact Us Section */}
-      <section>
-        <h1>Finding quality education is hard. We make it easy.</h1>
+      <section className="flex flex-col justify-center my-40">
+        <h1 className="text-[#1E1E1E] font-medium text-7xl leading-snug text-center"><span className="text-orange-light">Finding quality education is hard.</span><br/>We make it easy.</h1>
         <button>
           <h2>CONTACT US</h2>
           <img src="/home-page_assets/orange-arrow-icon.png" className="w-8"/>
