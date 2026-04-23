@@ -74,14 +74,70 @@ export default function FacultyProfiles() {
   const [memberIndex, setMemberIndex] = useState(0);
 
   const departments = [
-    { name: "DEANS OFFICE", side: "left", y: 200, x: 0, link: "/faculty-profiles/deans-office", logoAnchor: { x: 130, y: 200 }, zoomScale: 15 },
-    { name: "INFORMATION TECHNOLOGY", side: "left", y: 450, x: -100, link: "/faculty-profiles/it", logoAnchor: { x: 170, y: 450 }, zoomScale: 12 },
-    { name: "INFORMATION SYSTEM", side: "left", y: 650, x: 0, link: "/faculty-profiles/is", logoAnchor: { x: 400, y: 650 }, zoomScale: 12 },
-    { name: "Master of Information Technology", side: "left", y: 840, x: 350, link: "/faculty-profiles/mit", logoAnchor: { x: 440, y: 840 }, zoomScale: 12 },
-    { name: "COMPUTER SCIENCE", side: "right", y: 300, x: 1000, link: "/faculty-profiles/cs", logoAnchor: { x: 800, y: 300 }, zoomScale: 12 },
-    { name: "LIBRARY & INFORMATION SCIENCE (BLIS)", side: "right", y: 500, x: 850, link: "/faculty-profiles/lis", logoAnchor: { x: 510, y: 500 }, zoomScale: 12 },
-    { name: "ENTERTAINMENT AND MULTIMEDIA COMPUTING (BSEMC)", side: "right", y: 580, x: 800, link: "/faculty-profiles/emc", logoAnchor: { x: 560, y: 580 }, zoomScale: 12 },
-    { name: "Laboratory & Technical Support", side: "right", y: 750, x: 850, link: "/faculty-profiles/lts", logoAnchor: { x: 530, y: 750 }, zoomScale: 12 },
+    {
+      name: "DEANS OFFICE",
+      side: "left",
+      y: 200, x: 0, 
+      link: "/faculty-profiles/deans-office",
+      logoAnchor: { x: 130, y: 200 }, 
+      zoomScale: 15,
+    },
+    {
+      name: "INFORMATION TECHNOLOGY",
+      side: "left",
+      y: 450, x: -100,
+      link: "/faculty-profiles/it",
+      logoAnchor: { x: 170, y: 450 },
+      zoomScale: 12,
+    },
+    {
+      name: "INFORMATION SYSTEM",
+      side: "left",
+      y: 650, x: 0,
+      link: "/faculty-profiles/is",
+      logoAnchor: { x: 400, y: 650 },
+      zoomScale: 12,
+    },
+    {
+      name: "Master of Information Technology",
+      side: "left",
+      y: 950, x: 90,
+      link: "/faculty-profiles/mit",
+      logoAnchor: { x: 500, y: 950 },
+      zoomScale: 12,
+    },
+    {
+      name: "COMPUTER SCIENCE",
+      side: "right",
+      y: 300, x: 1000,
+      link: "/faculty-profiles/cs",
+      logoAnchor: { x: 800, y: 300 },
+      zoomScale: 12,
+    },
+    {
+      name: "LIBRARY & INFORMATION SCIENCE (BLIS)",
+      side: "right",
+      y: 500, x: 950,
+      link: "/faculty-profiles/lis",
+      logoAnchor: { x: 510, y: 500 },
+      zoomScale: 12,
+    },
+    {
+      name: "ENTERTAINMENT AND MULTIMEDIA COMPUTING (BSEMC)",
+      side: "right",
+      y: 600, x: 1000,
+      link: "/faculty-profiles/emc",
+      logoAnchor: { x: 660, y: 600 },
+      zoomScale: 12,
+    },
+    {
+      name: "Laboratory & Technical Support",
+      side: "right",
+      y: 800, x: 1000,
+      link: "/faculty-profiles/lts",
+      logoAnchor: { x: 650, y: 800 },
+      zoomScale: 12,
+    },
   ];
 
   const currentScale = zoomedIndex !== null ? departments[zoomedIndex].zoomScale : 1;
@@ -104,6 +160,7 @@ export default function FacultyProfiles() {
       setZoomedIndex(null);
     }, 150);
   };
+
 
   return (
     <main className="relative flex min-h-screen w-full flex-col items-center bg-white overflow-hidden scroll-smooth selection:bg-[#BA3D1B] selection:text-white pt-20">
