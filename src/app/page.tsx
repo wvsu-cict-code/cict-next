@@ -246,8 +246,8 @@ export default function Home() {
       <section className="flex flex-col justify-center items-center my-40">
         <h1 className="text-[#1E1E1E] font-medium text-7xl leading-snug text-center"><span className="text-orange-light">Finding quality education is hard.</span><br/>We make it easy.</h1>
         <button className="flex justify-center items-center text-orange-light text-center font-normal text-3xl h-16 w-80 mt-20 rounded-full border-3 border-orange-light">
-          <h2>CONTACT US</h2>
-          <img src="/home-page_assets/orange-arrow-icon.png" className="w-8"/>
+          <span className="font-major m-4">CONTACT US</span>
+          <img src="/home-page_assets/orange-arrow-icon.png" className="w-7 h-5"/>
         </button>
       </section>
     </main>
