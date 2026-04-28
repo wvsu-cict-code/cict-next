@@ -3,7 +3,9 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface Testimony {
   testimony: string;
@@ -42,8 +44,8 @@ const testimonies: Testimony[] = [
 
 type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
-function useBreakpoint(): Breakpoint {
-  const [bp, setBp] = useState<Breakpoint>("lg");
+function useBreakpoint(): Breakpoint | null {
+  const [bp, setBp] = useState<Breakpoint | null>(null);
   useEffect(() => {
     const calc = () => {
       const w = window.innerWidth;
@@ -342,7 +344,10 @@ function DesktopStack({
       },
     });
 
-    return () => { st.kill(); };
+    return () => {
+      st.kill();
+      ScrollTrigger.refresh();
+    };
   }, [bp]);
 
   const bringToFront = useCallback((idx: number) => {
@@ -439,7 +444,10 @@ function DesktopStack({
 
 export default function TestimonialCards() {
   const [activeModal, setActiveModal] = useState<Testimony | null>(null);
-  const bp    = useBreakpoint();
+  const bp = useBreakpoint();
+
+  if (!bp) return null;
+
   const sheet = isMobileOrTablet(bp);
 
   return (
