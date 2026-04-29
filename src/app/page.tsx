@@ -2,7 +2,7 @@ import TestimonialCards from "../components/TestimonialCards";
 
 export default function Home() {
 
-  const button_big = "inline-block border-8 rounded-2xl w-xs h-10";
+  const button_big = "flex justify-center items-center border-8 rounded-2xl w-32 md:w-xs h-6 md:h-10";
   const card_small = "w-3xs h-32 shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 w-3xs h-32 shadow-lg rounded-xl";
   const divider = "border border-transparent border-b-[#363636] p-4";
   const course_container = "w-58 h-54 flex flex-col justify-center items-center gap-6 bg-white pt-6";
@@ -12,19 +12,19 @@ export default function Home() {
       {/*Landing Page*/}
       <section>
         {/*Header*/}
-        <div className="mt-36 text-[#373737] text-center gap-6">
-          <h1 className="text-8xl font-medium leading-22">Building the <span className="text-orange-light">Digital<br/>Leaders</span> of Tomorrow</h1>
-          <h2 className="text-2xl font-normal font-minor mt-6">COLLEGE OF INFORMATION AND COMMUNICATIONS TECHNOLOGY</h2>
+        <div className="mt-12 md:mt-36 text-[#373737] text-center gap-6">
+          <h1 className="text-[32px] md:text-8xl font-medium leading-none md:leading-22">Building the <span className="text-orange-light">Digital<br/>Leaders</span> of Tomorrow</h1>
+          <h2 className="text-[8px] md:text-2xl font-normal font-minor mt-1 md:mt-6">COLLEGE OF INFORMATION AND COMMUNICATIONS TECHNOLOGY</h2>
         </div>
 
         {/*Buttons*/}
-        <div className="flex justify-center items-center mt-16 gap-20 text-center text-white text-base font-bold">
+        <div className="flex justify-center items-center mt-4 md:mt-16 gap-4 md:gap-20 text-center text-white text-[8px] md:text-base font-bold">
           <a href="#courses-offered" className={` ${button_big} border-orange-light bg-orange-light`}>COURSES OFFERED</a>
           <a href="#why-choose-us" className={` ${button_big} border-[#373737] bg-[#373737]`}>WHY CHOOSE US</a>
         </div>
 
         {/*Tagline*/}
-        <p className="mt-44 font-major font-medium text-2xl text-[#373737] text-center">We have been shaping <span className="text-orange-light">careers</span> for technological trailblazers across <span className="text-orange-light">industries</span> for <span className="text-orange-light">23 years</span>.</p>
+        <p className="mt-28 md:mt-44 font-major font-medium text-size-base md:text-2xl text-[#373737] text-center">We have been shaping <span className="text-orange-light">careers</span> for <br className="md:hidden" />technological trailblazers across <span className="text-orange-light">industries</span> for <br className="md:hidden" /><span className="text-orange-light">23 years</span>.</p>
       </section>
 
       {/*News and Announcements*/}
