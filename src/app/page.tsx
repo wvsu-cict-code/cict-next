@@ -252,7 +252,7 @@ export default function Home() {
       </section>
       
       {/* Testimonial Cards Section */}
-      <section className="flex flex-col bg-[#1E1E1E] py-12">
+      <section className="flex flex-col bg-[#1E1E1E] md:py-12">
         <TestimonialCards />
       </section>
 

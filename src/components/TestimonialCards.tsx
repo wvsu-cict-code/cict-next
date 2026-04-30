@@ -1,11 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 interface Testimony {
   testimony: string;
@@ -42,87 +37,42 @@ const testimonies: Testimony[] = [
   },
 ];
 
-type Breakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
-
-function useBreakpoint(): Breakpoint | null {
-  const [bp, setBp] = useState<Breakpoint | null>(null);
-  useEffect(() => {
-    const calc = () => {
-      const w = window.innerWidth;
-      if (w < 480) return setBp("xs");
-      if (w < 640) return setBp("sm");
-      if (w < 1024) return setBp("md");
-      if (w < 1280) return setBp("lg");
-      if (w < 1920) return setBp("xl");
-      setBp("2xl");
-    };
-    calc();
-    window.addEventListener("resize", calc);
-    return () => window.removeEventListener("resize", calc);
-  }, []);
-  return bp;
-}
-
-function isMobileOrTablet(bp: Breakpoint) {
-  return bp === "xs" || bp === "sm" || bp === "md";
-}
-
-function cardScale(bp: Breakpoint): number {
-  switch (bp) {
-    case "lg":  return 1.00;
-    case "xl":  return 1.05;
-    case "2xl": return 1.15;
-    default:    return 1.00;
-  }
-}
-
-const CARD_BASE_W     = 384;
-const CARD_BASE_H     = 560;
-const SCROLL_PER_CARD = 400;
-const DRAG_THRESHOLD  = 6;
-
-function getFanPos(i: number, total: number, vw: number) {
-  const spread = Math.min(vw * 0.72, 860);
-  const t   = total > 1 ? i / (total - 1) : 0.5;
-  const x   = (t - 0.5) * spread;
-  const arc = Math.abs(t - 0.5) * 2;
-  const y   = arc * 36 + 30;
-  const rot = (t - 0.5) * 30;
-  return { x, y, rot };
-}
-
-function getStackPos(i: number) {
-  const jx  = ((i * 53 + 11) % 26) - 13;
-  const jy  = ((i * 37 +  7) % 16) - 8;
-  const rot = ((i * 17 +  3) % 12) - 6;
-  return { x: jx, y: -i * 3 + jy, rot };
+// Stack offsets for cards at each depth position (0 = top)
+function getStackOffset(depth: number) {
+  if (depth === 0) return { rot: 0,  x: 0,  y: 0  };
+  if (depth === 1) return { rot: -4, x: -6, y: 4  };
+  if (depth === 2) return { rot: 6,  x: 8,  y: 8  };
+  // Hidden — parked far below
+  return { rot: 0, x: 0, y: 80 };
 }
 
 function CardFace({ exp }: { exp: Testimony }) {
   return (
     <div
-      className="w-full h-full rounded-4xl overflow-hidden flex flex-col"
-      style={{ background: "#898989", padding: "12px" }}
+      className="w-full h-full rounded-4xl overflow-hidden flex flex-col p-2 md:p-3"
+      style={{ background: "#898989" }}
     >
-      <h2 className="font-semibold text-2xl leading-5.5 text-white mt-12 mb-10 px-3 tracking-normal">
+      <h2 className="font-semibold text-[11px] md:text-2xl md:leading-5.5 text-white mt-3 md:mt-12 mb-2 md:mb-10 px-2 md:px-3">
         {exp.batch}
       </h2>
 
-      <div style={{ flex: 1, overflow: "hidden" }}>
-        <p className="font-medium text-2xl leading-5.5 text-white px-6 tracking-normal">
+      <div className="flex-1 overflow-hidden">
+        <p className="font-medium text-[11px] md:text-2xl md:leading-5.5 text-white px-2 md:px-6 tracking-normal leading-tight">
           "{exp.testimony}"
         </p>
       </div>
+      <div className="flex items-center gap-2 px-2 py-1 md:p-2">
+        <img
+          src="/home-page_assets/grinch.png"
+          className="w-6 h-6 md:w-16 md:h-16"
+        />
 
-      <div className="flex items-center">
-        <img src="/home-page_assets/grinch.png" className="w-16 h-16" />
-        <div className="ml-2">
+        <div className="ml-1">
           <h3
+            className="text-[11px] md:text-base leading-tight"
             style={{
               fontFamily: "var(--font-major)",
               fontWeight: 600,
-              fontSize: "16px",
-              lineHeight: "16px",
               letterSpacing: "0.01em",
               color: "#ffffff",
               margin: 0,
@@ -130,18 +80,18 @@ function CardFace({ exp }: { exp: Testimony }) {
           >
             {exp.name}
           </h3>
+
           <p
+            className="text-[11px] md:text-base leading-tight"
             style={{
               fontFamily: "var(--font-major)",
               fontWeight: 400,
-              fontSize: "16px",
-              lineHeight: "16px",
               letterSpacing: "0.01em",
               color: "#ffffff",
-              marginTop: "4px",
+              marginTop: "2px",
             }}
           >
-            {exp.position}, {exp.company}
+            {exp.position}
           </p>
         </div>
       </div>
@@ -149,320 +99,259 @@ function CardFace({ exp }: { exp: Testimony }) {
   );
 }
 
-// Modal renders into a portal outside the GSAP-controlled DOM tree
-import { createPortal } from "react-dom";
+const DRAG_THRESHOLD  = 6;
+const SWIPE_THRESHOLD = 80;
+const TILT_FACTOR     = 0.05;
+const FLY_DURATION    = 0.75;
+const SETTLE_DURATION = 0.55; // duration for cards to rotate into new stack positions
 
-function Modal({
-  exp,
-  onClose,
-  sheet,
-}: {
-  exp: Testimony;
-  onClose: () => void;
-  sheet: boolean;
-}) {
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const panelRef   = useRef<HTMLDivElement>(null);
+function SwipeStack() {
+  const total = testimonies.length;
 
+  // cardRefs[i] points to the DOM node for testimony[i]
+  const cardRefs = useRef<(HTMLDivElement | null)[]>(Array(total).fill(null));
+
+  // order[i] = depth position of card i (0 = top, 1 = second, etc.)
+  // Initially card 0 is on top, card 1 is second, card 2 is third
+  const order = useRef<number[]>(testimonies.map((_, i) => i));
+
+  const [topCard, setTopCard]   = useState(0); // index of the card currently on top
+  const [finished, setFinished] = useState(false);
+  const dismissing              = useRef(false); // prevent double-dismiss
+
+  const drag = useRef({
+    active: false,
+    didDrag: false,
+    startX: 0,
+    startY: 0,
+    currentX: 0,
+    currentY: 0,
+  });
+
+  // Apply stack positions to all cards via GSAP
+  const applyStackPositions = useCallback((skipIndex?: number, duration = SETTLE_DURATION) => {
+    const remaining = total - dismissCount.current;
+    order.current.forEach((depth, i) => {
+      if (i === skipIndex) return;
+      const el = cardRefs.current[i];
+      if (!el) return;
+      const { rot, x, y } = getStackOffset(depth);
+      const isVisible = depth < remaining; // only show as many cards as are left
+      gsap.to(el, {
+        x, y,
+        rotation: rot,
+        zIndex: total - depth,
+        opacity: isVisible ? 1 : 0,
+        duration,
+        ease: "power2.out",
+      });
+    });
+  }, [total]);
+
+  // Set initial positions on mount
   useEffect(() => {
-    gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power2.out" });
-    if (sheet) {
-      gsap.fromTo(panelRef.current, { y: "100%" }, { y: "0%", duration: 0.4, ease: "power3.out" });
-    } else {
-      gsap.fromTo(panelRef.current, { opacity: 0, scale: 0.91, y: 32 }, { opacity: 1, scale: 1, y: 0, duration: 0.38, ease: "back.out(1.6)" });
-    }
-  }, [sheet]);
-
-  const close = useCallback(() => {
-    if (sheet) {
-      gsap.to(panelRef.current,   { y: "100%", duration: 0.3, ease: "power3.in" });
-      gsap.to(overlayRef.current, { opacity: 0, duration: 0.32, ease: "power2.in", onComplete: onClose });
-    } else {
-      gsap.to(panelRef.current,   { opacity: 0, scale: 0.94, y: 16, duration: 0.2, ease: "power2.in" });
-      gsap.to(overlayRef.current, { opacity: 0, duration: 0.28, ease: "power2.in", onComplete: onClose });
-    }
-  }, [onClose, sheet]);
-
-  useEffect(() => {
-    const fn = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
-  }, [close]);
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    applyStackPositions(undefined, 0); // instant, no animation
   }, []);
 
-  // Render into document.body so it's completely outside the GSAP-pinned subtree
-  return createPortal(
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-[300] flex"
-      style={{
-        background: "rgba(0,0,0,0.72)",
-        backdropFilter: "blur(8px)",
-        alignItems: sheet ? "flex-end" : "center",
-        justifyContent: "center",
-        padding: sheet ? 0 : "1.5rem",
-      }}
-      onClick={close}
-    >
-      <div
-        ref={panelRef}
-        className="relative w-full"
-        style={{
-          maxWidth: sheet ? "100%" : `${CARD_BASE_W}px`,
-          height: sheet ? "auto" : `${CARD_BASE_H}px`,
-          maxHeight: sheet ? "88vh" : undefined,
-          borderRadius: sheet ? "1.5rem 1.5rem 0 0" : "1.5rem",
-          overflow: "hidden",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          onClick={close}
-          className="absolute z-10 w-8 h-8 flex items-center justify-center rounded-full text-sm"
-          style={{
-            top: "1rem",
-            right: "1rem",
-            background: "rgba(255,255,255,0.15)",
-            color: "#ffffff",
-          }}
-          aria-label="Close"
-        >
-          ✕
-        </button>
-        <CardFace exp={exp} />
-      </div>
-    </div>,
-    document.body
-  );
-}
+  // Find which card index is currently at depth 0 (on top)
+  const getTopCardIndex = useCallback(() => {
+    return order.current.indexOf(0);
+  }, []);
 
-function MobileTimeline({ onCardClick }: { onCardClick: (exp: Testimony) => void }) {
-  return (
-    <div className="px-6 sm:px-10 py-16 space-y-5">
-      <h1 className="font-medium text-6xl text-white ml-40 mb-8"><span className="text-orange-light">STUDENT LIFE</span> AND <span className="text-orange-light">COMMUNITY.</span></h1>
-      {testimonies.map((exp, i) => (
+  // Advance stack — rotate order positions
+  const advanceStack = useCallback(() => {
+    // Move the old top card to the bottom (depth = total - 1), shift everything else up
+    order.current = order.current.map((depth) =>
+      depth === 0 ? total - 1 : depth - 1
+    );
+    const newTop = getTopCardIndex();
+    setTopCard(newTop);
+    return newTop;
+  }, [total, getTopCardIndex]);
+
+  const dismiss = useCallback((dirX: number, dirY: number) => {
+    if (dismissing.current) return;
+    dismissing.current = true;
+
+    const topIdx = getTopCardIndex();
+    const el     = cardRefs.current[topIdx];
+    if (!el) return;
+
+    const flyX = dirX * (window.innerWidth * 1.3);
+    const flyY = dirY * 150 + (Math.random() - 0.5) * 100;
+    const rot  = dirX * (15 + Math.random() * 10);
+
+    // Fly the top card off
+    gsap.to(el, {
+      x: flyX, y: flyY, rotation: rot, opacity: 0,
+      duration: FLY_DURATION,
+      ease: "power2.inOut",
+      onComplete: () => {
+        // Advance stack order
+        advanceStack();
+
+        // Smoothly rotate the flown card back to straight and park it at the bottom
+        const { x, y, rot: stackRot } = getStackOffset(total - 1);
+        gsap.to(el, {
+          x, y, rotation: stackRot, opacity: 0, // keep hidden at bottom
+          duration: SETTLE_DURATION,
+          ease: "power2.out",
+          onComplete: () => {
+            dismissing.current = false;
+
+            // Check if all cards have been seen
+            // "seen" means the current top card has looped around once
+            // We track this by checking if we've dismissed all cards
+          },
+        });
+
+        // Shift the other cards into their new positions
+        applyStackPositions(topIdx);
+      },
+    });
+  }, [getTopCardIndex, advanceStack, applyStackPositions, total]);
+
+  // Track how many cards have been dismissed
+  const dismissCount = useRef(0);
+
+  const handleDismiss = useCallback((dirX: number, dirY: number) => {
+    dismissCount.current += 1;
+    if (dismissCount.current >= total) {
+      // All cards seen — after fly-off, show finished state
+      const topIdx = getTopCardIndex();
+      const el     = cardRefs.current[topIdx];
+      if (!el) return;
+
+      const flyX = dirX * (window.innerWidth * 1.3);
+      const flyY = dirY * 150 + (Math.random() - 0.5) * 100;
+      const rot  = dirX * (15 + Math.random() * 10);
+
+      gsap.to(el, {
+        x: flyX, y: flyY, rotation: rot, opacity: 0,
+        duration: FLY_DURATION,
+        ease: "power2.inOut",
+        onComplete: () => setFinished(true),
+      });
+      return;
+    }
+    dismiss(dirX, dirY);
+  }, [dismiss, getTopCardIndex, total]);
+
+  const resetCard = useCallback(() => {
+    const topIdx = getTopCardIndex();
+    const el     = cardRefs.current[topIdx];
+    if (!el) return;
+    gsap.to(el, {
+      x: 0, y: 0, rotation: 0,
+      duration: 0.5, ease: "elastic.out(1, 0.6)",
+    });
+  }, [getTopCardIndex]);
+
+  const handleReset = useCallback(() => {
+    dismissCount.current = 0;
+    dismissing.current   = false;
+    order.current        = testimonies.map((_, i) => i);
+    setTopCard(0);
+    setFinished(false);
+    // Re-apply initial positions instantly
+    setTimeout(() => applyStackPositions(undefined, 0.3), 50);
+  }, [applyStackPositions]);
+
+  // --- Pointer handlers (only active for the top card) ---
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (dismissing.current) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    drag.current = {
+      active: true, didDrag: false,
+      startX: e.clientX, startY: e.clientY,
+      currentX: e.clientX, currentY: e.clientY,
+    };
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current.active) return;
+    const topIdx = getTopCardIndex();
+    const el     = cardRefs.current[topIdx];
+    if (!el) return;
+    const dx = e.clientX - drag.current.startX;
+    const dy = e.clientY - drag.current.startY;
+    if (Math.hypot(dx, dy) > DRAG_THRESHOLD) drag.current.didDrag = true;
+    drag.current.currentX = e.clientX;
+    drag.current.currentY = e.clientY;
+    gsap.to(el, {
+      x: dx, y: dy, rotation: dx * TILT_FACTOR,
+      duration: 0.08, ease: "none", overwrite: true,
+    });
+  };
+
+  const onPointerUp = () => {
+    if (!drag.current.active) return;
+    drag.current.active = false;
+    const dx   = drag.current.currentX - drag.current.startX;
+    const dy   = drag.current.currentY - drag.current.startY;
+    const dist = Math.hypot(dx, dy);
+    if (!drag.current.didDrag) {
+      handleDismiss(1, -0.2);
+    } else if (dist >= SWIPE_THRESHOLD) {
+      handleDismiss(dx / dist, dy / dist);
+    } else {
+      resetCard();
+    }
+  };
+
+  if (finished) {
+    return (
+      <div className="flex flex-col items-center justify-center text-center px-8" style={{ height: 560 }}>
         <button
+          onClick={handleReset}
+          className="flex justify-center items-center text-orange-light text-center font-normal text-base md:text-2xl w-20 md:w-40 h-auto rounded-full border-2 md:border-3 border-orange-light hover:bg-orange-light hover:text-white transition-colors duration-500"
+        >
+          <span className="font-major m-1 md:m-2">RELOAD</span>
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-[186px] h-[273px] md:w-[384px] md:h-[560px]">
+      {testimonies.map((exp, i) => (
+        <div
           key={i}
-          onClick={() => onCardClick(exp)}
-          className="w-full text-left active:scale-[0.98] transition-transform duration-150"
+          ref={(el) => { cardRefs.current[i] = el; }}
+          className="absolute inset-0 w-full h-full rounded-4xl"
           style={{
-            borderRadius: "1.5rem",
-            height: "280px",
             overflow: "hidden",
-            display: "block",
+            boxShadow: "0px 8px 24px rgba(0,0,0,0.5)",
+            // Only the top card gets pointer events
+            cursor: i === topCard ? "grab" : "default",
+            touchAction: "none",
+            willChange: "transform",
+            pointerEvents: i === topCard ? "auto" : "none",
           }}
+          onPointerDown={i === topCard ? onPointerDown : undefined}
+          onPointerMove={i === topCard ? onPointerMove : undefined}
+          onPointerUp={i === topCard ? onPointerUp : undefined}
         >
           <CardFace exp={exp} />
-        </button>
+        </div>
       ))}
     </div>
   );
 }
 
-function DesktopStack({
-  bp,
-  onCardClick,
-}: {
-  bp: Breakpoint;
-  onCardClick: (exp: Testimony) => void;
-}) {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const stageRef   = useRef<HTMLDivElement>(null);
-  const cardRefs   = useRef<(HTMLDivElement | null)[]>([]);
-
-  const dragState = useRef(
-    testimonies.map(() => ({
-      baseX: 0, baseY: 0, baseRot: 0,
-      offsetX: 0, offsetY: 0,
-      dragging: false, didDrag: false,
-      startMX: 0, startMY: 0,
-    }))
-  );
-
-  const [zOrders, setZOrders]       = useState<number[]>(() => testimonies.map((_, i) => i + 10));
-  const [scrollDone, setScrollDone] = useState(false);
-
-  const sc      = cardScale(bp);
-  const CARD_W  = Math.round(CARD_BASE_W * sc);
-  const CARD_H  = Math.round(CARD_BASE_H * sc);
-  const V_PAD   = 80;
-  const STAGE_H = CARD_H + V_PAD * 2;
-  const totalH  = STAGE_H + testimonies.length * SCROLL_PER_CARD;
-
-  useEffect(() => {
-    const vw    = stageRef.current?.offsetWidth ?? window.innerWidth;
-    const total = testimonies.length;
-
-    cardRefs.current.forEach((el, i) => {
-      if (!el) return;
-      const { x, y, rot } = getFanPos(i, total, vw);
-      gsap.set(el, { x, y, rotation: rot, scale: 0.82, zIndex: i + 1, opacity: 1 });
-      dragState.current[i].baseX   = x;
-      dragState.current[i].baseY   = y;
-      dragState.current[i].baseRot = rot;
-    });
-
-    const tl = gsap.timeline({ paused: true });
-    testimonies.forEach((_, i) => {
-      const el = cardRefs.current[i];
-      if (!el) return;
-      const { x, y, rot } = getStackPos(i);
-      tl.to(el, {
-        x, y, rotation: rot, scale: 1, zIndex: i + 10, duration: 1, ease: "power3.inOut",
-        onComplete: () => {
-          dragState.current[i].baseX   = x;
-          dragState.current[i].baseY   = y;
-          dragState.current[i].baseRot = rot;
-        },
-      }, i);
-    });
-
-    const st = ScrollTrigger.create({
-      trigger: sectionRef.current,
-      start: "top top",
-      end: `+=${testimonies.length * SCROLL_PER_CARD}`,
-      pin: sectionRef.current,
-      pinSpacing: false,
-      scrub: 1.2,
-      animation: tl,
-      onLeaveBack() {
-        setScrollDone(false);
-      },
-      onLeave() {
-        setScrollDone(true);
-        cardRefs.current.forEach((el, i) => {
-          if (!el) return;
-          const matrix = new DOMMatrix(window.getComputedStyle(el).transform);
-          dragState.current[i].baseX   = matrix.m41;
-          dragState.current[i].baseY   = matrix.m42;
-          dragState.current[i].baseRot = getStackPos(i).rot;
-        });
-      },
-    });
-
-    return () => {
-      st.kill();
-      ScrollTrigger.refresh();
-    };
-  }, [bp]);
-
-  const bringToFront = useCallback((idx: number) => {
-    setZOrders((prev) => {
-      const max  = Math.max(...prev);
-      const next = [...prev];
-      next[idx]  = max + 1;
-      return next;
-    });
-  }, []);
-
-  const makeHandlers = useCallback(
-    (i: number) => {
-      const ds = dragState.current[i];
-
-      const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-        if (!scrollDone) return;
-        e.preventDefault();
-        e.currentTarget.setPointerCapture(e.pointerId);
-        bringToFront(i);
-        ds.dragging = true;
-        ds.didDrag  = false;
-        ds.startMX  = e.clientX;
-        ds.startMY  = e.clientY;
-        gsap.to(cardRefs.current[i], { scale: 1.06, rotation: ds.baseRot * 0.3, duration: 0.18, ease: "power2.out" });
-      };
-
-      const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-        if (!ds.dragging) return;
-        const dx = e.clientX - ds.startMX;
-        const dy = e.clientY - ds.startMY;
-        if (Math.hypot(dx, dy) > DRAG_THRESHOLD) ds.didDrag = true;
-        ds.offsetX = dx;
-        ds.offsetY = dy;
-        gsap.set(cardRefs.current[i], { x: ds.baseX + dx, y: ds.baseY + dy });
-      };
-
-      const onPointerUp = () => {
-        if (!ds.dragging) return;
-        ds.dragging  = false;
-        ds.baseX    += ds.offsetX;
-        ds.baseY    += ds.offsetY;
-        ds.offsetX   = 0;
-        ds.offsetY   = 0;
-        gsap.to(cardRefs.current[i], { scale: 1, rotation: ds.baseRot, duration: 0.55, ease: "elastic.out(1, 0.45)" });
-        if (!ds.didDrag) onCardClick(testimonies[i]);
-      };
-
-      return { onPointerDown, onPointerMove, onPointerUp };
-    },
-    [scrollDone, bringToFront, onCardClick]
-  );
-
+export default function TestimonialCards() {
   return (
-    <div ref={sectionRef} id="experience" style={{ height: totalH }} className="relative">
-      <h1 className="font-medium text-6xl text-white ml-40 relative top-4"><span className="text-orange-light">STUDENT LIFE</span> AND <span className="text-orange-light">COMMUNITY.</span></h1>
-      <div
-        ref={stageRef}
-        className="relative w-full flex flex-col items-center justify-center"
-        style={{ height: STAGE_H }}
-      >
-        <div className="relative" style={{ width: CARD_W, height: CARD_H }}>
-          {testimonies.map((exp, i) => {
-            const handlers = makeHandlers(i);
-            return (
-              <div
-                key={i}
-                ref={(el) => { cardRefs.current[i] = el; }}
-                className="absolute inset-0"
-                style={{
-                  width: CARD_W,
-                  height: CARD_H,
-                  willChange: "transform",
-                  zIndex: zOrders[i],
-                  cursor: scrollDone ? "grab" : "default",
-                  touchAction: "none",
-                  borderRadius: "32px",
-                  overflow: "hidden",
-                  boxShadow: "0px 6px 6.3px 3px #0000006E",
-                }}
-                onPointerDown={handlers.onPointerDown}
-                onPointerMove={handlers.onPointerMove}
-                onPointerUp={handlers.onPointerUp}
-              >
-                <CardFace exp={exp} />
-              </div>
-            );
-          })}
-        </div>
+    <div className="px-4 sm:px-10 py-16">
+      {/* Section heading */}
+      <h1 className="font-medium text-2xl md:text-6xl text-white md:mx-40 mb-16">
+        <span className="text-orange-light">STUDENT LIFE</span> AND{" "}
+        <span className="text-orange-light">COMMUNITY.</span>
+      </h1>
+
+      {/* Card stack — centered */}
+      <div className="flex justify-center items-center">
+        <SwipeStack />
       </div>
     </div>
-  );
-}
-
-export default function TestimonialCards() {
-  const [activeModal, setActiveModal] = useState<Testimony | null>(null);
-  const bp = useBreakpoint();
-
-  if (!bp) return null;
-
-  const sheet = isMobileOrTablet(bp);
-
-  return (
-    <>
-      {activeModal && (
-        <Modal exp={activeModal} onClose={() => setActiveModal(null)} sheet={sheet} />
-      )}
-
-      {sheet ? (
-        <section id="experience">
-          <MobileTimeline onCardClick={setActiveModal} />
-        </section>
-      ) : (
-        <DesktopStack bp={bp} onCardClick={setActiveModal} />
-      )}
-    </>
   );
 }
