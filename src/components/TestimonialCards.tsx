@@ -301,7 +301,7 @@ function SwipeStack() {
 
   if (finished) {
     return (
-      <div className="flex flex-col items-center justify-center text-center px-8" style={{ height: 560 }}>
+      <div className="flex items-center justify-center w-[186px] h-[273px] md:w-[384px] md:h-[560px] mx-auto overflow-hidden">
         <button
           onClick={handleReset}
           className="flex justify-center items-center text-orange-light text-center font-normal text-base md:text-2xl w-20 md:w-40 h-auto rounded-full border-2 md:border-3 border-orange-light hover:bg-orange-light hover:text-white transition-colors duration-500"
