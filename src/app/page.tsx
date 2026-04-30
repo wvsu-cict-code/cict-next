@@ -2,7 +2,7 @@ import TestimonialCards from "../components/TestimonialCards";
 
 export default function Home() {
 
-  const button_big = "flex justify-center items-center border-8 rounded-2xl w-32 md:w-xs h-6 md:h-10";
+  const button_big = "flex justify-center items-center border-1 rounded-2xl w-32 md:w-xs h-6 md:h-10 p-2";
   const card_small = "w-full shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 shadow-lg rounded-xl";
   const divider = "border border-transparent border-b-[#363636] p-2 md:p-4";
   const course_container = "w-25 h-24 md:w-58 md:h-54 flex flex-col justify-center items-center gap-2 md:gap-6 bg-white pt-3 md:pt-6";
@@ -19,8 +19,8 @@ export default function Home() {
 
         {/*Buttons*/}
         <div className="flex justify-center items-center mt-4 md:mt-16 gap-4 md:gap-20 text-center text-white text-[8px] md:text-base font-bold">
-          <a href="#courses-offered" className={` ${button_big} border-orange-light bg-orange-light`}>COURSES OFFERED</a>
-          <a href="#why-choose-us" className={` ${button_big} border-[#373737] bg-[#373737]`}>WHY CHOOSE US</a>
+          <a href="#courses-offered" className={` ${button_big} border-orange-light bg-orange-light hover:bg-white hover:text-orange-light transition-colors duration-200`}>COURSES OFFERED</a>
+          <a href="#why-choose-us" className={` ${button_big} border-[#373737] bg-[#373737] hover:bg-white hover:text-[#373737] transition-colors duration-200`}>WHY CHOOSE US</a>
         </div>
 
         {/*Tagline*/}
@@ -34,11 +34,11 @@ export default function Home() {
           <div className="w-full">
             <div className="flex items-center">
               <h1 className="text-[#585858] text-[11px] md:text-2xl font-medium flex">NEWS AND ANNOUNCEMENTS</h1>
-              <button className="ml-auto flex justify-center items-center border h-3 md:h-8 w-14 md:w-32  border-[#4D4D4D] text-[#4D4D4D] text-[6px] md:text-xs rounded-full">
+              <button className="ml-auto flex justify-center items-center border h-3 md:h-8 w-14 md:w-32  border-[#4D4D4D] text-[#4D4D4D] transition duration-200 hover:bg-[#4D4D4D] hover:text-white text-[6px] md:text-xs rounded-full group">
                 READ MORE
                 <img 
                   src="/home-page_assets/grey-arrow-icon.png" 
-                  className="ml-0.5 md:ml-2 w-[7px] md:w-4 h-[5px] md:h-3"
+                  className="ml-0.5 md:ml-2 w-[7px] md:w-4 h-[5px] md:h-3 transition duration-200 group-hover:invert group-hover:brightness-0"
                 /> 
               </button>
             </div>
@@ -62,11 +62,11 @@ export default function Home() {
               </div>
               <div className="ml-2 mt-6 flex flex-col h-36">
                 <h1 className="text-xl font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-                <button className="ml-auto mt-auto mr-3 mb-3 flex justify-center items-center h-8 w-28 border border-orange-light rounded-full text-orange-light text-xs font-normal">
+                <button className="ml-auto mt-auto mr-3 mb-3 flex justify-center items-center h-8 w-28 border border-orange-light rounded-full text-orange-light text-xs font-normal hover:bg-orange-light hover:text-white transition duration-200 group">
                   Read Now
                   <img 
                     src="/home-page_assets/orange-arrow-icon.png"  
-                    className="ml-1.5 w-5"
+                    className="ml-1.5 w-5 transition duration-200 group-hover:invert group-hover:brightness-0"
                   />
                 </button>
               </div>
@@ -79,11 +79,11 @@ export default function Home() {
             </div>
             <div className="mt-1 flex flex-col h-20">
               <h1 className="text-sm font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal transition duration-200 hover:bg-orange-light hover:text-white group">
                 Read More
                 <img 
                   src="/home-page_assets/orange-arrow-icon.png"  
-                  className="ml-1 w-3 h-2"
+                  className="ml-1 w-3 h-2 transition duration-200 group-hover:invert group-hover:brightness-0"
                 />
               </button>
             </div>
@@ -99,11 +99,11 @@ export default function Home() {
             </div>
             <div className="mt-1 md:mt-3 flex flex-col">
               <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal transition duration-200 hover:bg-orange-light hover:text-white group">
                 Read More
                 <img 
                   src="/home-page_assets/orange-arrow-icon.png"  
-                  className="ml-1 w-3 h-2"
+                  className="ml-1 w-3 h-2 transition duration-200 group-hover:invert group-hover:brightness-0"
                 />
               </button>
             </div>
@@ -115,11 +115,11 @@ export default function Home() {
             </div>
             <div className="mt-1 md:mt-3 flex flex-col h-20">
               <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal transition duration-200 hover:bg-orange-light hover:text-white group">
                 Read More
                 <img 
                   src="/home-page_assets/orange-arrow-icon.png"  
-                  className="ml-1 w-3 h-2"
+                  className="ml-1 w-3 h-2 transition duration-200 group-hover:invert group-hover:brightness-0"
                 />
               </button>
             </div>
@@ -131,11 +131,11 @@ export default function Home() {
             </div>
             <div className="mt-1 md:mt-3 flex flex-col h-20">
               <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal transition duration-200 hover:bg-orange-light hover:text-white group">
                 Read More
                 <img 
                   src="/home-page_assets/orange-arrow-icon.png"  
-                  className="ml-1 w-3 h-2"
+                  className="ml-1 w-3 h-2 transition duration-200 group-hover:invert group-hover:brightness-0"
                 />
               </button>
             </div>
@@ -147,11 +147,11 @@ export default function Home() {
             </div>
             <div className="mt-1 md:mt-3 flex flex-col h-20">
               <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
-              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal transition duration-200 hover:bg-orange-light hover:text-white group">
                 Read More
                 <img 
                   src="/home-page_assets/orange-arrow-icon.png"  
-                  className="ml-1 w-3 h-2"
+                  className="ml-1 w-3 h-2 transition duration-200 group-hover:invert group-hover:brightness-0"
                 />
               </button>
             </div>
@@ -212,11 +212,11 @@ export default function Home() {
         <div className="w-full h-auto bg-[#F0F0F0] rounded-3xl md:rounded-[92px] flex flex-col">
           <div className="flex-1 flex justify-center items-center mt-4 mx-4 md:mt-16 md:mx-12">
             <h2 className="font-medium text-2xl md:text-6xl text-[#1E1E1E]">Offered Programs</h2>
-            <button className="ml-auto flex justify-center items-center border h-5 md:h-12 w-20 md:w-52 border-[#4D4D4D] text-[#4D4D4D] text-[10px] md:text-2xl font-medium rounded-full">
+            <button className="ml-auto flex justify-center items-center border h-5 md:h-12 w-20 md:w-52 border-[#4D4D4D] text-[#4D4D4D] text-[10px] md:text-2xl font-medium rounded-full hover:bg-[#4D4D4D] hover:text-white transition duration-200 group">
               Explore All
               <img 
                 src="/home-page_assets/grey-arrow-icon.png"
-                className="w-3 md:w-6 h-auto ml-1 md:ml-4"
+                className="w-3 md:w-6 h-auto ml-1 md:ml-4 transition duration-200 group-hover:invert group-hover:brightness-0"
               /> 
             </button>
           </div>
@@ -259,9 +259,9 @@ export default function Home() {
       {/* Contact Us Section */}
       <section className="flex flex-col justify-center items-center my-16 md:my-40 gap-6 md:gap-20">
         <h1 className="text-[#1E1E1E] font-medium text-2xl md:text-7xl leading-snug text-center"><span className="text-orange-light">Finding quality education is hard.</span><br/>We make it easy.</h1>
-        <button className="flex justify-center items-center text-orange-light text-center font-normal text-base md:text-3xl w-40 md:w-80 h-auto rounded-full border-2 md:border-3 border-orange-light">
+        <button className="flex justify-center items-center text-orange-light text-center font-normal text-base md:text-3xl w-40 md:w-80 h-auto rounded-full border-2 md:border-3 border-orange-light hover:bg-orange-light hover:text-white transition duration-200 group">
           <span className="font-major m-2 md:m-4">CONTACT US</span>
-          <img src="/home-page_assets/orange-arrow-icon.png" className="w-5 md:w-7 h-auto"/>
+          <img src="/home-page_assets/orange-arrow-icon.png" className="w-5 md:w-7 h-auto transition duration-200 group-hover:invert group-hover:brightness-0"/>
         </button>
       </section>
     </main>
