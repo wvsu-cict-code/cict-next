@@ -3,7 +3,7 @@ import TestimonialCards from "../components/TestimonialCards";
 export default function Home() {
 
   const button_big = "flex justify-center items-center border-8 rounded-2xl w-32 md:w-xs h-6 md:h-10";
-  const card_small = "w-3xs h-32 shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 w-3xs h-32 shadow-lg rounded-xl";
+  const card_small = "w-full shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 shadow-lg rounded-xl";
   const divider = "border border-transparent border-b-[#363636] p-4";
   const course_container = "w-58 h-54 flex flex-col justify-center items-center gap-6 bg-white pt-6";
 
@@ -28,28 +28,28 @@ export default function Home() {
       </section>
 
       {/*News and Announcements*/}
-      <section className="mx-40 mt-[152px] mb-16">
+      <section className="flex flex-col justify-center items-center mx-4 md:mx-40 mt-10 md:mt-38 mb-16 max-w-full">
         {/*Top Section*/}
-        <div className="grid grid-cols-2">
-          <div className="">
+        <div className="grid grid-cols-2 w-full gap-6">
+          <div className="w-full">
             <div className="flex items-center">
-              <h1 className="text-[#585858] text-2xl font-medium flex">NEWS AND ANNOUNCEMENTS</h1>
-              <button className="ml-auto flex justify-center items-center border h-8 w-32  border-[#4D4D4D] text-[#4D4D4D] text-xs rounded-full">
-                READ MORE 
+              <h1 className="text-[#585858] text-[11px] md:text-2xl font-medium flex">NEWS AND ANNOUNCEMENTS</h1>
+              <button className="ml-auto flex justify-center items-center border h-3 md:h-8 w-14 md:w-32  border-[#4D4D4D] text-[#4D4D4D] text-[6px] md:text-xs rounded-full">
+                READ MORE
                 <img 
                   src="/home-page_assets/grey-arrow-icon.png" 
-                  className="ml-2 w-4 h-3"
+                  className="ml-0.5 md:ml-2 w-[7px] md:w-4 h-[5px] md:h-3"
                 /> 
               </button>
             </div>
 
-            <h1 className="mt-6 text-[#373737] text-5xl font-medium">CHECK OUT THE LATEST <br/><span className="text-orange-light">COLLEGE UPDATES</span></h1>
+            <h1 className="md:mt-6 text-[#373737] text-lg md:text-5xl font-medium">CHECK OUT THE LATEST <br/><span className="text-orange-light">COLLEGE UPDATES</span></h1>
             
-            <p className="mt-1 text-[#828282] text-base font-normal">Stay informed with the latest updates, official announcements, and <br/> important notices</p>
+            <p className="md:mt-1 text-[#828282] text-[8px] md:text-base font-normal">Stay informed with the latest updates, official announcements, and important notices</p>
           </div>
 
           {/*Featured Card*/}
-          <div className="ml-8 w-lg h-52 flex bg-white shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-lg">
+          <div className="w-full h-52 hidden md:flex bg-white shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-lg">
             <img 
               src="/home-page_assets/featured-card-image.png" 
               alt="insert image here" 
@@ -72,17 +72,33 @@ export default function Home() {
               </div>
             </div>
           </div>
+          <div className={`${card_small} block md:hidden`}>
+            <div className="flex items-center">
+              <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
+              <span className="ml-auto font-minor font-bold text-[6px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-17 h-3.5 flex justify-center items-center">ANNOUNCEMENT</span>
+            </div>
+            <div className="mt-1 flex flex-col h-20">
+              <h1 className="text-sm font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+              <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
+                Read More
+                <img 
+                  src="/home-page_assets/orange-arrow-icon.png"  
+                  className="ml-1 w-3 h-2"
+                />
+              </button>
+            </div>
+          </div>
         </div>
         
         {/*Bottom Section*/}
-        <div className="mt-8 grid grid-cols-4">
+        <div className="mt-6 md:mt-8 grid grid-cols-2 md:grid-cols-4 w-full gap-6">
           <div className={`${card_small}`}>
             <div className="flex items-center">
               <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
               <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
             </div>
-            <div className="mt-3 flex flex-col h-20">
-              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+            <div className="mt-1 md:mt-3 flex flex-col">
+              <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
               <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
                 Read More
                 <img 
@@ -97,8 +113,8 @@ export default function Home() {
               <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
               <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
             </div>
-            <div className="mt-3 flex flex-col h-20">
-              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+            <div className="mt-1 md:mt-3 flex flex-col h-20">
+              <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
               <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
                 Read More
                 <img 
@@ -113,8 +129,8 @@ export default function Home() {
               <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
               <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
             </div>
-            <div className="mt-3 flex flex-col h-20">
-              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+            <div className="mt-1 md:mt-3 flex flex-col h-20">
+              <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
               <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
                 Read More
                 <img 
@@ -129,8 +145,8 @@ export default function Home() {
               <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
               <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
             </div>
-            <div className="mt-3 flex flex-col h-20">
-              <h1 className="text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+            <div className="mt-1 md:mt-3 flex flex-col h-20">
+              <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
               <button className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal">
                 Read More
                 <img 
