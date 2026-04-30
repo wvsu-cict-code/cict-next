@@ -62,7 +62,7 @@ export default function Home() {
                 <span className="ml-1.5 text-white text-[8px] font-bold bg-orange-light border-orange-light rounded-sm px-2">ANNOUNCEMENT</span>
               </div>
               <div className="ml-2 mt-6 flex flex-col h-36">
-                <h1 className="text-xl font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
+                <h1 className="text-xl font-bold mr-3 ">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
                 <Link href="/news-announcements" className="ml-auto mt-auto mr-3 mb-3 flex justify-center items-center h-8 w-28 border border-orange-light rounded-full text-orange-light text-xs font-normal hover:bg-orange-light hover:text-white transition duration-200 group">
                   Read Now
                   <img 
