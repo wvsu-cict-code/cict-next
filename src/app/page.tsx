@@ -4,7 +4,7 @@ export default function Home() {
 
   const button_big = "flex justify-center items-center border-8 rounded-2xl w-32 md:w-xs h-6 md:h-10";
   const card_small = "w-full shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 shadow-lg rounded-xl";
-  const divider = "border border-transparent border-b-[#363636] p-4";
+  const divider = "border border-transparent border-b-[#363636] p-2 md:p-4";
   const course_container = "w-58 h-54 flex flex-col justify-center items-center gap-6 bg-white pt-6";
 
   return (
@@ -182,27 +182,27 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="mx-40 my-20">
-        <h1 className="text-[#363636] font-medium text-[80px]">Why Choose <span className="text-orange-light">Us</span>?</h1>
+      <section className="mx-4 md:mx-40 my-8 md:my-20">
+        <h1 className="text-[#363636] font-medium text-[32px] md:text-[80px] mb-4 md:mb-2">Why Choose <span className="text-orange-light">Us</span>?</h1>
         <div className={` ${divider} flex items-center border-t-[#363636] `}>
-          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p className="font-medium text-5xl text-[#363636] ml-4">ACCREDITATIONS</p>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-5 md:w-16 h-auto" />
+          <p className="font-medium text-base md:text-5xl text-[#363636] ml-4">ACCREDITATIONS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
-          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p className="font-medium text-5xl text-[#363636] ml-4">NATIONAL RANKINGS</p>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-5 md:w-16 h-auto" />
+          <p className="font-medium text-base md:text-5xl text-[#363636] ml-4">NATIONAL RANKINGS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
-          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p className="font-medium text-5xl text-[#363636] ml-4">INTERNATIONAL RELATIONS</p>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-5 md:w-16 h-auto" />
+          <p className="font-medium text-base md:text-5xl text-[#363636] ml-4">INTERNATIONAL RELATIONS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
-          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p className="font-medium text-5xl text-[#363636] ml-4">COMPETITION RECOGNITIONS</p>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-5 md:w-16 h-auto" />
+          <p className="font-medium text-base md:text-5xl text-[#363636] ml-4">COMPETITION RECOGNITIONS</p>
         </div>
         <div className={` ${divider} flex items-center `}>
-          <img src="/home-page_assets/cict-emblem-thick.png" className="w-16 h-16" />
-          <p className="font-medium text-5xl text-[#363636] ml-4">INTERNATIONAL ENGAGEMENTS</p>
+          <img src="/home-page_assets/cict-emblem-thick.png" className="w-5 md:w-16 h-auto" />
+          <p className="font-medium text-base md:text-5xl text-[#363636] ml-4">INTERNATIONAL ENGAGEMENTS</p>
         </div>
       </section>
 
