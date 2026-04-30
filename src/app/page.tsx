@@ -160,26 +160,24 @@ export default function Home() {
       </section>
       
       {/* About Section */}
-      <section className="bg-[#1e1e1e] py-40 px-52 relative">
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-orange-light font-medium text-6xl my-4">ABOUT.</h1>
-            <p className="text-white font-medium text-4 leading-8 w-160">Founded in <span className="text-orange-light font-bold">2002</span> under BOR Resolution No. 34, the College of Information and Communications Technology (CICT) began as the <span className="text-orange-light font-bold">Institute of Information and Communications Technology (IICT)</span> and launched the <span className="text-orange-light font-bold">BS in Information Technology (BSIT)</span> and <span className="text-orange-light font-bold">BS in Information Management (BSIM)</span> programs in AY 2002-2003, producing its first graduates soon after.</p>
-          </div>
-          <img
-            src="/home-page_assets/cict-logo.png"
-            className="w-69 h-auto absolute right-52 top-16"
-          />
-        </div>
-
-        <div className="ml-auto flex flex-col text-right">
-          <h1 className="text-orange-light font-medium text-6xl my-4">MISSION.</h1>
-          <p className="text-white font-medium text-4 leading-8 w-150 ml-auto">The WVSU-CICT aims to develop professionals who shall be able to meet the growing manpower  demand by expanding the ICT industries in the country. Being the lead institution of higher learning in <span className="text-orange-light font-bold">Western Visayas.</span></p>
-        </div>
-
+      <section className="bg-[#1e1e1e] py-12 md:py-40 px-4 md:px-52 relative max-w-full">
+        <img
+          src="/home-page_assets/cict-logo.png"
+          className="w-24 md:w-69 h-auto mx-auto md:float-right shrink-0 -mt-4 md:-mt-20"
+        />
         <div>
-          <h1 className="text-orange-light font-medium text-6xl my-4">VISION.</h1>
-          <p className="text-white font-medium text-4 leading-8 w-150">To be the leading provider of ICT education in <span className="text-orange-light font-bold">Western Visayas</span>, aligned with the broader mandate of WVSU as the lead institution of higher learning in the region.</p>
+          <h1 className="text-orange-light font-medium text-[32px] md:text-6xl my-1 md:my-4">ABOUT.</h1>
+          <p className="text-white font-medium text-[10px] md:text-base leading-4 md:leading-8 w-4/5 md:w-160">Founded in <span className="text-orange-light font-bold">2002</span> under BOR Resolution No. 34, the College of Information and Communications Technology (CICT) began as the <span className="text-orange-light font-bold">Institute of Information and Communications Technology (IICT)</span> and launched the <span className="text-orange-light font-bold">BS in Information Technology (BSIT)</span> and <span className="text-orange-light font-bold">BS in Information Management (BSIM)</span> programs in AY 2002-2003, producing its first graduates soon after.</p>
+        </div>
+
+        <div className="ml-auto flex flex-col text-right mt-4">
+          <h1 className="text-orange-light font-medium text-[32px] md:text-6xl my-1 md:my-4">MISSION.</h1>
+          <p className="text-white font-medium text-[10px] md:text-base leading-4 md:leading-8 w-4/5 md:w-150 ml-auto">The WVSU-CICT aims to develop professionals who shall be able to meet the growing manpower  demand by expanding the ICT industries in the country. Being the lead institution of higher learning in <span className="text-orange-light font-bold">Western Visayas.</span></p>
+        </div>
+
+        <div className="mt-4">
+          <h1 className="text-orange-light font-medium text-[32px] md:text-6xl my-1 md:my-4">VISION.</h1>
+          <p className="text-white font-medium text-[10px] md:text-base leading-4 md:leading-8 w-4/5 md:w-150">To be the leading provider of ICT education in <span className="text-orange-light font-bold">Western Visayas</span>, aligned with the broader mandate of WVSU as the lead institution of higher learning in the region.</p>
         </div>
       </section>
 
