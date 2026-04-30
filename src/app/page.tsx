@@ -98,7 +98,7 @@ export default function Home() {
               <p className="font-minor font-normal text-[#4D4D4D] text-[8px]">December 26, 2025</p>
               <span className="ml-auto font-minor font-bold text-[8px] text-white text-center border border-orange-light rounded-sm bg-orange-light w-8 h-3.5">NEWS</span>
             </div>
-            <div className="mt-1 md:mt-3 flex flex-col">
+            <div className="mt-1 md:mt-3 flex flex-col h-20">
               <h1 className="text-sm md:text-4 font-bold">WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan</h1>
               <Link href="/news-announcements" className="ml-auto mt-auto flex justify-center items-center h-4.5 w-17.5 border border-orange-light rounded-full text-orange-light text-[8px] font-normal transition duration-200 hover:bg-orange-light hover:text-white group">
                 Read More
