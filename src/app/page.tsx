@@ -5,7 +5,7 @@ export default function Home() {
   const button_big = "flex justify-center items-center border-8 rounded-2xl w-32 md:w-xs h-6 md:h-10";
   const card_small = "w-full shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 shadow-lg rounded-xl";
   const divider = "border border-transparent border-b-[#363636] p-2 md:p-4";
-  const course_container = "w-58 h-54 flex flex-col justify-center items-center gap-6 bg-white pt-6";
+  const course_container = "w-25 h-24 md:w-58 md:h-54 flex flex-col justify-center items-center gap-2 md:gap-6 bg-white pt-3 md:pt-6";
 
   return (
     <main>
@@ -207,44 +207,44 @@ export default function Home() {
       </section>
 
       {/* Offered Programs Section */}
-      <section className="mx-40 my-20">
-        <h1 className="text-[#363636] font-medium text-6xl text-right mb-12">INTERESTED IN THE COLLEGE? SEE WHAT <br /><span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
-        <div className="w-full h-176 bg-[#F0F0F0] rounded-[92px] flex flex-col">
-          <div className="flex-1 flex justify-center items-center mt-16 mx-12">
-            <h2 className="font-medium text-6xl text-[#1E1E1E]">Offered Programs</h2>
-            <button className="ml-auto flex justify-center items-center border h-12 w-52 border-[#4D4D4D] text-[#4D4D4D] text-2xl font-medium rounded-full">
+      <section className="mx-4 md:mx-40 my-8 md:my-20">
+        <h1 className="text-[#363636] font-medium text-2xl md:text-6xl text-right mb-12">INTERESTED IN THE COLLEGE? SEE WHAT <br className="hidden md:block" /><span className="text-orange-light font-bold">WE OFFER</span> IN THE TABLE</h1>
+        <div className="w-full h-auto bg-[#F0F0F0] rounded-3xl md:rounded-[92px] flex flex-col">
+          <div className="flex-1 flex justify-center items-center mt-4 mx-4 md:mt-16 md:mx-12">
+            <h2 className="font-medium text-2xl md:text-6xl text-[#1E1E1E]">Offered Programs</h2>
+            <button className="ml-auto flex justify-center items-center border h-5 md:h-12 w-20 md:w-52 border-[#4D4D4D] text-[#4D4D4D] text-[10px] md:text-2xl font-medium rounded-full">
               Explore All
               <img 
                 src="/home-page_assets/grey-arrow-icon.png"
-                className="w-6 h-4 ml-4"
+                className="w-3 md:w-6 h-auto ml-1 md:ml-4"
               /> 
             </button>
           </div>
-          <div className="flex justify-center items-center h-152">
-            <div className="grid grid-cols-3 gap-8">
+          <div className="flex justify-center items-center py-8 md:py-16">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
               <div className={` ${course_container} `}>
-                <img src="/home-page_assets/bsemc-icon.png" className="w-24 h-24" />
-                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSEMC</h3>
+                <img src="/home-page_assets/bsemc-icon.png" className="w-12 md:w-24 h-auto" />
+                <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSEMC</h3>
               </div>
               <div className={` ${course_container} `}>
-                <img src="/home-page_assets/bscs-icon.png" className="w-24 h-24" />
-                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSCS</h3>
+                <img src="/home-page_assets/bscs-icon.png" className="w-12 md:w-24 h-auto" />
+                <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSCS</h3>
               </div>
               <div className={` ${course_container} `}>
-                <img src="/home-page_assets/blis-icon.png" className="w-24 h-24" />
-                <h3 className="text-2xl font-medium text-[#1E1E1E]">BLIS</h3>
+                <img src="/home-page_assets/blis-icon.png" className="w-12 md:w-24 h-auto" />
+                <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BLIS</h3>
               </div>
               <div className={` ${course_container} `}>
-                <img src="/home-page_assets/bsis-icon.png" className="w-24 h-24" />
-                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSIS</h3>
+                <img src="/home-page_assets/bsis-icon.png" className="w-12 md:w-24 h-auto" />
+                <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSIS</h3>
               </div>
               <div className={` ${course_container} `}>
-                <img src="/home-page_assets/bsit-icon.png" className="w-24 h-24" />
-                <h3 className="text-2xl font-medium text-[#1E1E1E]">BSIT</h3>
+                <img src="/home-page_assets/bsit-icon.png" className="w-12 md:w-24 h-auto" />
+                <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSIT</h3>
               </div>
               <div className={` ${course_container} `}>
-                <img src="/home-page_assets/mit-icon.png" className="w-24 h-24" />
-                <h3 className="text-2xl font-medium text-[#1E1E1E]">MIT</h3>
+                <img src="/home-page_assets/mit-icon.png" className="w-12 md:w-24 h-auto" />
+                <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">MIT</h3>
               </div>
             </div>
           </div>
