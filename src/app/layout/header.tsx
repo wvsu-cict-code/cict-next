@@ -16,7 +16,7 @@ export default function Header() {
 
   return (
     <header 
-      className="relative h-16 flex justify-between md:grid md:grid-cols-3 items-center px-6 text-lg font-medium"
+      className="relative z-50 h-16 flex justify-between md:grid md:grid-cols-3 items-center px-6 text-lg font-medium bg-white"
     >      
       <Link 
         href="/" 
