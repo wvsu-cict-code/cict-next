@@ -253,9 +253,11 @@ export default function Home() {
       </section>
       
       {/* Testimonial Cards Section */}
+      {/*
       <section className="flex flex-col bg-[#1E1E1E] md:py-12">
         <TestimonialCards />
       </section>
+      */}
 
       {/* Contact Us Section */}
       <section className="flex flex-col justify-center items-center my-16 md:my-40 gap-6 md:gap-20">
