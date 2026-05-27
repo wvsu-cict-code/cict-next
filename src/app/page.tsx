@@ -223,30 +223,30 @@ export default function Home() {
           </div>
           <div className="flex justify-center items-center py-8 md:py-16">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-              <div className={` ${course_container} `}>
+              <Link href="/programs/bsemc" className={` ${course_container} `}>
                 <img src="/home-page_assets/bsemc-icon.png" className="w-12 md:w-24 h-auto" />
                 <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSEMC</h3>
-              </div>
-              <div className={` ${course_container} `}>
+              </Link>
+              <Link href="/programs/bscs" className={` ${course_container} `}>
                 <img src="/home-page_assets/bscs-icon.png" className="w-12 md:w-24 h-auto" />
                 <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSCS</h3>
-              </div>
-              <div className={` ${course_container} `}>
+              </Link>
+              <Link href="/programs/blis" className={` ${course_container} `}>
                 <img src="/home-page_assets/blis-icon.png" className="w-12 md:w-24 h-auto" />
                 <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BLIS</h3>
-              </div>
-              <div className={` ${course_container} `}>
+              </Link>
+              <Link href="/programs/bsis" className={` ${course_container} `}>
                 <img src="/home-page_assets/bsis-icon.png" className="w-12 md:w-24 h-auto" />
                 <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSIS</h3>
-              </div>
-              <div className={` ${course_container} `}>
+              </Link>
+              <Link href="/programs/bsit" className={` ${course_container} `}>
                 <img src="/home-page_assets/bsit-icon.png" className="w-12 md:w-24 h-auto" />
                 <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">BSIT</h3>
-              </div>
-              <div className={` ${course_container} `}>
+              </Link>
+              <Link href="/programs/mit" className={` ${course_container} `}>
                 <img src="/home-page_assets/mit-icon.png" className="w-12 md:w-24 h-auto" />
                 <h3 className="text-xs md:text-2xl font-medium text-[#1E1E1E]">MIT</h3>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
