@@ -20,7 +20,7 @@ export default function Home() {
 
         {/*Buttons*/}
         <div className="flex justify-center items-center mt-4 md:mt-16 gap-4 md:gap-20 text-center text-white text-[8px] md:text-base font-bold">
-          <Link href="#courses-offered" className={` ${button_big} border-orange-light bg-orange-light hover:bg-white hover:text-orange-light transition-colors duration-200`}>COURSES OFFERED</Link>
+          <Link href="/programs" className={` ${button_big} border-orange-light bg-orange-light hover:bg-white hover:text-orange-light transition-colors duration-200`}>COURSES OFFERED</Link>
           <Link href="#why-choose-us" className={` ${button_big} border-[#373737] bg-[#373737] hover:bg-white hover:text-[#373737] transition-colors duration-200`}>WHY CHOOSE US</Link>
         </div>
 
