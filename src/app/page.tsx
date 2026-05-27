@@ -227,7 +227,7 @@ export default function Home() {
               />
               <p className="font-medium text-base md:text-5xl text-[#363636] ml-4 flex-1">{item.title}</p>
             </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === index ? "max-h-96 opacity-100 mt-2 md:mt-4" : "max-h-0 opacity-0"}`}>
+            <div className={`overflow-hidden ${openIndex === index ? "max-h-96 opacity-100 mt-2 md:mt-4" : "max-h-0 opacity-0"}`}>
               <p
                 className="font-normal text-xs md:text-2xl leading-5 md:leading-8 md:tracking-[-0.01em] text-justify text-[#6F6F6F] py-2"
                 dangerouslySetInnerHTML={{ __html: item.content }}
