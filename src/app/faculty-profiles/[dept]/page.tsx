@@ -39,7 +39,7 @@ export default function FacultyDetail() {
   }
 
   return (
-    <main className="relative flex w-full flex-col selection:bg-[#BA3D1B] selection:text-white">
+    <main className="relative flex w-full flex-col overflow-hidden selection:bg-[#BA3D1B] selection:text-white">
       {/* Sharp zoomed logo background */}
       <ZoomedBackground dept={dept} isVisible={isVisible} />
 
