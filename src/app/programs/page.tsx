@@ -42,7 +42,7 @@ export default function ProgramsPage() {
             sizes="(max-width: 900px) 100vw, 50vw"
           />
           {/* Overlay: Only visible on Mobile to make text readable */}
-          <div className="absolute inset-0 bg-linear-to-t from-orange-dark/70 via-orange-dark/20 to-transparent md:hidden"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-orange-dark/70 via-orange-dark/20 to-transparent md:hidden" />
         </div>
         <div className="relative z-10 flex flex-col justify-center w-full h-full px-6 text-center text-white md:w-1/2 md:bg-orange-light md:text-left md:p-20 ">
           <h1 className="text-5xl font-medium mb-6 drop-shadow-xl md:drop-shadow-none">Programs and Curriculum</h1>
