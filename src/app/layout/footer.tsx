@@ -105,7 +105,7 @@ export default function Footer() {
           {/* Bottom Copyright Divider */}
           {/* Stretches full width on mobile, centers text */}
           <div className="mt-10 md:mt-15 md:mb-20 w-full md:col-span-2 relative z-10">
-            <div className="h-px -mx-6 md:mx-0 md:ml-0 md:w-291 md:translate-x-45 bg-[#4D4D4D] mb-4 md:mb-4"></div>
+            <div className="h-px -mx-6 md:mx-0 md:ml-0 md:w-291 md:translate-x-45 bg-[#4D4D4D] mb-4 md:mb-4" />
             <p className="text-sm md:text-base font-medium text-center md:text-left text-white md:translate-x-55">
               Copyright {currentYear} © WVSU CICT. All Rights Reserved
             </p>
