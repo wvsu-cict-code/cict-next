@@ -11,53 +11,65 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#1e1e1e] relative overflow-hidden pb-2 md:pb-0">
-      
-      <div className="w-auto mx-auto px-6 pt-10 md:px-0 md:py-12 relative z-10">
-        
-        <div className="flex flex-col md:grid md:grid-cols-[2fr_1fr] justify-between">
-          
+    <footer className="relative overflow-hidden bg-[#1e1e1e] pb-2 md:pb-0">
+      <div className="relative z-10 mx-auto w-auto px-6 pt-10 md:px-0 md:py-12">
+        <div className="flex flex-col justify-between md:grid md:grid-cols-[2fr_1fr]">
           {/* Left Column: Branding and Contact */}
           <div className="md:pl-10">
-            
             {/* Logo Section */}
-            <div className="flex items-center mb-6 md:mb-2 md:ml-32 relative z-10">
+            <div className="relative z-10 mb-6 flex items-center md:mb-2 md:ml-32">
               <img
-                src="/footer_assets/cict-icon.svg" 
-                className="w-10 h-10 md:w-14 md:h-14 md:mr-1"
+                src="/footer_assets/cict-icon.svg"
+                className="h-10 w-10 md:mr-1 md:h-14 md:w-14"
                 alt="WVSU CICT Logo"
               />
-              <h2 className="text-4xl md:text-5xl font-medium uppercase leading-4 flex gap-3 text-white">
-                WVSU <span className="font-light font-major">CICT</span> 
+              <h2 className="flex gap-3 text-4xl leading-4 font-medium text-white uppercase md:text-5xl">
+                WVSU <span className="font-major font-light">CICT</span>
               </h2>
             </div>
 
             {/* Description */}
-            <p className="text-sm md:text-base text-left text-white md:max-w-170 md:ml-35 mb-12 md:mb-18 leading-6 relative z-10">
-              The official website of the <span className="text-orange-light">WVSU College of Information and Communications Technology. </span>
-              We aim to foster a resilient, innovative, and digitally-ready Western Visayas - producing competent, globally competitive, and technologically skilled harbingers of change.
+            <p className="relative z-10 mb-12 text-left text-sm leading-6 text-white md:mb-18 md:ml-35 md:max-w-170 md:text-base">
+              The official website of the{" "}
+              <span className="text-orange-light">
+                WVSU College of Information and Communications Technology.{" "}
+              </span>
+              We aim to foster a resilient, innovative, and digitally-ready
+              Western Visayas - producing competent, globally competitive, and
+              technologically skilled harbingers of change.
             </p>
 
             {/* Social Media Section */}
             <div className="relative z-10">
-              <h3 className="text-xl md:text-2xl mb-2 md:mb-4 md:ml-35 text-white tracking-wide">
-                Get in touch with <span className="text-orange-light font-major">us</span>
+              <h3 className="mb-2 text-xl tracking-wide text-white md:mb-4 md:ml-35 md:text-2xl">
+                Get in touch with{" "}
+                <span className="text-orange-light font-major">us</span>
               </h3>
-              
+
               {/* Added gap for mobile spacing */}
-              <div className="flex md:ml-33 gap-2 md:gap-0 items-center">
-                <a href="https://web.facebook.com/cictwvsu" target="_blank" rel="noopener noreferrer" aria-label="Visit WVSU CICT Facebook Page" className="text-gray-300 hover:text-white transition-colors duration-200">
+              <div className="flex items-center gap-2 md:ml-33 md:gap-0">
+                <a
+                  href="https://web.facebook.com/cictwvsu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit WVSU CICT Facebook Page"
+                  className="text-gray-300 transition-colors duration-200 hover:text-white"
+                >
                   <img
-                    src="/footer_assets/footer-fb.svg" 
-                    className="w-5 h-6 md:w-7 md:h-5 object-contain"
+                    src="/footer_assets/footer-fb.svg"
+                    className="h-6 w-5 object-contain md:h-5 md:w-7"
                     alt=""
                     aria-hidden="true"
                   />
                 </a>
-                <a href="mailto:cict@wvsu.edu.ph" aria-label="Email WVSU CICT" className="text-gray-300 hover:text-white transition-colors duration-200">
+                <a
+                  href="mailto:cict@wvsu.edu.ph"
+                  aria-label="Email WVSU CICT"
+                  className="text-gray-300 transition-colors duration-200 hover:text-white"
+                >
                   <img
-                    src="/footer_assets/footer-mail.svg" 
-                    className="w-8 h-8 md:w-10 md:h-7 object-contain brightness-0 invert pt-1"
+                    src="/footer_assets/footer-mail.svg"
+                    className="h-8 w-8 object-contain pt-1 brightness-0 invert md:h-7 md:w-10"
                     alt=""
                     aria-hidden="true"
                   />
@@ -66,35 +78,43 @@ export default function Footer() {
             </div>
           </div>
 
-         {/* Mobile SVG Background */}
-          <div className="absolute -left-42 top-60 sm:top-48 opacity-8 pointer-events-none z-0" aria-hidden="true">
-            <img 
-              src="/footer_assets/cict-icon.svg" 
-              alt="" 
+          {/* Mobile SVG Background */}
+          <div
+            className="pointer-events-none absolute top-60 -left-42 z-0 opacity-8 sm:top-48"
+            aria-hidden="true"
+          >
+            <img
+              src="/footer_assets/cict-icon.svg"
+              alt=""
               loading="lazy"
-              className="block md:hidden max-w-none w-155" 
+              className="block w-155 max-w-none md:hidden"
             />
           </div>
 
           {/* Desktop SVG Background */}
-          <div className="absolute mt-47 right-0 top-1/2 -translate-y-1/2 translate-x-35 opacity-8 pointer-events-none z-0" aria-hidden="true">
-            <img 
-              src="/footer_assets/cict-icon.svg" 
-              alt="" 
+          <div
+            className="pointer-events-none absolute top-1/2 right-0 z-0 mt-47 translate-x-35 -translate-y-1/2 opacity-8"
+            aria-hidden="true"
+          >
+            <img
+              src="/footer_assets/cict-icon.svg"
+              alt=""
               loading="lazy"
-              className="hidden md:block h-200 object-contain" 
+              className="hidden h-200 object-contain md:block"
             />
           </div>
 
           {/* Right Column: Navigation */}
-          <div className="flex flex-col items-start md:items-end text-left md:text-right pt-12 md:pt-18 pr-0 md:pr-44 relative z-10">
-            <p className="text-base md:text-2xl font-extrabold font-minor mb-4 tracking-tight text-white">NAVIGATION</p>
-            <nav className="flex flex-col items-start md:items-end gap-5 md:gap-4 text-sm md:text-xl">
+          <div className="relative z-10 flex flex-col items-start pt-12 pr-0 text-left md:items-end md:pt-18 md:pr-44 md:text-right">
+            <p className="font-minor mb-4 text-base font-extrabold tracking-tight text-white md:text-2xl">
+              NAVIGATION
+            </p>
+            <nav className="flex flex-col items-start gap-5 text-sm md:items-end md:gap-4 md:text-xl">
               {NAV_LINKS.map((link) => (
-                <Link 
-                  key={link.href} 
-                  href={link.href} 
-                  className="text-white hover:text-gray-300 transition-colors uppercase tracking-wide"
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="tracking-wide text-white uppercase transition-colors hover:text-gray-300"
                 >
                   {link.label}
                 </Link>
@@ -104,13 +124,12 @@ export default function Footer() {
 
           {/* Bottom Copyright Divider */}
           {/* Stretches full width on mobile, centers text */}
-          <div className="mt-10 md:mt-15 md:mb-20 w-full md:col-span-2 relative z-10">
-            <div className="h-px -mx-6 md:mx-0 md:ml-0 md:w-291 md:translate-x-45 bg-[#4D4D4D] mb-4 md:mb-4" />
-            <p className="text-sm md:text-base font-medium text-center md:text-left text-white md:translate-x-55">
+          <div className="relative z-10 mt-10 w-full md:col-span-2 md:mt-15 md:mb-20">
+            <div className="-mx-6 mb-4 h-px bg-[#4D4D4D] md:mx-0 md:mb-4 md:ml-0 md:w-291 md:translate-x-45" />
+            <p className="text-center text-sm font-medium text-white md:translate-x-55 md:text-left md:text-base">
               Copyright {currentYear} © WVSU CICT. All Rights Reserved
             </p>
           </div>
-          
         </div>
       </div>
     </footer>
