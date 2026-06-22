@@ -134,12 +134,7 @@ export default function Home() {
                 href="/news-announcements"
                 className="group ml-auto flex h-3 w-14 items-center justify-center rounded-full border border-[#4D4D4D] text-[6px] text-[#4D4D4D] transition duration-200 hover:bg-[#4D4D4D] hover:text-white md:h-8 md:w-32 md:text-xs"
               >
-                READ MORE
-                <img
-                  src="/home-page_assets/grey-arrow-icon.png"
-                  className="ml-0.5 h-[5px] w-[7px] transition duration-200 group-hover:brightness-0 group-hover:invert md:ml-2 md:h-3 md:w-4"
-                  alt="image"
-                />
+                READ MORE →
               </Link>
             </div>
 
@@ -178,12 +173,7 @@ export default function Home() {
                   href="/news-announcements"
                   className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto mr-3 mb-3 ml-auto flex h-8 w-28 items-center justify-center rounded-full border text-xs font-normal transition duration-200 hover:text-white"
                 >
-                  Read Now
-                  <img
-                    src="/home-page_assets/orange-arrow-icon.png"
-                    className="ml-1.5 w-5 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                    alt="image"
-                  />
+                  Read Now →
                 </Link>
               </div>
             </div>
@@ -205,12 +195,7 @@ export default function Home() {
                 href="/news-announcements"
                 className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
               >
-                Read More
-                <img
-                  src="/home-page_assets/orange-arrow-icon.png"
-                  className="ml-1 h-2 w-3 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                  alt="image"
-                />
+                Read More →
               </Link>
             </div>
           </div>
@@ -344,12 +329,7 @@ export default function Home() {
               href="/programs"
               className="group ml-auto flex h-5 w-20 items-center justify-center rounded-full border border-[#4D4D4D] text-[10px] font-medium text-[#4D4D4D] transition duration-200 hover:bg-[#4D4D4D] hover:text-white md:h-12 md:w-52 md:text-2xl"
             >
-              Explore All
-              <img
-                src="/home-page_assets/grey-arrow-icon.png"
-                className="ml-1 h-auto w-3 transition duration-200 group-hover:brightness-0 group-hover:invert md:ml-4 md:w-6"
-                alt="Toggle"
-              />
+              Explore All →
             </Link>
           </div>
           <div className="flex items-center justify-center py-8 md:py-16">
@@ -439,12 +419,7 @@ export default function Home() {
           href="/contact"
           className="text-orange-light border-orange-light hover:bg-orange-light group flex h-auto w-40 items-center justify-center rounded-full border-2 text-center text-base font-normal transition duration-200 hover:text-white md:w-80 md:border-3 md:text-3xl"
         >
-          <span className="font-major m-2 md:m-4">CONTACT US</span>
-          <img
-            src="/home-page_assets/orange-arrow-icon.png"
-            className="h-auto w-5 transition duration-200 group-hover:brightness-0 group-hover:invert md:w-7"
-            alt="arrow icon"
-          />
+          <span className="font-major m-2 md:m-4">CONTACT US →</span>
         </Link>
       </section>
     </main>

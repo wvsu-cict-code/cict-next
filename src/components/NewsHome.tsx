@@ -25,12 +25,7 @@ export function HomeNewsCard({ date, tag, title, href, className }: CardProps) {
           href={href}
           className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
         >
-          Read More
-          <img
-            src="/home-page_assets/orange-arrow-icon.png"
-            className="ml-1 h-2 w-3 transition duration-200 group-hover:brightness-0 group-hover:invert"
-            alt="image"
-          />
+          Read More →
         </Link>
       </div>
     </div>
