@@ -2,7 +2,41 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { HomeNewsCard } from "@/components/NewsHome";
 
+interface NewsItem {
+  date: string;
+  tag: string;
+  title: string;
+  href: string;
+}
+
+export const items = [
+  {
+    date: "December 26, 2025",
+    tag: "NEWS",
+    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
+    href: "/news-announcements",
+  },
+  {
+    date: "December 26, 2025",
+    tag: "NEWS",
+    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
+    href: "/news-announcements",
+  },
+  {
+    date: "December 26, 2025",
+    tag: "NEWS",
+    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
+    href: "/news-announcements",
+  },
+  {
+    date: "December 26, 2025",
+    tag: "NEWS",
+    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
+    href: "/news-announcements",
+  },
+];
 const whyChooseItems = [
   {
     title: "ACCREDITATIONS",
@@ -28,6 +62,8 @@ const whyChooseItems = [
 
 export default function Home() {
   const [openIndex, setOpenIndex] = useState(null);
+
+  const HOME_NEWS_CARD_LIMIT = 4;
 
   const button_big =
     "flex justify-center items-center border-1 rounded-2xl w-32 md:w-xs h-6 md:h-10 p-2";
@@ -119,7 +155,7 @@ export default function Home() {
           </div>
 
           {/*Featured Card*/}
-          <div className="hidden h-52 w-full rounded-lg bg-white shadow-[0_0_10px_rgba(0,0,0,0.15)] md:flex">
+          <div className="bg-yellow hidden h-52 w-full rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.15)] md:flex">
             <img
               src="/home-page_assets/featured-card-image.png"
               className="mr-4 w-3xs"
@@ -180,112 +216,13 @@ export default function Home() {
           </div>
         </div>
 
-        {/*Bottom Section*/}
+        {/*Bottom Section
+          NOTE: We should only limit 4 news articles
+          */}
         <div className="mt-6 grid w-full grid-cols-2 gap-6 md:mt-8 md:grid-cols-4">
-          <div className={`${card_small}`}>
-            <div className="flex items-center">
-              <p className="font-minor text-[8px] font-normal text-[#4D4D4D]">
-                December 26, 2025
-              </p>
-              <span className="font-minor border-orange-light bg-orange-light ml-auto h-3.5 w-8 rounded-sm border text-center text-[8px] font-bold text-white">
-                NEWS
-              </span>
-            </div>
-            <div className="mt-1 flex h-20 flex-col md:mt-3">
-              <h1 className="md:text-4 text-sm font-bold">
-                WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan
-              </h1>
-              <Link
-                href="/news-announcements"
-                className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
-              >
-                Read More
-                <img
-                  src="/home-page_assets/orange-arrow-icon.png"
-                  className="ml-1 h-2 w-3 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                  alt="image"
-                />
-              </Link>
-            </div>
-          </div>
-          <div className={`${card_small}`}>
-            <div className="flex items-center">
-              <p className="font-minor text-[8px] font-normal text-[#4D4D4D]">
-                December 26, 2025
-              </p>
-              <span className="font-minor border-orange-light bg-orange-light ml-auto h-3.5 w-8 rounded-sm border text-center text-[8px] font-bold text-white">
-                NEWS
-              </span>
-            </div>
-            <div className="mt-1 flex h-20 flex-col md:mt-3">
-              <h1 className="md:text-4 text-sm font-bold">
-                WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan
-              </h1>
-              <Link
-                href="/news-announcements"
-                className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
-              >
-                Read More
-                <img
-                  src="/home-page_assets/orange-arrow-icon.png"
-                  className="ml-1 h-2 w-3 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                  alt="image"
-                />
-              </Link>
-            </div>
-          </div>
-          <div className={`${card_small}`}>
-            <div className="flex items-center">
-              <p className="font-minor text-[8px] font-normal text-[#4D4D4D]">
-                December 26, 2025
-              </p>
-              <span className="font-minor border-orange-light bg-orange-light ml-auto h-3.5 w-8 rounded-sm border text-center text-[8px] font-bold text-white">
-                NEWS
-              </span>
-            </div>
-            <div className="mt-1 flex h-20 flex-col md:mt-3">
-              <h1 className="md:text-4 text-sm font-bold">
-                WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan
-              </h1>
-              <Link
-                href="/news-announcements"
-                className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
-              >
-                Read More
-                <img
-                  src="/home-page_assets/orange-arrow-icon.png"
-                  className="ml-1 h-2 w-3 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                  alt="image"
-                />
-              </Link>
-            </div>
-          </div>
-          <div className={`${card_small}`}>
-            <div className="flex items-center">
-              <p className="font-minor text-[8px] font-normal text-[#4D4D4D]">
-                December 26, 2025
-              </p>
-              <span className="font-minor border-orange-light bg-orange-light ml-auto h-3.5 w-8 rounded-sm border text-center text-[8px] font-bold text-white">
-                NEWS
-              </span>
-            </div>
-            <div className="mt-1 flex h-20 flex-col md:mt-3">
-              <h1 className="md:text-4 text-sm font-bold">
-                WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan
-              </h1>
-              <Link
-                href="/news-announcements"
-                className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
-              >
-                Read More
-                <img
-                  src="/home-page_assets/orange-arrow-icon.png"
-                  className="ml-1 h-2 w-3 transition duration-200 group-hover:brightness-0 group-hover:invert"
-                  alt="image"
-                />
-              </Link>
-            </div>
-          </div>
+          {items.slice(0, HOME_NEWS_CARD_LIMIT).map((item, index) => (
+            <HomeNewsCard key={index} className={card_small} {...item} />
+          ))}
         </div>
       </section>
 
