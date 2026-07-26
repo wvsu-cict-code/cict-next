@@ -109,16 +109,16 @@ export default async function ProgramDetailsPage({ params }: PageProps) {
                 </div>
 
                 {/* INFO CARD */}
-                <div className="w-auto mx-auto bg-white border-[1.5] border-black rounded-2xl p-8 mb-45 md:mt-0 md:mb-0 md:px-35 md:py-4 flex flex-col sm:flex-row md:flex-row justify-between gap-10 shadow-sm">
+                {/*<div className="w-auto mx-auto bg-white border-[1.5] border-black rounded-2xl p-8 mb-45 md:mt-0 md:mb-0 md:px-35 md:py-4 flex flex-col sm:flex-row md:flex-row justify-between gap-10 shadow-sm">
 
-                    {/* Left: Download Curriculum */}
+
                     <a
                         href={program.curriculumPdf}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-12 group cursor-pointer w-full md:w-auto hover:opacity-80 transition-opacity"
                     >
-                        {/* Icon Circle */}
+
                         <div className="shrink-0 w-15 h-15 md:w-20 md:h-20 rounded-full bg-orange-light text-white flex items-center justify-center shadow-md">
                             <Image
                                 src="/program_assets/pdf-icon.svg"
@@ -127,7 +127,7 @@ export default async function ProgramDetailsPage({ params }: PageProps) {
                                 height={30}
                             />
                         </div>
-                        {/* Text */}
+
                         <div className="flex flex-col">
                             <span className="font-bold text-sm md:text-base text-black leading-tight tracking-tight">
                                 [PDF] Curriculum Details
@@ -139,9 +139,9 @@ export default async function ProgramDetailsPage({ params }: PageProps) {
                     </a>
 
 
-                    {/* Right: Program Duration */}
+
                     <div className="flex items-center gap-12 w-full md:w-auto">
-                        {/* Icon Circle */}
+
                         <div className="shrink-0 w-15 h-15 md:w-20 md:h-20 rounded-full bg-orange-light text-white flex items-center justify-center shadow-md">
                             <Image
                                 src="/program_assets/cap-icon.svg"
@@ -150,7 +150,7 @@ export default async function ProgramDetailsPage({ params }: PageProps) {
                                 height={40}
                             />
                         </div>
-                        {/* Text */}
+
                         <div className="flex flex-col">
                             <span className="font-bold text-sm md:text-base text-black leading-tight tracking-tight">
                                 Program Duration
@@ -164,7 +164,7 @@ export default async function ProgramDetailsPage({ params }: PageProps) {
                         </div>
                     </div>
 
-                </div>
+                </div>*/}
             </div>
         </main>
     );
