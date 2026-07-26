@@ -67,12 +67,14 @@ export default async function ProgramDetailsPage({ params }: PageProps) {
                 <div className="absolute top-8 left-6 md:top-24 md:left-20 z-20">
                     <Link
                         href="/programs"
-                        className="group flex items-center justify-center gap-2 bg-white text-orange-light px-4 py-1.5 md:px-6 md:py-2 rounded-3xl text-sm md:text-2xl hover:bg-gray-100 transition-all active:scale-95 shadow-sm"
+                        className="group relative flex items-center gap-4 px-8 py-4 bg-white text-orange-light rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-700 w-fit cursor-pointer"
                     >
-                        <span className="group-hover:-translate-x-1 transition-transform">
-                            &lt;
-                        </span>
-                        <span className="font-medium md:font-normal">Back to Programs</span>
+                        <div className="flex items-center justify-center text-orange-light transition-transform group-hover:-translate-x-1">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 12H5M12 19l-7-7 7-7" />
+                            </svg>
+                        </div>
+                        <span className="text-[13px] font-bold tracking-tighter text-orange-light uppercase">Back to Programs</span>
                     </Link>
                 </div>
 

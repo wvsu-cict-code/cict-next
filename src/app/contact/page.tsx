@@ -252,18 +252,6 @@ export default function Contact() {
             />
           </div>
         </section>
-
-        {/* CONNECT */}
-        <section className="mt-28 flex w-full justify-center sm:mt-36">
-          <h2 className="font-major text-orange-light text-center text-3xl sm:text-4xl md:text-5xl">
-            Connect with Us!
-          </h2>
-        </section>
-
-        <p className="font-minor mx-auto mt-10 max-w-3xl px-4 text-center text-lg text-[#363636]">
-          We love to hear from you! If you have any questions, comments, or
-          feedback, you can email or call us.
-        </p>
       </section>
     </main>
   );
