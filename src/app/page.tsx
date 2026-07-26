@@ -2,41 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { HomeNewsCard } from "@/components/NewsHome";
+import { NewsHomeSection } from "@/components/NewsHomeSection";
 
-interface NewsItem {
-  date: string;
-  tag: string;
-  title: string;
-  href: string;
-}
-
-export const items = [
-  {
-    date: "December 26, 2025",
-    tag: "NEWS",
-    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
-    href: "/news-announcements",
-  },
-  {
-    date: "December 26, 2025",
-    tag: "NEWS",
-    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
-    href: "/news-announcements",
-  },
-  {
-    date: "December 26, 2025",
-    tag: "NEWS",
-    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
-    href: "/news-announcements",
-  },
-  {
-    date: "December 26, 2025",
-    tag: "NEWS",
-    title: "WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan",
-    href: "/news-announcements",
-  },
-];
 const whyChooseItems = [
   {
     title: "ACCREDITATIONS",
@@ -63,12 +30,8 @@ const whyChooseItems = [
 export default function Home() {
   const [openIndex, setOpenIndex] = useState(null);
 
-  const HOME_NEWS_CARD_LIMIT = 4;
-
   const button_big =
     "flex justify-center items-center border-1 rounded-2xl w-32 md:w-xs h-6 md:h-10 p-2";
-  const card_small =
-    "w-full shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 shadow-lg rounded-xl";
   const divider = "border border-transparent border-b-[#363636] p-2 md:p-4";
   const course_container =
     "w-25 h-24 md:w-58 md:h-54 flex flex-col justify-center items-center gap-2 md:gap-6 bg-white pt-3 md:pt-6 duration-200 hover:scale-105 hover:shadow-xl hover:-translate-y-1";
@@ -122,94 +85,7 @@ export default function Home() {
       </section>
 
       {/*News and Announcements*/}
-      <section className="mx-4 mt-10 mb-16 flex max-w-full flex-col items-center justify-center md:mx-40 md:mt-38">
-        {/*Top Section*/}
-        <div className="grid w-full grid-cols-2 gap-6">
-          <div className="w-full">
-            <div className="flex items-center">
-              <h1 className="flex text-[11px] font-medium text-[#585858] md:text-2xl">
-                NEWS AND ANNOUNCEMENTS
-              </h1>
-              <Link
-                href="/news-announcements"
-                className="group ml-auto flex h-3 w-14 items-center justify-center rounded-full border border-[#4D4D4D] text-[6px] text-[#4D4D4D] transition duration-200 hover:bg-[#4D4D4D] hover:text-white md:h-8 md:w-32 md:text-xs"
-              >
-                READ MORE →
-              </Link>
-            </div>
-
-            <h1 className="text-lg font-medium text-[#373737] md:mt-6 md:text-5xl">
-              CHECK OUT THE LATEST <br />
-              <span className="text-orange-light">COLLEGE UPDATES</span>
-            </h1>
-
-            <p className="text-[8px] font-normal text-[#828282] md:mt-1 md:text-base">
-              Stay informed with the latest updates, official announcements, and
-              important notices
-            </p>
-          </div>
-
-          {/*Featured Card*/}
-          <div className="bg-yellow hidden h-52 w-full rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.15)] md:flex">
-            <img
-              src="/home-page_assets/featured-card-image.png"
-              className="mr-4 w-3xs"
-              alt="image"
-            />
-            <div className="mt-4">
-              <div className="flex h-6 items-center">
-                <p className="text-xs font-normal text-[#4D4D4D]">
-                  2 days ago |
-                </p>
-                <span className="bg-orange-light border-orange-light ml-1.5 rounded-sm px-2 text-[8px] font-bold text-white">
-                  ANNOUNCEMENT
-                </span>
-              </div>
-              <div className="mt-6 ml-2 flex h-36 flex-col">
-                <h1 className="mr-3 text-xl font-bold">
-                  WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan
-                </h1>
-                <Link
-                  href="/news-announcements"
-                  className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto mr-3 mb-3 ml-auto flex h-8 w-28 items-center justify-center rounded-full border text-xs font-normal transition duration-200 hover:text-white"
-                >
-                  Read Now →
-                </Link>
-              </div>
-            </div>
-          </div>
-          <div className={`${card_small} block md:hidden`}>
-            <div className="flex items-center">
-              <p className="font-minor text-[8px] font-normal text-[#4D4D4D]">
-                December 26, 2025
-              </p>
-              <span className="font-minor border-orange-light bg-orange-light ml-auto flex h-3.5 w-17 items-center justify-center rounded-sm border text-center text-[6px] font-bold text-white">
-                ANNOUNCEMENT
-              </span>
-            </div>
-            <div className="mt-1 flex h-20 flex-col">
-              <h1 className="text-sm font-bold">
-                WVSU-CICT Presents Tech Solutions at ICC 2025 in Taiwan
-              </h1>
-              <Link
-                href="/news-announcements"
-                className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
-              >
-                Read More →
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/*Bottom Section
-          NOTE: We should only limit 4 news articles
-          */}
-        <div className="mt-6 grid w-full grid-cols-2 gap-6 md:mt-8 md:grid-cols-4">
-          {items.slice(0, HOME_NEWS_CARD_LIMIT).map((item, index) => (
-            <HomeNewsCard key={index} className={card_small} {...item} />
-          ))}
-        </div>
-      </section>
+      <NewsHomeSection />
 
       {/* About Section */}
       <section className="relative max-w-full bg-[#1e1e1e] px-4 py-12 md:px-52 md:py-40">
@@ -336,7 +212,7 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
               <Link href="/programs/bsemc" className={` ${course_container} `}>
                 <img
-                  src="/home-page_assets/bsemc-icon.png"
+                  src="/program_assets/bsemc.svg"
                   className="h-auto w-12 md:w-24"
                   alt="BSEMC Logo"
                 />
@@ -346,7 +222,7 @@ export default function Home() {
               </Link>
               <Link href="/programs/bscs" className={` ${course_container} `}>
                 <img
-                  src="/home-page_assets/bscs-icon.png"
+                  src="/program_assets/bscs.svg"
                   className="h-auto w-12 md:w-24"
                   alt="bscs icon"
                 />
@@ -356,7 +232,7 @@ export default function Home() {
               </Link>
               <Link href="/programs/blis" className={` ${course_container} `}>
                 <img
-                  src="/home-page_assets/blis-icon.png"
+                  src="/program_assets/blis.svg"
                   className="h-auto w-12 md:w-24"
                   alt="blis logo"
                 />
@@ -366,7 +242,7 @@ export default function Home() {
               </Link>
               <Link href="/programs/bsis" className={` ${course_container} `}>
                 <img
-                  src="/home-page_assets/bsis-icon.png"
+                  src="/program_assets/bsis.svg"
                   className="h-auto w-12 md:w-24"
                   alt="bsis logo"
                 />
@@ -376,7 +252,7 @@ export default function Home() {
               </Link>
               <Link href="/programs/bsit" className={` ${course_container} `}>
                 <img
-                  src="/home-page_assets/bsit-icon.png"
+                  src="/program_assets/bsit.svg"
                   className="h-auto w-12 md:w-24"
                   alt="bsit logo"
                 />
@@ -386,7 +262,7 @@ export default function Home() {
               </Link>
               <Link href="/programs/mit" className={` ${course_container} `}>
                 <img
-                  src="/home-page_assets/mit-icon.png"
+                  src="/program_assets/mit.svg"
                   className="h-auto w-12 md:w-24"
                   alt="mit logo"
                 />
