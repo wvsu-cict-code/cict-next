@@ -1,7 +1,6 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { Database } from "./database.types";
 import { getSupabaseEnv } from "./env";
@@ -31,17 +30,5 @@ export async function createSessionClient() {
         }
       },
     },
-  });
-}
-
-/**
- * Anonymous client for the public site. It never touches cookies, so pages
- * that use it can be statically generated and revalidated.
- */
-export function createPublicClient() {
-  const { url, key } = getSupabaseEnv();
-
-  return createClient<Database>(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
   });
 }
