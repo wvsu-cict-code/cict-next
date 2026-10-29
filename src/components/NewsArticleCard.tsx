@@ -3,20 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { newsHref } from "@/lib/news";
 
 interface NewsArticleCardProps {
+    slug: string;
     imgSrc?: string;
     date: string;
     header: string;
     description?: string;
 }
 
-const NewsArticleCard: React.FC<NewsArticleCardProps> = ({ imgSrc, date, header, description }) => {
+const NewsArticleCard: React.FC<NewsArticleCardProps> = ({ slug, imgSrc, date, header, description }) => {
     const [isLoading, setIsLoading] = useState(true);
-
-    // Generate slug
-    const generateSlug = (text: string) =>
-        text.toLowerCase().trim().replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-");
 
     return (
         <div className="flex md:flex-col rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow bg-white">
@@ -63,7 +61,7 @@ const NewsArticleCard: React.FC<NewsArticleCardProps> = ({ imgSrc, date, header,
 
                 {/* Read More Button */}
                 <Link
-                    href={`/news-announcements/news/${generateSlug(header)}`}
+                    href={newsHref(slug)}
                     className="text-xs sm:text-sm font-minor font-semibold text-white tracking-wider mt-0 sm:mt-2 px-3 py-1 self-start sm:self-end bg-orange-dark border border-orange-dark rounded-full cursor-pointer transition-colors duration-300 ease-in-out hover:text-orange-dark hover:bg-white hover:border-orange-dark"
                 >
                     Read More &nbsp;→

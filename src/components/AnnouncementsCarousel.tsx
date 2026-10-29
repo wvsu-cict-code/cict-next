@@ -7,12 +7,8 @@ import Link from "next/link";
 // [IMPORT] Hooks
 import { useState, useEffect, useRef } from "react";
 
-interface NewsArticle {
-  id: number;
-  imgSrc?: string;
-  date: string;
-  newsHeader: string;
-}
+// [IMPORT] Types
+import { newsHref, type NewsArticle } from "@/lib/news";
 
 interface AnnouncementsCarouselProps {
   articles: NewsArticle[];
@@ -34,14 +30,6 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
   // [CONSTANTS] Carousel configuration
   const GAP = 40; // space-x-10
   const offset = activeIndex * (cardWidth + GAP) + cardWidth / 2;
-
-  // [FUNCTION] Generate URL slug from news header
-  const generateSlug = (text: string) =>
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
 
   // [EFFECT] Update card width based on window size
   useEffect(() => {
@@ -140,7 +128,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
         >
           {articles.map((article, index) => {
             const daysAgo = Math.floor(
-              (new Date().getTime() - new Date(article.date).getTime()) /
+              (new Date().getTime() - new Date(article.publishedAt).getTime()) /
                 (1000 * 60 * 60 * 24),
             );
 
@@ -182,7 +170,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
                   <Link
                     href={
                       isActive
-                        ? `/news-announcements/news/${generateSlug(article.newsHeader)}`
+                        ? newsHref(article.slug)
                         : "#"
                     }
                     className={`font-minor mt-4 self-start rounded-full px-3 py-1 text-xs font-semibold tracking-wider transition-colors duration-300 ease-in-out md:text-sm ${
