@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:site": "BUILD_TARGET=site next build && cp deploy/school-server/.htaccess out/",
+    "check:site": "node --env-file=.env scripts/check-site.mjs",
     "start": "next start",
     "lint": "eslint",
     "db:start": "supabase start",
@@ -46,6 +47,7 @@
     "postcss": "^8.5.9",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "puppeteer-core": "^25.16.0",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3",
     "vitest": "^5.0.5"
