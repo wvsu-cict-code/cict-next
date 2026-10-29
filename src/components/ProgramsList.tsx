@@ -3,12 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
-import { fetchPrograms } from "@/lib/cms/content";
+import { loadPrograms } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
 
 /** Program cards on the Programs page. */
 export default function ProgramsList() {
-  const programs = useContent("programs", fetchPrograms);
+  const programs = useContent("programs", loadPrograms);
 
   if (programs.status === "error") {
     return <ContentError onRetry={programs.retry} />;

@@ -1,48 +1,68 @@
 "use client";
 
 import Link from "next/link";
+import { ArrowCircle, PhotoSlot } from "@/components/PhotoSlot";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
-import { fetchPrograms } from "@/lib/cms/content";
+import { loadPrograms } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
 
-const course_container =
-  "w-25 h-24 md:w-58 md:h-54 flex flex-col justify-center items-center gap-2 md:gap-6 bg-white pt-3 md:pt-6 duration-200 hover:scale-105 hover:shadow-xl hover:-translate-y-1";
-
-/** Program tiles in the home page's "Offered Programs" table. */
 export function HomePrograms() {
-  const programs = useContent("programs", fetchPrograms);
+  const programs = useContent("programs", loadPrograms);
 
   if (programs.status === "error") {
     return <ContentError onRetry={programs.retry} />;
   }
 
+  if (programs.status === "loading") {
+    return (
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }, (_, index) => (
+          <ContentPlaceholder key={index} className="h-72 w-full rounded-2xl" />
+        ))}
+      </div>
+    );
+  }
+
+  if (programs.data.length === 0) {
+    return (
+      <p className="text-ink-soft text-base">No programs are listed yet.</p>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
-      {programs.status === "loading"
-        ? Array.from({ length: 6 }, (_, index) => (
-            <ContentPlaceholder
-              key={index}
-              className="h-24 w-25 rounded-none md:h-54 md:w-58"
-            />
-          ))
-        : programs.data.map((program) => (
-            <Link
-              key={program.id}
-              href={`/programs/${program.id}`}
-              className={` ${course_container} `}
-            >
-              {program.logo_url && (
+    <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {programs.data.map((program) => (
+        <li key={program.id} className="min-w-0">
+          <Link
+            href={`/programs/${program.id}`}
+            className="ease-draw group block overflow-hidden rounded-2xl bg-white shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-transform duration-200 hover:-translate-y-0.5"
+          >
+            <PhotoSlot label="Photo coming" className="aspect-[16/10] w-full" />
+            <span className="flex items-center gap-3 px-4 py-4">
+              {program.logo_url ? (
                 <img
                   src={program.logo_url}
-                  className="h-auto w-12 md:w-24"
-                  alt={`${program.code} logo`}
+                  alt=""
+                  className="h-10 w-10 shrink-0 object-contain"
                 />
+              ) : (
+                <span className="bg-theme-red/10 h-10 w-10 shrink-0 rounded-full" />
               )}
-              <h3 className="text-xs font-medium text-[#1E1E1E] md:text-2xl">
-                {program.code}
-              </h3>
-            </Link>
-          ))}
-    </div>
+              <span className="min-w-0 flex-1">
+                <span className="font-major text-ink block text-lg leading-none">
+                  {program.code}
+                </span>
+                {program.name && program.name !== program.code && (
+                  <span className="text-ink-soft mt-1 block text-sm leading-snug">
+                    {program.name}
+                  </span>
+                )}
+              </span>
+              <ArrowCircle className="text-ink-soft group-hover:border-theme-red group-hover:text-theme-red" />
+            </span>
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }

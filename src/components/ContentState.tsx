@@ -16,7 +16,7 @@ export function ContentError({ onRetry }: { onRetry: () => void }) {
       <button
         type="button"
         onClick={onRetry}
-        className="font-minor bg-orange-dark hover:bg-orange-light rounded-full px-6 py-2 text-sm font-semibold text-white transition-colors"
+        className="bg-theme-red ease-draw hover:bg-accent-deep min-h-11 rounded-full px-6 text-sm font-semibold text-white transition-colors duration-200 active:scale-[0.98]"
       >
         Try again
       </button>

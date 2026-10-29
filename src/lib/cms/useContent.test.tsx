@@ -1,6 +1,11 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { CONTENT_TIMEOUT_MS, useContent } from "@/lib/cms/useContent";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  clearContentCache,
+  CONTENT_TIMEOUT_MS,
+  rememberContent,
+  useContent,
+} from "@/lib/cms/useContent";
 
 const fakeClient = { fake: true };
 vi.mock("@/lib/supabase/browser", () => ({
@@ -18,6 +23,10 @@ function deferred<T>() {
 }
 
 describe("useContent", () => {
+  beforeEach(() => {
+    clearContentCache();
+  });
+
   it("starts loading, then returns the data", async () => {
     const load = vi.fn().mockResolvedValue(["a post"]);
     const { result } = renderHook(() => useContent("posts", load));
@@ -111,5 +120,80 @@ describe("useContent", () => {
     const { result } = renderHook(() => useContent("posts", load));
 
     await waitFor(() => expect(result.current.status).toBe("error"));
+  });
+
+  it("shows cached data on the next visit, then refreshes it", async () => {
+    const load = vi.fn().mockResolvedValue("first");
+    const first = renderHook(() => useContent("item", load));
+    await waitFor(() => expect(first.result.current.status).toBe("ready"));
+    first.unmount();
+
+    load.mockResolvedValue("second");
+    const second = renderHook(() => useContent("item", load));
+    expect(second.result.current).toEqual({ status: "ready", data: "first" });
+    await waitFor(() =>
+      expect(second.result.current).toEqual({
+        status: "ready",
+        data: "second",
+      }),
+    );
+  });
+
+  it("keeps cached data when a refresh fails", async () => {
+    const load = vi
+      .fn()
+      .mockResolvedValueOnce("first")
+      .mockRejectedValueOnce(new Error("offline"));
+    const first = renderHook(() => useContent("item", load));
+    await waitFor(() => expect(first.result.current.status).toBe("ready"));
+    first.unmount();
+
+    const second = renderHook(() => useContent("item", load));
+    expect(second.result.current).toEqual({ status: "ready", data: "first" });
+    await waitFor(() => expect(load).toHaveBeenCalledTimes(2));
+    expect(second.result.current).toEqual({ status: "ready", data: "first" });
+  });
+
+  it("shares one request between callers of the same key", async () => {
+    const gate = deferred<string>();
+    const load = vi.fn().mockReturnValue(gate.promise);
+    const first = renderHook(() => useContent("item", load));
+    const second = renderHook(() => useContent("item", load));
+
+    await act(async () => {});
+    expect(load).toHaveBeenCalledTimes(1);
+    await act(async () => gate.resolve("shared"));
+    await waitFor(() =>
+      expect(first.result.current).toEqual({ status: "ready", data: "shared" }),
+    );
+    expect(second.result.current).toEqual({ status: "ready", data: "shared" });
+  });
+
+  it("returns remembered content without waiting", () => {
+    rememberContent("program:1", { id: "1" });
+    const load = vi.fn().mockReturnValue(new Promise(() => {}));
+    const { result } = renderHook(() => useContent("program:1", load));
+
+    expect(result.current).toEqual({ status: "ready", data: { id: "1" } });
+  });
+
+  it("retries a stalled request instead of joining it again", async () => {
+    vi.useFakeTimers();
+    try {
+      const load = vi
+        .fn()
+        .mockReturnValueOnce(new Promise(() => {}))
+        .mockResolvedValueOnce("back");
+      const { result } = renderHook(() => useContent("posts", load));
+
+      await act(async () => vi.advanceTimersByTime(CONTENT_TIMEOUT_MS));
+      expect(result.current.status).toBe("error");
+      await act(async () => {
+        if (result.current.status === "error") result.current.retry();
+      });
+      expect(result.current).toEqual({ status: "ready", data: "back" });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

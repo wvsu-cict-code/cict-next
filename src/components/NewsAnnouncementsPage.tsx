@@ -2,22 +2,12 @@
 
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import NewsAnnouncementsView from "@/components/NewsAnnouncementsView";
-import { fetchPublishedPosts } from "@/lib/cms/content";
+import { loadNewsAnnouncements } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
-import { toNewsArticle } from "@/lib/news";
 
 /** Loads the news and announcements lists, then renders the page's view. */
 export default function NewsAnnouncementsPage() {
-  const posts = useContent("news-announcements", async (client) => {
-    const [announcements, news] = await Promise.all([
-      fetchPublishedPosts(client, { category: "announcement", limit: 10 }),
-      fetchPublishedPosts(client, { category: "news" }),
-    ]);
-    return {
-      announcements: announcements.map(toNewsArticle),
-      newsArticles: news.map(toNewsArticle),
-    };
-  });
+  const posts = useContent("news-announcements", loadNewsAnnouncements);
 
   if (posts.status === "ready") {
     return <NewsAnnouncementsView {...posts.data} />;

@@ -8,9 +8,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => pathname }));
 const highlighted = (name: string) =>
   screen
     .getAllByRole("link", { name })
-    .map((link) =>
-      link.className.split(/\s+/).includes("text-[var(--color-orange-light)]"),
-    );
+    .map((link) => link.className.split(/\s+/).includes("text-theme-red"));
 
 describe("Header", () => {
   afterEach(cleanup);
@@ -18,13 +16,21 @@ describe("Header", () => {
   it("highlights the current section on the school site, where URLs end in a slash", () => {
     pathname = "/programs/";
     render(<Header />);
-    expect(highlighted("PROGRAMS")).not.toContain(false);
-    expect(highlighted("CONTACT")).not.toContain(true);
+    expect(highlighted("Programs")).not.toContain(false);
+    expect(highlighted("Contact")).not.toContain(true);
   });
 
   it("highlights the current section without a trailing slash (CMS deployment)", () => {
     pathname = "/contact";
     render(<Header />);
-    expect(highlighted("CONTACT")).not.toContain(false);
+    expect(highlighted("Contact")).not.toContain(false);
+  });
+
+  it("sends Apply Now to the contact page", () => {
+    pathname = "/";
+    render(<Header />);
+    expect(
+      screen.getByRole("link", { name: "Apply Now" }).getAttribute("href"),
+    ).toBe("/contact");
   });
 });
