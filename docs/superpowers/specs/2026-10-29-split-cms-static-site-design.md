@@ -1,7 +1,7 @@
 # Split deployment: CMS on Vercel, public site on the school server
 
 Date: 2026-10-29
-Status: draft, awaiting approval
+Status: approved 2026-10-29
 
 ## Intent
 
