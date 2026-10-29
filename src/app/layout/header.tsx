@@ -11,7 +11,8 @@ const active_mobile = "text-(--font-minor) w-5/6 mx-auto text-center py-4 border
 const inactive_mobile = "text-(--font-minor) w-5/6 mx-auto text-center py-4 border-b border-gray-300 duration-200 active:scale-90";
 
 export default function Header() {
-  const pathname = usePathname();
+  // The school site's URLs end in a slash (static export), the CMS's don't
+  const pathname = usePathname().replace(/\/+$/, "") || "/";
   const [isOpen, setIsOpen] = useState(false);
 
   return (

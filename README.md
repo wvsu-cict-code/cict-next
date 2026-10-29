@@ -109,7 +109,9 @@ The project deploys as two parts from this one codebase:
 ### Public site on the school server
 
 1. Build it: `npm run build:site`. This writes the site to `out/`, using the
-   Supabase URL and publishable key from `.env`.
+   Supabase URL and publishable key from your env files. `.env.local` overrides
+   `.env`, so if you keep local-development values there, the build stops with
+   an error instead of producing a site that points at your machine.
 2. Optional: `npm run check:site` serves `out/` on a local Apache (Docker) and
    checks it in Chrome before you upload.
 3. Upload the **contents** of `out/` to the web root over FTP. Include the

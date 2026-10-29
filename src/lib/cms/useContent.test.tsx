@@ -1,6 +1,6 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { useContent } from "@/lib/cms/useContent";
+import { CONTENT_TIMEOUT_MS, useContent } from "@/lib/cms/useContent";
 
 const fakeClient = { fake: true };
 vi.mock("@/lib/supabase/browser", () => ({
@@ -88,5 +88,28 @@ describe("useContent", () => {
     await act(async () => {});
     expect(result.current.status).toBe("loading");
     expect(load).not.toHaveBeenCalled();
+  });
+  it("gives up with an error when loading never finishes", async () => {
+    vi.useFakeTimers();
+    try {
+      const load = vi.fn().mockReturnValue(new Promise(() => {}));
+      const { result } = renderHook(() => useContent("posts", load));
+
+      await act(async () => vi.advanceTimersByTime(CONTENT_TIMEOUT_MS - 1));
+      expect(result.current.status).toBe("loading");
+      await act(async () => vi.advanceTimersByTime(1));
+      expect(result.current.status).toBe("error");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("shows the error state when starting the load throws", async () => {
+    const load = vi.fn(() => {
+      throw new Error("Missing Supabase environment variables");
+    });
+    const { result } = renderHook(() => useContent("posts", load));
+
+    await waitFor(() => expect(result.current.status).toBe("error"));
   });
 });

@@ -1,3 +1,5 @@
+import { siteBuildEnvProblem } from "./src/lib/siteBuildEnv.mjs";
+
 // Allow next/image to optimize files served from Supabase Storage.
 const remotePatterns = [];
 let isLocalSupabase = false;
@@ -25,6 +27,13 @@ if (supabaseUrlEnv) {
 // New public pages and layouts MUST be named `page.site.tsx` /
 // `layout.site.tsx`, or they won't be on the school site.
 const isSiteBuild = process.env.BUILD_TARGET === "site";
+
+// The school site's pages load content from Supabase in visitors' browsers;
+// stop before producing an upload that can't reach it
+if (isSiteBuild) {
+  const problem = siteBuildEnvProblem(process.env);
+  if (problem) throw new Error(`Can't build the school site: ${problem}`);
+}
 
 /** @type {import('next').NextConfig} */
 const cmsConfig = {
