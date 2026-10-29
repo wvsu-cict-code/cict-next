@@ -10,7 +10,6 @@ import {
   handleForm,
   requireValue,
   resolveMediaField,
-  revalidateSite,
   type FormState,
 } from "@/lib/cms/forms";
 import { slugify } from "@/lib/format";
@@ -54,7 +53,6 @@ export async function createProgram(_state: FormState, formData: FormData) {
     const { error } = await supabase.from("programs").insert({ id, ...values });
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/programs/${id}?saved=1`);
   });
 }
@@ -72,7 +70,6 @@ export async function updateProgram(
       .eq("id", id);
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/programs/${id}?saved=1`);
   });
 }
@@ -82,6 +79,5 @@ export async function deleteProgram(id: string) {
   const { error } = await supabase.from("programs").delete().eq("id", id);
   assertDbOk(error);
 
-  revalidateSite();
   redirect("/admin/programs");
 }

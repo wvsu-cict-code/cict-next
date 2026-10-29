@@ -9,7 +9,6 @@ import {
   handleForm,
   requireValue,
   resolveMediaField,
-  revalidateSite,
   type FormState,
 } from "@/lib/cms/forms";
 import { slugify } from "@/lib/format";
@@ -43,7 +42,6 @@ export async function createDepartment(_state: FormState, formData: FormData) {
       .insert({ slug, ...values });
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/faculty/departments/${slug}?saved=1`);
   });
 }
@@ -61,7 +59,6 @@ export async function updateDepartment(
       .eq("slug", slug);
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/faculty/departments/${slug}?saved=1`);
   });
 }
@@ -74,7 +71,6 @@ export async function deleteDepartment(slug: string) {
     .eq("slug", slug);
   assertDbOk(error);
 
-  revalidateSite();
   redirect("/admin/faculty");
 }
 
@@ -113,7 +109,6 @@ export async function createMember(_state: FormState, formData: FormData) {
       .single();
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/faculty/members/${data!.id}?saved=1`);
   });
 }
@@ -131,7 +126,6 @@ export async function updateMember(
       .eq("id", id);
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/faculty/members/${id}?saved=1`);
   });
 }
@@ -144,6 +138,5 @@ export async function deleteMember(id: string) {
     .eq("id", id);
   assertDbOk(error);
 
-  revalidateSite();
   redirect("/admin/faculty");
 }

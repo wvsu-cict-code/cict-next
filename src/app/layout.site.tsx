@@ -2,9 +2,10 @@ import "./globals.css";
 import { Metadata } from "next";
 
 // --- SEO METADATA CONFIGURATION ---
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cict.wvsu.edu.ph";
+
 export const metadata: Metadata = {
-// TODO: Replace with the actual URL once deployed
-  metadataBase: new URL('https://www.your-cict-domain.edu.ph'), 
+  metadataBase: new URL(siteUrl),
   
   title: {
     default: 'WVSU CICT',
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_PH',
     siteName: 'WVSU CICT',
-    url: 'https://www.your-cict-domain.edu.ph', // TODO: Replace with the actual URL once deployed
+    url: siteUrl,
     images: [
       {
         url: '/icons/cictlogo.png', 

@@ -12,7 +12,6 @@ import {
   requireValue,
   FormError,
   resolveMediaField,
-  revalidateSite,
   uploadMedia,
   type FormState,
 } from "@/lib/cms/forms";
@@ -71,7 +70,6 @@ export async function createPost(_state: FormState, formData: FormData) {
       .single();
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/posts/${data!.id}?saved=1`);
   });
 }
@@ -86,7 +84,6 @@ export async function updatePost(
     const { error } = await supabase.from("posts").update(values).eq("id", id);
     assertDbOk(error);
 
-    revalidateSite();
     redirect(`/admin/posts/${id}?saved=1`);
   });
 }
@@ -96,7 +93,6 @@ export async function deletePost(id: string) {
   const { error } = await supabase.from("posts").delete().eq("id", id);
   assertDbOk(error);
 
-  revalidateSite();
   redirect("/admin/posts");
 }
 

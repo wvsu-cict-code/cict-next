@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import AdminNav from "@/components/admin/AdminNav";
 import { requireAdmin } from "@/lib/cms/auth";
+import { siteUrl } from "@/lib/site";
 import { signOut } from "../actions";
 
 export default async function CmsLayout({
@@ -28,9 +29,14 @@ export default async function CmsLayout({
             {user.email}
           </p>
           <div className="flex gap-3">
-            <Link href="/" target="_blank" className="hover:text-white">
+            <a
+              href={siteUrl("/")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white"
+            >
               View site ↗
-            </Link>
+            </a>
             <form action={signOut}>
               <button type="submit" className="hover:text-white">
                 Sign out

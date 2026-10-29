@@ -1,6 +1,5 @@
 import "server-only";
 
-import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 
@@ -101,11 +100,6 @@ export async function uploadMedia(
   if (error) throw new FormError(`Upload failed: ${error.message}`);
 
   return supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
-}
-
-/** Content appears on many pages (home, lists, details), so refresh them all. */
-export function revalidateSite() {
-  revalidatePath("/", "layout");
 }
 
 export function describeDbError(error: { code?: string; message: string }) {

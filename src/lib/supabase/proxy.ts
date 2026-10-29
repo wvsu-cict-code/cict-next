@@ -1,11 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { Database } from "./database.types";
 import { getSupabaseEnv } from "./env";
 
 /**
- * Refreshes the Supabase auth session on /admin requests and redirects
- * signed-out visitors to the login page. Admin role checks happen in
- * requireAdmin() and in the database's RLS policies.
+ * Refreshes the Supabase auth session for a request and reports whether
+ * someone is signed in. Routing decisions are made by the caller; admin role
+ * checks happen in requireAdmin() and in the database's RLS policies.
  *
  * `requestHeaders` are the (CSP-augmented) headers to forward to the page.
  */
@@ -18,7 +19,7 @@ export async function updateSession(
     NextResponse.next({ request: { headers: requestHeaders } });
   let response = next();
 
-  const supabase = createServerClient(url, key, {
+  const supabase = createServerClient<Database>(url, key, {
     cookies: {
       getAll() {
         return request.cookies.getAll();
@@ -43,15 +44,6 @@ export async function updateSession(
   // Do not run code between createServerClient and getClaims(): it is what
   // refreshes an expired session.
   const { data } = await supabase.auth.getClaims();
-  const isSignedIn = Boolean(data?.claims);
-  const isLoginPage = request.nextUrl.pathname === "/admin/login";
 
-  if (!isSignedIn && !isLoginPage) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/admin/login";
-    loginUrl.search = "";
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return response;
+  return { response, isSignedIn: Boolean(data?.claims), supabase };
 }

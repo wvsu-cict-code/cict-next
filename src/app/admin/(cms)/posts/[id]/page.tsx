@@ -4,7 +4,9 @@ import DeleteButton from "@/components/admin/DeleteButton";
 import PageHeader, { Card } from "@/components/admin/PageHeader";
 import SavedNotice from "@/components/admin/SavedNotice";
 import { requireAdmin } from "@/lib/cms/auth";
+import { previewLabel } from "@/lib/cms/content";
 import { newsHref } from "@/lib/news";
+import { siteUrl } from "@/lib/site";
 import { deletePost, updatePost } from "../actions";
 import PostForm from "../PostForm";
 
@@ -32,7 +34,12 @@ export default async function EditPostPage({
     .maybeSingle();
   if (!post) notFound();
 
-  const previewHref = `/api/preview?url=${encodeURIComponent(newsHref(post.slug))}`;
+  // Posts visitors can't see yet are previewed on this (CMS) deployment,
+  // where the admin's session can read them
+  const isPreview = previewLabel(post) !== null;
+  const viewHref = isPreview
+    ? newsHref(post.slug)
+    : siteUrl(newsHref(post.slug));
 
   return (
     <>
@@ -43,12 +50,12 @@ export default async function EditPostPage({
         actions={
           <>
             <a
-              href={previewHref}
+              href={viewHref}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-neutral-50"
             >
-              {post.status === "draft" ? "Preview draft ↗" : "View on site ↗"}
+              {isPreview ? "Preview ↗" : "View on site ↗"}
             </a>
             <DeleteButton
               action={deletePost.bind(null, post.id)}

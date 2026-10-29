@@ -4,6 +4,7 @@ import DeleteButton from "@/components/admin/DeleteButton";
 import PageHeader, { Card } from "@/components/admin/PageHeader";
 import SavedNotice from "@/components/admin/SavedNotice";
 import { requireAdmin } from "@/lib/cms/auth";
+import { siteUrl } from "@/lib/site";
 import { deleteProgram, updateProgram } from "../actions";
 import ProgramForm from "../ProgramForm";
 
@@ -40,7 +41,7 @@ export default async function EditProgramPage({
         actions={
           <>
             <a
-              href={`/programs/${program.id}`}
+              href={siteUrl(`/programs/${program.id}`)}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-neutral-50"
