@@ -17,10 +17,19 @@ if (supabaseUrlEnv) {
   }
 }
 
+// Two builds from one codebase:
+// - `npm run build` (CMS, deployed to Vercel): the whole app.
+// - `npm run build:site` (BUILD_TARGET=site): a static export of the public
+//   site for the school's Apache server. It only includes `*.site.tsx` route
+//   files, which leaves out the CMS (`admin/`, `api/`, `proxy.ts`).
+// New public pages and layouts MUST be named `page.site.tsx` /
+// `layout.site.tsx`, or they won't be on the school site.
+const isSiteBuild = process.env.BUILD_TARGET === "site";
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  /* config options here */
+const cmsConfig = {
   reactCompiler: true,
+  pageExtensions: ["tsx", "ts", "site.tsx", "site.ts"],
   images: {
     remotePatterns,
     // Local Supabase (`supabase start`) serves images from 127.0.0.1
@@ -34,4 +43,14 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+const siteConfig = {
+  reactCompiler: true,
+  pageExtensions: ["site.tsx", "site.ts"],
+  output: "export",
+  trailingSlash: true,
+  // There's no image optimization server on static hosting
+  images: { unoptimized: true },
+};
+
+export default isSiteBuild ? siteConfig : cmsConfig;

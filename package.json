@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:site": "BUILD_TARGET=site next build && cp deploy/school-server/.htaccess out/",
     "start": "next start",
     "lint": "eslint",
     "db:start": "supabase start",
