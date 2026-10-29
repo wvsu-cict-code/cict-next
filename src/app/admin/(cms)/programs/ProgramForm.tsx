@@ -2,7 +2,7 @@ import AdminForm from "@/components/admin/AdminForm";
 import MediaField from "@/components/admin/MediaField";
 import { FieldGrid, TextAreaField, TextField } from "@/components/admin/fields";
 import type { FormState } from "@/lib/cms/forms";
-import type { Program } from "@/lib/cms/queries";
+import type { Program } from "@/lib/cms/content";
 
 interface ProgramFormProps {
   program?: Program;

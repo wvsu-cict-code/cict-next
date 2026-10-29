@@ -10,7 +10,7 @@ import {
 } from "@/components/admin/fields";
 import { toManilaDateTimeInput } from "@/lib/cms/dates";
 import type { FormState } from "@/lib/cms/forms";
-import type { Post } from "@/lib/cms/queries";
+import type { Post } from "@/lib/cms/content";
 import { uploadPostImage } from "./actions";
 
 interface PostFormProps {
