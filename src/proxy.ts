@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { routeAccess } from "@/lib/cms/access";
+import { contentSecurityPolicy } from "@/lib/cms/csp";
 import { siteUrl } from "@/lib/site";
 import { updateSession } from "@/lib/supabase/proxy";
 
@@ -7,23 +8,6 @@ import { updateSession } from "@/lib/supabase/proxy";
 const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin
   : "";
-
-function contentSecurityPolicy(nonce: string) {
-  return `
-    default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
-    style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com;
-    img-src 'self' blob: data: ${supabaseOrigin};
-    font-src 'self' https://fonts.gstatic.com;
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'self';
-    upgrade-insecure-requests;
-`
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}
 
 // Runs on the CMS deployment only (the school site is static files).
 // - /admin: nonce-based CSP and a signed-in user. The CSP needs dynamically
@@ -40,7 +24,12 @@ export async function proxy(request: NextRequest) {
   const nonce = isCms
     ? Buffer.from(crypto.randomUUID()).toString("base64")
     : null;
-  const csp = nonce ? contentSecurityPolicy(nonce) : null;
+  const csp = nonce
+    ? contentSecurityPolicy(nonce, {
+        isDev: process.env.NODE_ENV === "development",
+        supabaseOrigin,
+      })
+    : null;
   if (nonce && csp) {
     requestHeaders.set("x-nonce", nonce);
     requestHeaders.set("Content-Security-Policy", csp);
