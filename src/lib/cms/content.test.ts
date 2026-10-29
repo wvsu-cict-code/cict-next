@@ -105,7 +105,9 @@ describe("errors", () => {
     ],
   ])("%s rejects when Supabase returns an error", async (_, load) => {
     const { client } = recordingClient(failed);
-    await expect(load(client)).rejects.toThrow(/^Failed to load .*network down/);
+    await expect(load(client)).rejects.toThrow(
+      /^Failed to load .*network down/,
+    );
   });
 });
 

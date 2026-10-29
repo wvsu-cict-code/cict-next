@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import { HomeNewsCard } from "@/components/NewsHome";
-import { getFeaturedPost, getPublishedPosts } from "@/lib/cms/queries";
+import { fetchFeaturedPost, fetchPublishedPosts } from "@/lib/cms/content";
+import { useContent } from "@/lib/cms/useContent";
 import { formatDate, timeAgo } from "@/lib/format";
 import { newsHref } from "@/lib/news";
 
@@ -8,11 +12,16 @@ const HOME_NEWS_CARD_LIMIT = 4;
 const card_small =
   "w-full shadow-[0_0_10px_rgba(0,0,0,0.15)] rounded-xl p-3 shadow-lg rounded-xl";
 
-export async function NewsHomeSection() {
-  const [featuredPost, latestPosts] = await Promise.all([
-    getFeaturedPost(),
-    getPublishedPosts({ limit: HOME_NEWS_CARD_LIMIT + 1 }),
-  ]);
+export function NewsHomeSection() {
+  const content = useContent("home-news", async (client) => {
+    const [featuredPost, latestPosts] = await Promise.all([
+      fetchFeaturedPost(client),
+      fetchPublishedPosts(client, { limit: HOME_NEWS_CARD_LIMIT + 1 }),
+    ]);
+    return { featuredPost, latestPosts };
+  });
+  const { featuredPost = null, latestPosts = [] } =
+    content.status === "ready" ? content.data : {};
 
   // Fall back to the newest post when nothing is flagged as featured
   const featured = featuredPost ?? latestPosts[0] ?? null;
@@ -53,6 +62,13 @@ export async function NewsHomeSection() {
             important notices
           </p>
         </div>
+
+        {content.status === "loading" && (
+          <>
+            <ContentPlaceholder className="hidden h-52 w-full md:block" />
+            <ContentPlaceholder className="h-28 w-full md:hidden" />
+          </>
+        )}
 
         {/*Featured Card (desktop)*/}
         {featured && (
@@ -114,11 +130,19 @@ export async function NewsHomeSection() {
       {/*Bottom Section
         NOTE: We should only limit 4 news articles
         */}
-      <div className="mt-6 grid w-full grid-cols-2 gap-6 md:mt-8 md:grid-cols-4">
-        {newsItems.map((item, index) => (
-          <HomeNewsCard key={index} className={card_small} {...item} />
-        ))}
-      </div>
+      {content.status === "error" ? (
+        <ContentError onRetry={content.retry} />
+      ) : (
+        <div className="mt-6 grid w-full grid-cols-2 gap-6 md:mt-8 md:grid-cols-4">
+          {content.status === "loading"
+            ? Array.from({ length: HOME_NEWS_CARD_LIMIT }, (_, index) => (
+                <ContentPlaceholder key={index} className="h-24 w-full" />
+              ))
+            : newsItems.map((item, index) => (
+                <HomeNewsCard key={index} className={card_small} {...item} />
+              ))}
+        </div>
+      )}
     </section>
   );
 }

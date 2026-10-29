@@ -1,18 +1,11 @@
 import Link from "next/link";
 import { NewsHomeSection } from "@/components/NewsHomeSection";
+import { HomePrograms } from "@/components/HomePrograms";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
-import { getPrograms } from "@/lib/cms/queries";
 
-// Short fallback so posts scheduled for a future date appear on time.
-export const revalidate = 60;
-
-export default async function Home() {
-  const programs = await getPrograms();
-
+export default function Home() {
   const button_big =
     "flex justify-center items-center border-1 rounded-2xl w-32 md:w-xs h-6 md:h-10 p-2";
-  const course_container =
-    "w-25 h-24 md:w-58 md:h-54 flex flex-col justify-center items-center gap-2 md:gap-6 bg-white pt-3 md:pt-6 duration-200 hover:scale-105 hover:shadow-xl hover:-translate-y-1";
 
   return (
     <main>
@@ -148,26 +141,7 @@ export default async function Home() {
             </Link>
           </div>
           <div className="flex items-center justify-center py-8 md:py-16">
-            <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
-              {programs.map((program) => (
-                <Link
-                  key={program.id}
-                  href={`/programs/${program.id}`}
-                  className={` ${course_container} `}
-                >
-                  {program.logo_url && (
-                    <img
-                      src={program.logo_url}
-                      className="h-auto w-12 md:w-24"
-                      alt={`${program.code} logo`}
-                    />
-                  )}
-                  <h3 className="text-xs font-medium text-[#1E1E1E] md:text-2xl">
-                    {program.code}
-                  </h3>
-                </Link>
-              ))}
-            </div>
+            <HomePrograms />
           </div>
         </div>
       </section>
