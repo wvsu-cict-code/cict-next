@@ -87,7 +87,7 @@ describe("fetchPostBySlug", () => {
     const { client, calls } = recordingClient(ok(null));
     await fetchPostBySlug(client, "x");
     expect(calls).toContainEqual(["eq", "slug", "x"]);
-    expect(calls.some(([method, column]) => column === "status")).toBe(false);
+    expect(calls.some(([, column]) => column === "status")).toBe(false);
   });
 });
 
