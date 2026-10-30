@@ -85,64 +85,67 @@ export default function ProgramDetails() {
           </p>
         </ProgramSection>
 
-        {/* INFO CARD */}
-        {/*<div className="w-auto mx-auto bg-white border-[1.5] border-black rounded-2xl p-8 mb-45 md:mt-0 md:mb-0 md:px-35 md:py-4 flex flex-col sm:flex-row md:flex-row justify-between gap-10 shadow-sm">
-
-
-                    <a
-                        href={program.curriculum_pdf_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-12 group cursor-pointer w-full md:w-auto hover:opacity-80 transition-opacity"
-                    >
-
-                        <div className="shrink-0 w-15 h-15 md:w-20 md:h-20 rounded-full bg-orange-light text-white flex items-center justify-center shadow-md">
-                            <Image
-                                src="/program_assets/pdf-icon.svg"
-                                alt=""
-                                width={30}
-                                height={30}
-                            />
-                        </div>
-
-                        <div className="flex flex-col">
-                            <span className="font-bold text-sm md:text-base text-black leading-tight tracking-tight">
-                                [PDF] Curriculum Details
-                            </span>
-                            <span className="text-black text-sm md:text-base tracking-tight">
-                                Press button to download
-                            </span>
-                        </div>
-                    </a>
-
-
-
-                    <div className="flex items-center gap-12 w-full md:w-auto">
-
-                        <div className="shrink-0 w-15 h-15 md:w-20 md:h-20 rounded-full bg-orange-light text-white flex items-center justify-center shadow-md">
-                            <Image
-                                src="/program_assets/cap-icon.svg"
-                                alt=""
-                                width={40}
-                                height={40}
-                            />
-                        </div>
-
-                        <div className="flex flex-col">
-                            <span className="font-bold text-sm md:text-base text-black leading-tight tracking-tight">
-                                Program Duration
-                            </span>
-                            <span className="text-black text-sm md:text-base tracking-tight">
-                                {program.duration}
-                            </span>
-                            <span className="text-black text-sm md:text-base tracking-tight">
-                                {program.semesters}
-                            </span>
-                        </div>
-                    </div>
-
-                </div>*/}
+        <ProgramFacts
+          duration={program.duration}
+          semesters={program.semesters}
+          curriculumUrl={uploadedFileUrl(program.curriculum_pdf_url)}
+        />
       </div>
     </div>
+  );
+}
+
+/**
+ * Only files uploaded through the CMS (absolute Supabase Storage URLs) are
+ * linked. Older rows hold a site path to a PDF that was never published.
+ */
+function uploadedFileUrl(url: string | null) {
+  return url && /^https?:\/\//.test(url) ? url : null;
+}
+
+/** Length of study and the curriculum download, when the CMS has them. */
+function ProgramFacts({
+  duration,
+  semesters,
+  curriculumUrl,
+}: {
+  duration: string | null;
+  semesters: string | null;
+  curriculumUrl: string | null;
+}) {
+  if (!duration && !semesters && !curriculumUrl) return null;
+
+  return (
+    <ProgramSection title="At a glance">
+      <dl className="grid gap-8 sm:grid-cols-2">
+        {duration || semesters ? (
+          <div>
+            <dt className="text-theme-red text-xs font-semibold tracking-[0.08em] uppercase">
+              Program length
+            </dt>
+            <dd className="text-ink mt-2 text-lg leading-snug">
+              {[duration, semesters].filter(Boolean).join(" · ")}
+            </dd>
+          </div>
+        ) : null}
+        {curriculumUrl ? (
+          <div>
+            <dt className="text-theme-red text-xs font-semibold tracking-[0.08em] uppercase">
+              Curriculum
+            </dt>
+            <dd className="mt-2">
+              <a
+                href={curriculumUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-ink decoration-theme-red/40 hover:decoration-theme-red text-lg underline underline-offset-4"
+              >
+                Download the curriculum (PDF)
+              </a>
+            </dd>
+          </div>
+        ) : null}
+      </dl>
+    </ProgramSection>
   );
 }

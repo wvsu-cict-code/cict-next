@@ -72,6 +72,7 @@ export default async function DashboardPage() {
 
   const actions: { href: string; label: string; icon: IconName }[] = [
     { href: "/admin/posts/new", label: "Write a post", icon: "news" },
+    { href: "/admin/events/new", label: "Add an event", icon: "calendar" },
     {
       href: "/admin/faculty/members/new",
       label: "Add a faculty member",

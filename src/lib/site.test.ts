@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { siteUrl } from "@/lib/site";
+import { siteUrl, yearsOfService } from "@/lib/site";
 
 describe("siteUrl", () => {
   afterEach(() => vi.unstubAllEnvs());
@@ -21,5 +21,12 @@ describe("siteUrl", () => {
   it("keeps links relative when the address is not set", () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
     expect(siteUrl("/programs/bscs")).toBe("/programs/bscs");
+  });
+});
+
+describe("yearsOfService", () => {
+  it("counts whole years since the 2002 founding", () => {
+    expect(yearsOfService(new Date("2026-10-30"))).toBe(24);
+    expect(yearsOfService(new Date("2027-01-01"))).toBe(25);
   });
 });

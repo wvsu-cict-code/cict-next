@@ -229,9 +229,43 @@ try {
     },
   );
 
+  await check("the events and admissions pages open", async () => {
+    await page.goto(`${BASE}/events/`, { waitUntil: "networkidle0" });
+    await pageText(page, "Upcoming");
+    await page.goto(`${BASE}/admissions/`, { waitUntil: "networkidle0" });
+    await pageText(page, "Admissions");
+  });
+
+  await check("an unknown event shows Event not found", async () => {
+    await page.goto(`${BASE}/events/does-not-exist`, {
+      waitUntil: "networkidle0",
+    });
+    await pageText(page, "Event not found");
+  });
+
   await check("unknown pages return HTTP 404", async () => {
     const response = await fetch(`${BASE}/nope/`);
     expect(response.status === 404, `got HTTP ${response.status}`);
+  });
+
+  await check("unknown pages show the site's own 404 page", async () => {
+    await page.goto(`${BASE}/nope/`, { waitUntil: "networkidle0" });
+    await pageText(page, "We couldn't find that page");
+  });
+
+  await check("sitemap.xml and robots.txt are served", async () => {
+    const sitemap = await fetch(`${BASE}/sitemap.xml`);
+    expect(sitemap.ok, `sitemap.xml: HTTP ${sitemap.status}`);
+    expect(
+      (await sitemap.text()).includes(`/programs/${program.id}/</loc>`),
+      "sitemap.xml doesn't list the programs",
+    );
+    const robots = await fetch(`${BASE}/robots.txt`);
+    expect(robots.ok, `robots.txt: HTTP ${robots.status}`);
+    expect(
+      (await robots.text()).includes("Sitemap:"),
+      "robots.txt doesn't point to the sitemap",
+    );
   });
 
   await check("no secret key in the upload", async () => {

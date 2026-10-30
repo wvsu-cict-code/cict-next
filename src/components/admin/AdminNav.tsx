@@ -7,6 +7,8 @@ import { Icon, type IconName } from "@/components/admin/icons";
 const links: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin", label: "Dashboard", icon: "dashboard" },
   { href: "/admin/posts", label: "News & Announcements", icon: "news" },
+  { href: "/admin/events", label: "Events", icon: "calendar" },
+  { href: "/admin/pages", label: "Pages", icon: "page" },
   { href: "/admin/programs", label: "Programs", icon: "programs" },
   { href: "/admin/faculty", label: "Faculty", icon: "faculty" },
   { href: "/admin/settings", label: "Settings", icon: "settings" },

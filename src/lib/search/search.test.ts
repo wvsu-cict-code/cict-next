@@ -7,6 +7,18 @@ import {
 } from "@/lib/search/search";
 
 const hits = buildSearchHits({
+  events: [
+    {
+      slug: "hackathon-2026",
+      title: "CICT Hackathon 2026",
+      summary: "A weekend of building.",
+      body: "Teams build apps for local government.",
+      location: "CICT Building, Room 301",
+      starts_at: "2026-11-14T01:00:00.000Z",
+      ends_at: null,
+      all_day: false,
+    },
+  ],
   posts: [
     {
       slug: "icc-2025",
@@ -64,6 +76,17 @@ describe("searchHits", () => {
     );
     expect(titles("concepcion")[0]).toBe("DR. MA. BETH S. CONCEPCION");
     expect(titles("admission").map((title) => title)).toContain("Contact");
+  });
+
+  it("finds an event by its location and links to its page", () => {
+    const [event] = searchHits(hits, "room 301");
+    expect(event.kind).toBe("Event");
+    expect(event.href).toBe("/events/hackathon-2026");
+    expect(event.detail).toContain("November 14, 2026");
+  });
+
+  it("finds the admissions page", () => {
+    expect(titles("how to apply")).toContain("Admissions");
   });
 
   it("requires every content word and ignores filler words", () => {

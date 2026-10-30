@@ -4,7 +4,10 @@ import {
   type Post,
   fetchDepartmentWithFaculty,
   fetchDepartments,
+  fetchEventBySlug,
   fetchFeaturedPost,
+  fetchPage,
+  fetchPublishedEvents,
   fetchPostBySlug,
   fetchProgram,
   fetchPrograms,
@@ -134,6 +137,62 @@ describe("previewLabel", () => {
     expect(
       previewLabel(post({ published_at: "2026-11-15T02:00:00.000Z" }), NOW),
     ).toBe("Preview — scheduled for November 15, 2026");
+  });
+});
+
+describe("fetchPublishedEvents", () => {
+  it("returns published events by start date", async () => {
+    const { client, calls } = recordingClient(ok([]));
+    await fetchPublishedEvents(client);
+    expect(calls).toContainEqual(["from", "events"]);
+    expect(calls).toContainEqual(["eq", "status", "published"]);
+    expect(calls).toContainEqual(["order", "starts_at"]);
+  });
+
+  it("treats a missing events table as no events", async () => {
+    const { client } = recordingClient({
+      data: null,
+      error: { code: "PGRST205", message: "Could not find the table" },
+    });
+    await expect(fetchPublishedEvents(client)).resolves.toEqual([]);
+    await expect(fetchEventBySlug(client, "hackathon")).resolves.toBeNull();
+  });
+
+  it("throws on other errors", async () => {
+    const { client } = recordingClient(failed);
+    await expect(fetchPublishedEvents(client)).rejects.toThrow("network down");
+    await expect(fetchEventBySlug(client, "hackathon")).rejects.toThrow(
+      "network down",
+    );
+  });
+});
+
+describe("fetchPage", () => {
+  it("reads one page by slug", async () => {
+    const row = {
+      slug: "admissions",
+      title: "Admissions",
+      status: "published",
+    };
+    const { client, calls } = recordingClient(ok(row));
+    await expect(fetchPage(client, "admissions")).resolves.toEqual(row);
+    expect(calls).toContainEqual(["from", "pages"]);
+    expect(calls).toContainEqual(["eq", "slug", "admissions"]);
+  });
+
+  it("treats a missing pages table as no page, so the route shows its fallback", async () => {
+    const { client } = recordingClient({
+      data: null,
+      error: { code: "PGRST205", message: "Could not find the table" },
+    });
+    await expect(fetchPage(client, "admissions")).resolves.toBeNull();
+  });
+
+  it("throws on other errors", async () => {
+    const { client } = recordingClient(failed);
+    await expect(fetchPage(client, "admissions")).rejects.toThrow(
+      "network down",
+    );
   });
 });
 

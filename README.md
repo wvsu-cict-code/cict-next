@@ -35,7 +35,9 @@ Sign in at `/admin` to manage:
 | Section | What it controls |
 | --- | --- |
 | **News & Announcements** | Posts on the home page and `/news-announcements`. Supports drafts, scheduled publishing, a featured post for the home page, cover images, and Markdown bodies with inline image uploads. |
-| **Programs** | Programs on the home page, `/programs` and `/programs/<id>` (logo, description, objectives, curriculum PDF). |
+| **Events** | Events and academic calendar dates on `/events`, `/events/<slug>` and the home page's "Upcoming events" strip. Supports drafts, all-day events, locations, cover images, and Markdown details. |
+| **Pages** | Text of standalone pages such as `/admissions`. Each page has a fixed address on the site, so new pages are added by developers (a migration row plus a route), not in the CMS. |
+| **Programs** | Programs on the home page, `/programs` and `/programs/<id>` (logo, description, objectives, length of study, curriculum PDF). |
 | **Faculty** | Departments and faculty members in the Faculty Directory, including photos and the department's position on the desktop diagram. |
 
 Drafts and scheduled posts can be checked before they go live with **Preview**
@@ -118,6 +120,9 @@ The project deploys as two parts from this one codebase:
    hidden `.htaccess` file: turn on "show hidden files" in your FTP client.
    The server needs Apache's `mod_rewrite` enabled.
 4. Re-upload only after code or design changes, never for content changes.
+   The exception is `sitemap.xml`, which lists posts, events, programs and
+   departments as of the build; rebuild and re-upload now and then so search
+   engines find new content.
 
 New public pages and layouts must be named `page.site.tsx` /
 `layout.site.tsx`. Files named `page.tsx` are left out of the school site

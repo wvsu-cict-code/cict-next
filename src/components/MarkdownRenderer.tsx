@@ -58,6 +58,25 @@ export default function MarkdownRenderer({ content }: { content: string }) {
             {children}
           </blockquote>
         ),
+        // Tables (schedules, fees) scroll sideways on phones instead of
+        // widening the page
+        table: ({ children }) => (
+          <div className="mb-6 overflow-x-auto">
+            <table className="w-full min-w-[28rem] border-collapse text-left text-base">
+              {children}
+            </table>
+          </div>
+        ),
+        th: ({ children }) => (
+          <th className="border-rule text-ink border-b-2 px-3 py-2 font-semibold">
+            {children}
+          </th>
+        ),
+        td: ({ children }) => (
+          <td className="border-rule text-ink-soft border-b px-3 py-2 align-top">
+            {children}
+          </td>
+        ),
         img: ({ src, alt }) => {
           if (!src || typeof src !== "string") return null;
           return (

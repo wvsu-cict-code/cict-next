@@ -8,6 +8,7 @@ export const PLACEHOLDER_SEGMENT = "_";
 export const NEWS_PREFIX = "/news-announcements/news";
 export const PROGRAMS_PREFIX = "/programs";
 export const FACULTY_PREFIX = "/faculty-profiles";
+export const EVENTS_PREFIX = "/events";
 
 /**
  * Reads the slug/ID from a detail page's URL. Detail pages read it from the

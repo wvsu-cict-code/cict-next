@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { HomeEvents } from "@/components/EventList";
 import { NewsHomeSection } from "@/components/NewsHomeSection";
 import { HomePrograms } from "@/components/HomePrograms";
 import { LandingMaintenance } from "@/components/LandingMaintenance";
@@ -20,16 +21,17 @@ import {
   SITE_URL,
   pageMetadata,
 } from "@/lib/seo";
+import { FOUNDING_YEAR, yearsOfService } from "@/lib/site";
 
 const record = [
   {
-    value: "23",
+    value: String(yearsOfService()),
     unit: "years",
     detail: "of academic excellence in ICT education",
     icon: "cap",
   },
   {
-    value: "2002",
+    value: String(FOUNDING_YEAR),
     unit: "",
     detail: "Founded under BOR Resolution No. 34",
     icon: "people",
@@ -227,6 +229,7 @@ function HomeContent() {
       </section>
 
       <NewsHomeSection />
+      <HomeEvents />
 
       <section id="about" className="bg-navy scroll-mt-24 text-white">
         <div className="grid lg:grid-cols-2">
@@ -356,12 +359,21 @@ function HomeContent() {
                 Questions about admission or a program?
               </h2>
               <p className="text-ink-soft mt-4 max-w-[42ch] text-base leading-relaxed md:text-lg">
-                Write to the CICT office about programs, visits, and enrollment.
+                See how to apply, or write to the CICT office about programs,
+                visits, and enrollment.
               </p>
-              <Link href="/contact" className={`${primaryButton} mt-8`}>
-                Contact us
-                <ArrowIcon className="h-4 w-4" />
-              </Link>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+                <Link href="/admissions" className={primaryButton}>
+                  How to apply
+                  <ArrowIcon className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/contact"
+                  className="text-ink hover:text-theme-red text-base font-semibold underline underline-offset-4"
+                >
+                  Contact us
+                </Link>
+              </div>
             </div>
           </div>
         </div>

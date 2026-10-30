@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import {
   loadDepartments,
+  loadEvents,
   loadHomeNews,
   loadNewsAnnouncements,
   loadPrograms,
@@ -21,6 +22,7 @@ export function SiteContentPrefetch() {
       prefetchContent("programs", loadPrograms),
       prefetchContent("home-news", loadHomeNews),
       prefetchContent("news-announcements", loadNewsAnnouncements),
+      prefetchContent("events", loadEvents),
       prefetchContent("departments", loadDepartments),
       prefetchContent("search", loadSearch),
       prefetchContent("site-settings", fetchSiteSettings),

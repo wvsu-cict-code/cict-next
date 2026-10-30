@@ -18,6 +18,7 @@ import {
 const GROUPS: { kind: SearchKind; label: string }[] = [
   { kind: "Program", label: "Programs" },
   { kind: "Article", label: "Articles" },
+  { kind: "Event", label: "Events" },
   { kind: "Faculty", label: "Faculty" },
   { kind: "Page", label: "Pages" },
 ];
@@ -38,7 +39,7 @@ export function SearchResults() {
       <PageHeader
         eyebrow="Search"
         title="Search the college site"
-        intro="Articles, programs, and faculty."
+        intro="Articles, events, programs, and faculty."
       >
         <SearchForm query={query} />
       </PageHeader>

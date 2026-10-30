@@ -5,6 +5,8 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { ArrowIcon } from "@/components/PhotoSlot";
+import { loadPrograms } from "@/lib/cms/siteContent";
+import { useContent } from "@/lib/cms/useContent";
 import { searchTerms } from "@/lib/search/search";
 
 function searchTermsTooShort(query: string) {
@@ -23,12 +25,16 @@ const inactiveMobile =
 const LINKS = [
   { href: "/programs", label: "Programs" },
   { href: "/news-announcements", label: "News" },
+  { href: "/events", label: "Events" },
   { href: "/faculty-profiles", label: "Faculty" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
-const PROGRAM_LINKS = [
+type ProgramLink = { href: string; code: string; name: string };
+
+// Shown until the CMS list loads, so the menu is never empty
+const FALLBACK_PROGRAM_LINKS: ProgramLink[] = [
   {
     href: "/programs/blis",
     code: "BLIS",
@@ -38,7 +44,7 @@ const PROGRAM_LINKS = [
   {
     href: "/programs/bsemc",
     code: "BSEMC",
-    name: "Entertainment and Media Computing",
+    name: "Entertainment and Multimedia Computing",
   },
   { href: "/programs/bsis", code: "BSIS", name: "Information Systems" },
   { href: "/programs/bsit", code: "BSIT", name: "Information Technology" },
@@ -49,10 +55,26 @@ const PROGRAM_LINKS = [
   },
 ];
 
+/** Menu entries for the CMS programs, with "Bachelor of (Science in)" dropped. */
+export function programLinks(
+  programs: { id: string; code: string; name: string }[],
+): ProgramLink[] {
+  return programs.map((program) => ({
+    href: `/programs/${program.id}`,
+    code: program.code,
+    name: program.name.replace(/^Bachelor of (Science in )?/i, ""),
+  }));
+}
+
 export default function Header() {
   // The school site's URLs end in a slash (static export), the CMS's don't
   const pathname = usePathname().replace(/\/+$/, "") || "/";
   const router = useRouter();
+  const programs = useContent("programs", loadPrograms);
+  const programMenu =
+    programs.status === "ready" && programs.data.length > 0
+      ? programLinks(programs.data)
+      : FALLBACK_PROGRAM_LINKS;
   const [isOpen, setIsOpen] = useState(false);
   const [programsOpen, setProgramsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -135,7 +157,7 @@ export default function Header() {
                     className="absolute top-full left-1/2 z-50 w-72 -translate-x-1/2 pt-3"
                   >
                     <div className="border-rule rounded-2xl border bg-white p-2 shadow-[0_18px_50px_rgba(16,32,51,0.12)]">
-                      {PROGRAM_LINKS.map((program) => (
+                      {programMenu.map((program) => (
                         <Link
                           key={program.href}
                           href={program.href}
@@ -196,7 +218,7 @@ export default function Header() {
             </svg>
           </button>
           <Link
-            href="/contact"
+            href="/admissions"
             className="ease-draw bg-theme-red hover:bg-accent-deep hidden min-h-11 items-center gap-1.5 rounded-full px-4 text-sm font-semibold whitespace-nowrap text-white transition-colors duration-200 active:scale-[0.98] sm:inline-flex"
           >
             Apply Now
@@ -269,7 +291,7 @@ export default function Header() {
             </Link>
           ))}
           <div className="mx-auto grid w-5/6 grid-cols-2 gap-2 py-4">
-            {PROGRAM_LINKS.map((program) => (
+            {programMenu.map((program) => (
               <Link
                 key={program.href}
                 href={program.href}
@@ -281,7 +303,7 @@ export default function Header() {
             ))}
           </div>
           <Link
-            href="/contact"
+            href="/admissions"
             className="bg-theme-red mx-auto mb-4 inline-flex min-h-11 w-5/6 items-center justify-center rounded-full text-sm font-semibold text-white sm:hidden"
             onClick={() => setIsOpen(false)}
           >

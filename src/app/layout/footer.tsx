@@ -2,8 +2,11 @@ import Link from "next/link";
 
 const NAV_LINKS = [
   { href: "/programs", label: "Programs" },
+  { href: "/admissions", label: "Admissions" },
   { href: "/news-announcements", label: "News" },
+  { href: "/events", label: "Events" },
   { href: "/faculty-profiles", label: "Faculty" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 

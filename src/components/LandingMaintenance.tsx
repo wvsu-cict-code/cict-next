@@ -17,7 +17,9 @@ const SETTINGS_WAIT_MS = 1200;
 
 const stillOpen = [
   { href: "/programs", label: "Programs" },
+  { href: "/admissions", label: "Admissions" },
   { href: "/news-announcements", label: "News" },
+  { href: "/events", label: "Events" },
   { href: "/faculty-profiles", label: "Faculty" },
   { href: "/contact", label: "Contact" },
 ];

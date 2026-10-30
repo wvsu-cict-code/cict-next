@@ -4,6 +4,7 @@ import {
   fetchDepartmentsWithFaculty,
   fetchFeaturedPost,
   fetchPrograms,
+  fetchPublishedEvents,
   fetchPublishedPosts,
   type ContentClient,
 } from "@/lib/cms/content";
@@ -56,14 +57,20 @@ export async function loadNewsAnnouncements(client: ContentClient) {
   };
 }
 
-/**
- * Department pins for the directory. Faculty for each department loads in
- * the background so opening one doesn't start from an empty page.
- */
-/** Articles, programs, faculty, and the main pages, for site search. */
+/** Published events, oldest first. Also fills each event page. */
+export async function loadEvents(client: ContentClient) {
+  const events = await fetchPublishedEvents(client);
+  for (const event of events) {
+    rememberContent(`event:${event.slug}`, event);
+  }
+  return events;
+}
+
+/** Articles, events, programs, faculty, and the main pages, for site search. */
 export async function loadSearch(client: ContentClient) {
-  const [posts, programs, departments] = await Promise.all([
+  const [posts, events, programs, departments] = await Promise.all([
     fetchPublishedPosts(client),
+    loadEvents(client),
     fetchPrograms(client),
     fetchDepartmentsWithFaculty(client),
   ]);
@@ -83,6 +90,7 @@ export async function loadSearch(client: ContentClient) {
 
   return buildSearchHits({
     posts,
+    events,
     programs,
     departments: departments.map((entry) => ({
       slug: entry.department.slug,
@@ -92,6 +100,10 @@ export async function loadSearch(client: ContentClient) {
   });
 }
 
+/**
+ * Department pins for the directory. Faculty for each department loads in
+ * the background so opening one doesn't start from an empty page.
+ */
 export async function loadDepartments(client: ContentClient) {
   const departments = await fetchDepartments(client);
   for (const department of departments) {

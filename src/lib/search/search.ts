@@ -1,7 +1,8 @@
+import { eventHref, formatEventWhen } from "@/lib/events";
 import { brochureFor } from "@/lib/programs/brochure";
 import { newsHref } from "@/lib/news";
 
-export type SearchKind = "Article" | "Program" | "Faculty" | "Page";
+export type SearchKind = "Article" | "Event" | "Program" | "Faculty" | "Page";
 
 export type SearchHit = {
   id: string;
@@ -21,6 +22,14 @@ const PAGES: SearchHit[] = [
     detail: "History, mission, and vision of the college.",
     href: "/about",
     text: "Innovative education for a digital tomorrow. Founded in 2002 under BOR Resolution No. 34, the College of Information and Communications Technology began as the Institute of Information and Communications Technology. Mission and vision. Western Visayas.",
+  },
+  {
+    id: "page:admissions",
+    kind: "Page",
+    title: "Admissions",
+    detail: "How to apply: requirements, steps, and key dates.",
+    href: "/admissions",
+    text: "Admissions. How to apply, enroll, or shift to a CICT program. Requirements, application steps, admission test, key dates, scholarships, and financial aid.",
   },
   {
     id: "page:contact",
@@ -47,6 +56,14 @@ const PAGES: SearchHit[] = [
     text: "News and announcements. College updates, events, and news articles.",
   },
   {
+    id: "page:events",
+    kind: "Page",
+    title: "Events",
+    detail: "Upcoming events and academic calendar dates.",
+    href: "/events",
+    text: "Events and academic calendar. Upcoming college events, activities, seminars, enrollment periods, and important dates.",
+  },
+  {
     id: "page:faculty",
     kind: "Page",
     title: "Faculty",
@@ -62,6 +79,17 @@ export type SearchPost = {
   excerpt: string | null;
   body: string;
   category: string;
+};
+
+export type SearchEvent = {
+  slug: string;
+  title: string;
+  summary: string | null;
+  body: string;
+  location: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  all_day: boolean;
 };
 
 export type SearchProgram = {
@@ -80,6 +108,7 @@ export type SearchDepartment = {
 
 export function buildSearchHits(input: {
   posts: SearchPost[];
+  events: SearchEvent[];
   programs: SearchProgram[];
   departments: SearchDepartment[];
 }): SearchHit[] {
@@ -90,6 +119,17 @@ export function buildSearchHits(input: {
     detail: post.excerpt?.trim() || labelFor(post.category),
     href: newsHref(post.slug),
     text: [post.title, post.excerpt, post.body, post.category]
+      .filter(Boolean)
+      .join(" "),
+  }));
+
+  const events: SearchHit[] = input.events.map((event) => ({
+    id: `event:${event.slug}`,
+    kind: "Event",
+    title: event.title,
+    detail: formatEventWhen(event),
+    href: eventHref(event.slug),
+    text: [event.title, event.summary, event.location, event.body, "event"]
       .filter(Boolean)
       .join(" "),
   }));
@@ -147,7 +187,7 @@ export function buildSearchHits(input: {
     return [office, ...people];
   });
 
-  return [...programs, ...articles, ...faculty, ...PAGES];
+  return [...programs, ...articles, ...events, ...faculty, ...PAGES];
 }
 
 const STOP_WORDS = new Set([
