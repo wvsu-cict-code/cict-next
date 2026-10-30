@@ -1,7 +1,10 @@
 "use client";
 
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
-import FacultyDirectory from "@/components/faculty/FacultyDirectory";
+import FacultyDirectory, {
+  FacultyPageHeader,
+} from "@/components/faculty/FacultyDirectory";
+import { container } from "@/components/PageHeader";
 import { loadDepartments } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
 
@@ -12,8 +15,16 @@ export default function FacultyDirectoryPage() {
   if (departments.status === "ready") {
     return <FacultyDirectory departments={departments.data} />;
   }
-  if (departments.status === "error") {
-    return <ContentError onRetry={departments.retry} />;
-  }
-  return <ContentPlaceholder className="mx-auto my-12 h-[70vh] w-11/12" />;
+  return (
+    <div className="bg-white">
+      <FacultyPageHeader />
+      <div className={`${container} pb-16`}>
+        {departments.status === "error" ? (
+          <ContentError onRetry={departments.retry} />
+        ) : (
+          <ContentPlaceholder className="h-[60vh] w-full rounded-2xl" />
+        )}
+      </div>
+    </div>
+  );
 }

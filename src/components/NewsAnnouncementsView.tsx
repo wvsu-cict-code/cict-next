@@ -8,135 +8,178 @@ import { AnnouncementsCarousel } from "./AnnouncementsCarousel";
 import SearchBar from "./SearchBar";
 import SortFilter from "./SortFilter";
 import NewsArticleCard from "./NewsArticleCard";
+import { PageHeader, SectionHeading, container } from "./PageHeader";
 
 // [IMPORT] Types
 import type { NewsArticle } from "@/lib/news";
 
 interface NewsAnnouncementsViewProps {
-    announcements: NewsArticle[];
-    newsArticles: NewsArticle[];
+  announcements: NewsArticle[];
+  newsArticles: NewsArticle[];
 }
 
-export default function NewsAnnouncementsView({ announcements, newsArticles }: NewsAnnouncementsViewProps) {
-    // States
-    const [sortOption, setSortOption] = useState("");
-    const [currentPage, setCurrentPage] = useState(1);
+const pageButton =
+  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border px-4 text-sm font-semibold transition-colors duration-200 disabled:pointer-events-none disabled:opacity-40";
 
-    const articlesPerPage = 4; // # of articles per page
+export function NewsPageHeader() {
+  return (
+    <PageHeader
+      eyebrow="News"
+      title="News and announcements"
+      intro="Stay informed with the latest events, announcements, and achievements."
+    />
+  );
+}
 
-    // [MEMO FUNCTION] Sort Articles
-    const sortedArticles = useMemo(() => {
-        const copy = [...newsArticles];
+export default function NewsAnnouncementsView({
+  announcements,
+  newsArticles,
+}: NewsAnnouncementsViewProps) {
+  // States
+  const [sortOption, setSortOption] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-        switch (sortOption) {
-            case "name-asc":
-                return copy.sort((a, b) => a.newsHeader.localeCompare(b.newsHeader));
-            case "name-desc":
-                return copy.sort((a, b) => b.newsHeader.localeCompare(a.newsHeader));
-            case "date-new":
-                return copy.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
-            case "date-old":
-                return copy.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
-            default:
-                return copy;
-        }
-    }, [newsArticles, sortOption]);
+  const articlesPerPage = 6; // # of articles per page (two rows of three)
 
-    // Pagination calculations
-    const indexOfLast = currentPage * articlesPerPage;
-    const indexOfFirst = indexOfLast - articlesPerPage;
-    const currentArticles = sortedArticles.slice(indexOfFirst, indexOfLast);
-    const totalPages = Math.ceil(sortedArticles.length / articlesPerPage);
+  // [MEMO FUNCTION] Sort Articles
+  const sortedArticles = useMemo(() => {
+    const copy = [...newsArticles];
 
-	// [FUNCTION] Navigate to page number
-    const goToPage = (page: number) => {
-        if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
-        }
-    };
+    switch (sortOption) {
+      case "name-asc":
+        return copy.sort((a, b) => a.newsHeader.localeCompare(b.newsHeader));
+      case "name-desc":
+        return copy.sort((a, b) => b.newsHeader.localeCompare(a.newsHeader));
+      case "date-new":
+        return copy.sort(
+          (a, b) =>
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime(),
+        );
+      case "date-old":
+        return copy.sort(
+          (a, b) =>
+            new Date(a.publishedAt).getTime() -
+            new Date(b.publishedAt).getTime(),
+        );
+      default:
+        return copy;
+    }
+  }, [newsArticles, sortOption]);
 
-    return (
-        <main className="px-6 sm:px-12 md:px-14 py-8 sm:py-12 md:py-16 space-y-10 sm:space-y-14 md:space-y-18">
-            {/* [SECTION] Announcements */}
-            <section className="space-y-6">
-                <div className="flex items-center gap-2 sm:gap-4">
-                    <h2 className="text-2xl sm:text-3xl font-medium text-[#4D4D4D] whitespace-nowrap">
-                        ANNOUNCEMENTS
-                    </h2>
-                    <div className="flex-1 h-[2px] border-2 border-orange-dark" />
-                </div>
+  // Pagination calculations
+  const indexOfLast = currentPage * articlesPerPage;
+  const indexOfFirst = indexOfLast - articlesPerPage;
+  const currentArticles = sortedArticles.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(sortedArticles.length / articlesPerPage);
 
-                {/* [SECTION] Announcements Carousel */}
-                <div className="relative w-full rounded-lg overflow-hidden bg-[url('/carousel-bg.webp')] bg-cover bg-center">
-                    <div className="absolute inset-0 bg-orange-light opacity-60" />
-                    <div className="relative z-10 py-10 px-4">
-                        <AnnouncementsCarousel articles={announcements} />
-                    </div>
-                </div>
-            </section>
+  // [FUNCTION] Navigate to page number
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
-            {/* [SECTION] News Articles */}
-            <section className="space-y-2">
-                <div className="flex items-center gap-2 sm:gap-4">
-                    <h2 className="text-2xl sm:text-3xl font-medium text-[#4D4D4D] whitespace-nowrap">
-                        NEWS ARTICLES
-                    </h2>
-                    <div className="flex-1 h-[2px] border-2 border-orange-dark"/>
-                </div>
+  return (
+    <div className="bg-white">
+      <NewsPageHeader />
 
-                {/* [FEATURE] Search Bar & Sort Filter */}
-                <div className="flex flex-wrap justify-between items-center py-2 space-x-4 sm:space-x-6 md:space-x-8 mb-4">
-                    <SearchBar/>
-                    <div className="flex flex-2 sm:flex-1">
-                        <SortFilter value={sortOption} onChange={setSortOption} />
-                    </div>
-                </div>
+      {/* [SECTION] Announcements */}
+      {announcements.length > 0 && (
+        <section className={`${container} py-16 md:py-20`}>
+          <SectionHeading
+            eyebrow="Announcements"
+            title="From the college office"
+          />
 
-                {/* [SECTION] News Article Cards */}
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                    {currentArticles.map(article => (
-                        <NewsArticleCard
-                            key={article.id}
-                            slug={article.slug}
-                            imgSrc={article.imgSrc}
-                            date={article.date}
-                            header={article.newsHeader}
-                            description={article.description}
-                        />
-                    ))}
-                </div>
+          {/* [SECTION] Announcements Carousel */}
+          <div className="bg-navy relative mt-10 overflow-hidden rounded-2xl">
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-[url('/carousel-bg.webp')] bg-cover bg-center opacity-25"
+            />
+            <div className="relative z-10 px-4 py-10">
+              <AnnouncementsCarousel articles={announcements} />
+            </div>
+          </div>
+        </section>
+      )}
 
-                {/* [FEATURE] Pagination */}
-                <div className="flex justify-center space-x-2 mt-6">
-                    <button
-                        onClick={() => goToPage(currentPage - 1)}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1 rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
-                    >
-                        Prev
-                    </button>
+      {/* [SECTION] News Articles */}
+      <section className="bg-[#f7f8fa]">
+        <div className={`${container} py-16 md:py-20`}>
+          <SectionHeading eyebrow="News" title="News articles" />
 
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                        <button
-                            key={page}
-                            onClick={() => goToPage(page)}
-                            className={`px-3 py-1 rounded border ${
-                                page === currentPage ? "bg-orange-dark text-white" : "bg-white hover:bg-gray-100"
-                            }`}
-                        >
-                            {page}
-                        </button>
-                    ))}
+          {/* [FEATURE] Search Bar & Sort Filter */}
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <SearchBar />
+            <SortFilter value={sortOption} onChange={setSortOption} />
+          </div>
 
-                    <button
-                        onClick={() => goToPage(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-1 rounded border bg-white hover:bg-gray-100 disabled:opacity-50"
-                    >
-                        Next
-                    </button>
-                </div>
-            </section>
-        </main>
-    );
+          {/* [SECTION] News Article Cards */}
+          {currentArticles.length === 0 ? (
+            <p className="text-ink-soft mt-10 text-base">
+              No news articles yet.
+            </p>
+          ) : (
+            <ul className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {currentArticles.map((article) => (
+                <li key={article.id} className="flex min-w-0">
+                  <NewsArticleCard
+                    slug={article.slug}
+                    imgSrc={article.imgSrc}
+                    date={article.date}
+                    header={article.newsHeader}
+                    description={article.description}
+                    sdgs={article.sdgs}
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* [FEATURE] Pagination */}
+          {totalPages > 1 && (
+            <nav
+              aria-label="News pages"
+              className="mt-10 flex flex-wrap justify-center gap-2"
+            >
+              <button
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`${pageButton} border-rule text-ink hover:border-ink bg-white`}
+              >
+                Prev
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => goToPage(page)}
+                    aria-current={page === currentPage ? "page" : undefined}
+                    className={`${pageButton} ${
+                      page === currentPage
+                        ? "border-theme-red bg-theme-red text-white"
+                        : "border-rule text-ink hover:border-ink bg-white"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ),
+              )}
+
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`${pageButton} border-rule text-ink hover:border-ink bg-white`}
+              >
+                Next
+              </button>
+            </nav>
+          )}
+        </div>
+      </section>
+    </div>
+  );
 }

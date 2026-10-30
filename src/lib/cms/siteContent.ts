@@ -1,6 +1,7 @@
 import {
   fetchDepartmentWithFaculty,
   fetchDepartments,
+  fetchDepartmentsWithFaculty,
   fetchFeaturedPost,
   fetchPrograms,
   fetchPublishedPosts,
@@ -8,6 +9,7 @@ import {
 } from "@/lib/cms/content";
 import { prefetchContent, rememberContent } from "@/lib/cms/useContent";
 import { toNewsArticle } from "@/lib/news";
+import { buildSearchHits } from "@/lib/search/search";
 
 /** How many stories the home page lists beside the featured post. */
 export const HOME_NEWS_LIMIT = 4;
@@ -58,6 +60,38 @@ export async function loadNewsAnnouncements(client: ContentClient) {
  * Department pins for the directory. Faculty for each department loads in
  * the background so opening one doesn't start from an empty page.
  */
+/** Articles, programs, faculty, and the main pages, for site search. */
+export async function loadSearch(client: ContentClient) {
+  const [posts, programs, departments] = await Promise.all([
+    fetchPublishedPosts(client),
+    fetchPrograms(client),
+    fetchDepartmentsWithFaculty(client),
+  ]);
+
+  for (const post of posts) {
+    if (post.slug) rememberContent(`post:${post.slug}`, post);
+  }
+  for (const program of programs) {
+    rememberContent(`program:${program.id}`, program);
+  }
+  for (const entry of departments) {
+    rememberContent(`department:${entry.department.slug}`, {
+      department: entry.department,
+      faculty: entry.faculty.map((person) => person.member),
+    });
+  }
+
+  return buildSearchHits({
+    posts,
+    programs,
+    departments: departments.map((entry) => ({
+      slug: entry.department.slug,
+      name: entry.department.name,
+      faculty: entry.faculty,
+    })),
+  });
+}
+
 export async function loadDepartments(client: ContentClient) {
   const departments = await fetchDepartments(client);
   for (const department of departments) {

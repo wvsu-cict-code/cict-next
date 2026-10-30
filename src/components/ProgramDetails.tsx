@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
-import { ProgramBrochure } from "@/components/ProgramBrochure";
+import { programPhoto } from "@/components/HomePrograms";
+import { PageHeader, container } from "@/components/PageHeader";
+import { ProgramBrochure, ProgramSection } from "@/components/ProgramBrochure";
 import { fetchProgram } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
 import { PROGRAMS_PREFIX, segmentFromPathname } from "@/lib/routes";
@@ -30,100 +31,59 @@ export default function ProgramDetails() {
 
   if (result.status === "loading") {
     return (
-      <main className="min-h-screen bg-white pb-20">
-        <ContentPlaceholder className="h-98 w-full rounded-none md:min-h-154" />
-      </main>
+      <div className="bg-white">
+        <ContentPlaceholder className="h-80 w-full rounded-none" />
+        <div className={`${container} grid gap-4 py-16`}>
+          <ContentPlaceholder className="h-8 w-64" />
+          <ContentPlaceholder className="h-4 w-full max-w-3xl" />
+          <ContentPlaceholder className="h-4 w-full max-w-2xl" />
+        </div>
+      </div>
     );
   }
 
   if (!program) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <h1 className="font-major text-2xl font-bold text-neutral-900 uppercase">
-          Program not found
-        </h1>
-      </div>
+      <PageHeader
+        eyebrow="Programs"
+        title="Program not found"
+        intro="This program doesn't exist or is no longer offered."
+        back={{ href: "/programs", label: "All programs" }}
+      />
     );
   }
 
   return (
-    <main className="min-h-screen bg-white pb-20 font-sans">
-      <section className="bg-orange-light relative flex h-98 w-auto flex-col items-center justify-center overflow-hidden px-6 text-center md:min-h-154 md:w-full md:px-20">
-        {/* Dynamic Background Watermark */}
-        {/* Left SVG */}
-        {program.logo_url && (
-          <div className="absolute bottom-0 -left-20 h-60 w-60 opacity-0 md:bottom-12 md:-left-50 md:h-125 md:w-125 md:opacity-20">
+    <div className="bg-white">
+      <PageHeader
+        eyebrow={program.code}
+        title={program.name}
+        image={programPhoto(program)}
+        back={{ href: "/programs", label: "All programs" }}
+        aside={
+          program.logo_url ? (
             <Image
               src={program.logo_url}
               alt=""
-              fill
-              className="object-contain object-bottom-left brightness-0 invert"
-              priority
+              width={160}
+              height={160}
+              className="h-40 w-40 object-contain opacity-90 brightness-0 invert"
             />
-          </div>
-        )}
+          ) : null
+        }
+      />
 
-        {/* Right SVG */}
-        {program.logo_url && (
-          <div className="absolute top-10 -right-20 h-80 w-80 opacity-20 md:top-1/2 md:-right-50 md:h-125 md:w-125 md:-translate-y-1/2 md:opacity-20">
-            <Image
-              src={program.logo_url}
-              alt=""
-              fill
-              className="object-contain object-right brightness-0 invert"
-              priority
-            />
-          </div>
-        )}
-
-        {/* Back Button */}
-        <div className="absolute top-8 left-6 z-20 md:top-24 md:left-20">
-          <Link
-            href="/programs"
-            className="group text-orange-light relative flex w-fit cursor-pointer items-center gap-4 rounded-full bg-white px-8 py-4 shadow-lg transition-all duration-700 hover:-translate-y-1 hover:shadow-xl"
-          >
-            <div className="text-orange-light flex items-center justify-center transition-transform group-hover:-translate-x-1">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M19 12H5M12 19l-7-7 7-7" />
-              </svg>
-            </div>
-            <span className="text-orange-light text-[13px] font-bold tracking-tighter uppercase">
-              Back to Programs
-            </span>
-          </Link>
-        </div>
-
-        {/* Program Title */}
-        <h1 className="relative z-10 mt-10 max-w-2xl text-left text-[40px] leading-12 font-semibold text-white drop-shadow-sm md:mt-0 md:max-w-6xl md:text-center md:text-7xl md:leading-tight md:font-normal">
-          {program.name}
-        </h1>
-      </section>
-
-      {/* CONTENT SECTION */}
-      <div className="mx-auto mb-15 max-w-7xl px-7 pt-8 md:pt-20">
+      <div className={`${container} py-16 md:py-20`}>
         <ProgramBrochure
           code={program.code}
           description={program.description}
         />
 
-        {/* 2. Objectives */}
-        <div className="mb-20">
-          <h2 className="text-orange-light mb-8 text-3xl font-medium md:text-[40px] md:font-normal">
-            Program Objectives
-          </h2>
-          <p className="text-justify text-sm leading-relaxed tracking-tight whitespace-pre-line text-black md:text-base">
+        <ProgramSection title="Program objectives">
+          <p className="text-ink-soft max-w-[68ch] text-base leading-relaxed whitespace-pre-line md:text-lg">
             {program.objectives}
           </p>
-        </div>
+        </ProgramSection>
 
         {/* INFO CARD */}
         {/*<div className="w-auto mx-auto bg-white border-[1.5] border-black rounded-2xl p-8 mb-45 md:mt-0 md:mb-0 md:px-35 md:py-4 flex flex-col sm:flex-row md:flex-row justify-between gap-10 shadow-sm">
@@ -183,6 +143,6 @@ export default function ProgramDetails() {
 
                 </div>*/}
       </div>
-    </main>
+    </div>
   );
 }

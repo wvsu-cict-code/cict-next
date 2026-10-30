@@ -109,5 +109,9 @@ export function describeDbError(error: { code?: string; message: string }) {
     return "Slugs/IDs may only contain lowercase letters, numbers and single dashes.";
   }
   if (error.code === "42501") return "You don't have permission to do that.";
+  // A column the form saves isn't in the database yet
+  if (error.code === "PGRST204") {
+    return "The database is missing a field this form saves. Apply the latest database migrations, then try again.";
+  }
   return error.message;
 }

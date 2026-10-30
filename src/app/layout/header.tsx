@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 import { ArrowIcon } from "@/components/PhotoSlot";
+import { searchTerms } from "@/lib/search/search";
+
+function searchTermsTooShort(query: string) {
+  return searchTerms(query).length === 0;
+}
 
 const active =
   "relative whitespace-nowrap text-sm font-semibold text-theme-red after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:bg-theme-red";
@@ -47,10 +52,26 @@ const PROGRAM_LINKS = [
 export default function Header() {
   // The school site's URLs end in a slash (static export), the CMS's don't
   const pathname = usePathname().replace(/\/+$/, "") || "/";
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [programsOpen, setProgramsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const current = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
+
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [pathname]);
+
+  function submitSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const query = searchQuery.trim();
+    if (searchTermsTooShort(query)) return;
+    setSearchOpen(false);
+    setIsOpen(false);
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
 
   return (
     <header className="border-rule/80 relative z-50 border-b bg-white">
@@ -154,9 +175,12 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center justify-end gap-1 lg:gap-2">
-          <Link
-            href="/news-announcements"
-            aria-label="Search news and announcements"
+          <button
+            type="button"
+            aria-expanded={searchOpen}
+            aria-controls="site-search-panel"
+            aria-label={searchOpen ? "Close search" : "Search"}
+            onClick={() => setSearchOpen((open) => !open)}
             className="text-ink hover:bg-paper inline-flex h-11 w-11 items-center justify-center rounded-full"
           >
             <svg
@@ -170,7 +194,7 @@ export default function Header() {
               <circle cx="11" cy="11" r="6.5" />
               <path d="M16 16l5 5" strokeLinecap="round" />
             </svg>
-          </Link>
+          </button>
           <Link
             href="/contact"
             className="ease-draw bg-theme-red hover:bg-accent-deep hidden min-h-11 items-center gap-1.5 rounded-full px-4 text-sm font-semibold whitespace-nowrap text-white transition-colors duration-200 active:scale-[0.98] sm:inline-flex"
@@ -190,6 +214,43 @@ export default function Header() {
           </button>
         </div>
       </div>
+
+      {searchOpen && (
+        <div
+          id="site-search-panel"
+          className="border-rule absolute top-full left-0 z-50 w-full border-t bg-white shadow-[0_16px_40px_rgba(28,30,34,0.08)]"
+        >
+          <form
+            role="search"
+            onSubmit={submitSearch}
+            className="mx-auto flex max-w-[1400px] flex-col gap-2 px-4 py-4 sm:flex-row md:px-8"
+          >
+            <label htmlFor="site-search" className="sr-only">
+              Search the site
+            </label>
+            <input
+              id="site-search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Search articles, programs, and faculty"
+              autoFocus
+              className="border-rule text-ink focus:border-theme-red min-h-11 min-w-0 flex-1 rounded-full border px-4 text-base outline-none"
+            />
+            <button
+              type="submit"
+              className="ease-draw bg-theme-red hover:bg-accent-deep min-h-11 rounded-full px-5 text-sm font-semibold text-white"
+            >
+              Search
+            </button>
+          </form>
+          {searchQuery.trim().length > 0 &&
+            searchTermsTooShort(searchQuery) && (
+              <p className="text-ink-soft mx-auto max-w-[1400px] px-4 pb-4 text-sm md:px-8">
+                Type at least two letters.
+              </p>
+            )}
+        </div>
+      )}
 
       {isOpen && (
         <nav

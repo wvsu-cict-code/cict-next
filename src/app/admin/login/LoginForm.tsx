@@ -1,17 +1,21 @@
 "use client";
 
-import { startTransition, useActionState } from "react";
+import { startTransition, useActionState, useState } from "react";
+import { inputClass } from "@/components/admin/fields";
+import { Icon } from "@/components/admin/icons";
+import { buttonClass } from "@/components/admin/PageHeader";
 import { signIn } from "../actions";
 
 export default function LoginForm({ initialError }: { initialError?: string }) {
   const [state, formAction, pending] = useActionState(signIn, undefined);
   const error = state?.error ?? initialError;
-
-  const inputClass =
-    "w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-orange-dark focus:ring-2 focus:ring-orange-dark/20 focus:outline-none";
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <form
+      // POST, so a sign-in before the page has loaded its scripts never puts
+      // the password in the URL
+      method="post"
       className="space-y-4"
       onSubmit={(e) => {
         // Avoid React's automatic form reset so the email survives a failed attempt
@@ -23,13 +27,14 @@ export default function LoginForm({ initialError }: { initialError?: string }) {
       {error && (
         <p
           role="alert"
-          className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"
+          className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-800"
         >
+          <Icon name="alert" className="mt-0.5 h-4 w-4 shrink-0" />
           {error}
         </p>
       )}
       <div className="space-y-1.5">
-        <label htmlFor="email" className="block text-sm font-semibold">
+        <label htmlFor="email" className="text-ink block text-sm font-semibold">
           Email
         </label>
         <input
@@ -42,22 +47,39 @@ export default function LoginForm({ initialError }: { initialError?: string }) {
         />
       </div>
       <div className="space-y-1.5">
-        <label htmlFor="password" className="block text-sm font-semibold">
+        <label
+          htmlFor="password"
+          className="text-ink block text-sm font-semibold"
+        >
           Password
         </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          className={inputClass}
-        />
+        <div className="relative">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="current-password"
+            required
+            className={`${inputClass} pr-12`}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((shown) => !shown)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+            className="text-ink-soft hover:text-ink absolute inset-y-0 right-0 flex w-11 items-center justify-center"
+          >
+            <Icon
+              name={showPassword ? "eye-off" : "eye"}
+              className="h-[18px] w-[18px]"
+            />
+          </button>
+        </div>
       </div>
       <button
         type="submit"
         disabled={pending}
-        className="bg-orange-dark hover:bg-orange-light w-full rounded-md py-2 text-sm font-semibold text-white transition-colors disabled:opacity-60"
+        className={`${buttonClass.primary} min-h-11 w-full`}
       >
         {pending ? "Signing in…" : "Sign in"}
       </button>

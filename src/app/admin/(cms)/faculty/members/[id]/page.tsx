@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DeleteButton from "@/components/admin/DeleteButton";
-import PageHeader, { Card } from "@/components/admin/PageHeader";
+import PageHeader from "@/components/admin/PageHeader";
 import SavedNotice from "@/components/admin/SavedNotice";
 import { requireAdmin } from "@/lib/cms/auth";
 import { deleteMember, updateMember } from "../../actions";
@@ -49,13 +49,11 @@ export default async function EditMemberPage({
         }
       />
       {saved && <SavedNotice />}
-      <Card>
-        <MemberForm
-          member={member}
-          departments={departments}
-          action={updateMember.bind(null, member.id)}
-        />
-      </Card>
+      <MemberForm
+        member={member}
+        departments={departments}
+        action={updateMember.bind(null, member.id)}
+      />
     </>
   );
 }

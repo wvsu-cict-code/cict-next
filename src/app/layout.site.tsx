@@ -1,6 +1,13 @@
 import "./globals.css";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { Oswald, Source_Sans_3 } from "next/font/google";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  pageMetadata,
+} from "@/lib/seo";
 
 const display = Oswald({
   subsets: ["latin"],
@@ -15,51 +22,34 @@ const body = Source_Sans_3({
 });
 
 // --- SEO METADATA CONFIGURATION ---
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://cict.wvsu.edu.ph";
-
+// Defaults for every page; pages override them through pageMetadata().
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "WVSU CICT",
+    default: SITE_TITLE,
     template: "%s | CICT",
   },
+  applicationName: SITE_NAME,
 
-  description:
-    "The official website for the College of Information and Communications Technology.",
-
-  openGraph: {
-    type: "website",
-    locale: "en_PH",
-    siteName: "WVSU CICT",
-    url: siteUrl,
-    images: [
-      {
-        url: "/icons/cictlogo.png",
-        width: 1200,
-        height: 630,
-        alt: "WVSU CICT Campus or Logo",
-      },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "WVSU CICT",
-    description:
-      "The official website for the College of Information and Communications Technology.",
-    images: ["/icons/cictlogo.png"],
-  },
+  ...pageMetadata({
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  }),
 
   icons: {
     icon: "/icons/cictlogo.png",
-    apple: "/apple-touch-icon.png",
+    apple: "/icons/cictlogo.png",
   },
 
   robots: {
     index: true,
     follow: true,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#102033",
 };
 
 export default function RootLayout({ children }) {

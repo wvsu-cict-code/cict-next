@@ -1,33 +1,88 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import {
+  Eyebrow,
+  PageHeader,
+  SectionHeading,
+  container,
+} from "@/components/PageHeader";
 
-interface InfoBox {
-  icon: string;
-  title: string;
-  content?: string;
-  phone?: string;
-  email?: string;
-}
+const PHONE = "+6312345689";
+const EMAIL = "cict@wvsu.edu.ph";
 
-const infoBoxes: InfoBox[] = [
+const iconProps = {
+  viewBox: "0 0 24 24",
+  className: "h-6 w-6",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.6,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  "aria-hidden": true as const,
+};
+
+const infoCards: { title: string; icon: ReactNode; body: ReactNode }[] = [
   {
-    icon: "/icons/firstbox_icon.svg",
-    title: "ADDRESS",
-    content: "West Visayas State University, La Paz, Iloilo City",
+    title: "Address",
+    icon: (
+      <svg {...iconProps}>
+        <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
+        <circle cx="12" cy="9.5" r="2.5" />
+      </svg>
+    ),
+    body: <p>West Visayas State University, La Paz, Iloilo City</p>,
   },
   {
-    icon: "/icons/office_icon.svg",
-    title: "OFFICE NAME",
-    content:
-      "College of Information and Communications Technology (CICT)\nOffice Hours: 8:00 AM – 5:00 PM",
+    title: "Office",
+    icon: (
+      <svg {...iconProps}>
+        <rect x="3" y="7" width="18" height="13" rx="2" />
+        <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 12h18" />
+      </svg>
+    ),
+    body: (
+      <>
+        <p>College of Information and Communications Technology (CICT)</p>
+        <p className="mt-2">Office hours: 8:00 AM – 5:00 PM</p>
+      </>
+    ),
   },
   {
-    icon: "/icons/contact_icon.svg",
-    title: "CONTACT INFO",
-    phone: "+6312345689",
-    email: "cict@wvsu.edu.ph",
+    title: "Contact info",
+    icon: (
+      <svg {...iconProps}>
+        <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2" />
+      </svg>
+    ),
+    body: (
+      <>
+        <p>
+          Phone:{" "}
+          <a href={`tel:${PHONE}`} className="text-ink hover:text-theme-red">
+            {PHONE}
+          </a>
+        </p>
+        <p className="mt-1">
+          Email:{" "}
+          <a href={`mailto:${EMAIL}`} className="text-ink hover:text-theme-red">
+            {EMAIL}
+          </a>
+        </p>
+        <p className="mt-1">
+          Facebook:{" "}
+          <a
+            href="https://www.facebook.com/WVSUCICT"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-ink hover:text-theme-red"
+          >
+            WVSU CICT
+          </a>
+        </p>
+      </>
+    ),
   },
 ];
 
@@ -42,7 +97,7 @@ const faqItems = [
   },
   {
     header: "Who should I contact for urgent concerns?",
-    body: "Call +6312345689 or email cict@wvsu.edu.ph",
+    body: `Call ${PHONE} or email ${EMAIL}`,
   },
   {
     header: "Does CICT provide IT or technical support for students?",
@@ -54,195 +109,114 @@ export default function Contact() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
 
   return (
-    <main className="flex w-full flex-col items-center text-center">
-      {/* HERO */}
-      <section className="w-full px-4 py-16 sm:px-6 lg:px-8">
-        <h1 className="font-major text-4xl tracking-tight sm:text-5xl md:text-6xl">
-          <span className="text-neutral-900">COLLEGE CONTACT </span>
-          <span className="text-orange-light">INFORMATION</span>
-        </h1>
-        <p className="font-minor mx-auto mt-4 max-w-3xl text-base text-neutral-600 sm:text-lg">
-          For any inquiries or collaborations, we'd{" "}
-          <span className="text-orange-light">love</span> to hear from you.{" "}
-          <span className="text-orange-light">Reach out</span> and let's{" "}
-          <span className="text-orange-light">connect.</span>
-        </p>
-      </section>
+    <div className="bg-white">
+      <PageHeader
+        eyebrow="Contact"
+        title="College contact information"
+        intro="For any inquiries or collaborations, we'd love to hear from you. Reach out and let's connect."
+      />
 
-      {/* INFO BOXES */}
-      <section className="mt-22 flex w-full flex-wrap justify-center gap-x-6 gap-y-14 px-4 sm:gap-x-8 sm:gap-y-18 sm:px-6 lg:px-8">
-        {infoBoxes.map((box, i) => (
-          <div
-            key={i}
-            className="relative flex h-56 w-72 flex-col items-center rounded-xl bg-white pt-12 shadow-xl sm:h-60 sm:w-80"
-          >
-            <Image
-              src={box.icon}
-              alt={box.title}
-              width={56}
-              height={56}
-              className="absolute -top-7"
-            />
-            <p className="font-major text-orange-light text-lg font-bold">
-              {box.title}
-            </p>
-            {"phone" in box || "email" in box ? (
-              <div className="font-minor mt-3 px-4 text-sm text-neutral-600 sm:px-6">
-                {box.phone && (
-                  <p>
-                    <a href={`tel:${box.phone}`} className="hover:underline">
-                      Phone: {box.phone}
-                    </a>
-                  </p>
-                )}
-                {box.email && (
-                  <p>
-                    <a href={`mailto:${box.email}`} className="hover:underline">
-                      Email: {box.email}
-                    </a>
-                  </p>
-                )}
+      {/* INFO CARDS */}
+      <section className={`${container} py-16 md:py-20`}>
+        <ul className="grid gap-5 md:grid-cols-3">
+          {infoCards.map((card) => (
+            <li
+              key={card.title}
+              className="border-rule rounded-2xl border bg-[#f7f8fa] p-6"
+            >
+              <span className="text-theme-red border-theme-red/30 inline-flex h-12 w-12 items-center justify-center rounded-full border bg-white">
+                {card.icon}
+              </span>
+              <h2 className="text-ink mt-5 text-xl font-medium">
+                {card.title}
+              </h2>
+              <div className="text-ink-soft mt-2 text-base leading-relaxed">
+                {card.body}
               </div>
-            ) : (
-              <p className="font-minor mt-3 px-4 text-sm whitespace-pre-line text-neutral-600 sm:px-6">
-                {box.content}
-              </p>
-            )}
-          </div>
-        ))}
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* FAQ */}
-      <section className="mt-20 w-full bg-neutral-900">
-        <div className="mx-auto grid max-w-6xl items-start gap-12 px-4 py-16 sm:gap-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:px-8">
-          {/* LOGO */}
-          <div className="order-1 mt-16 mb-6 flex justify-center lg:order-2 lg:mb-0">
-            <Image
-              src="/icons/cictlogo.svg"
-              alt="CICT Logo"
-              width={300}
-              height={300}
-              className="h-auto w-52 sm:w-64 lg:w-72"
-            />
-          </div>
-
-          {/* FAQ CONTENT */}
-          <div className="order-2 text-left lg:order-1">
-            <h2 className="font-major mb-6 text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl">
-              <span className="block text-white">FREQUENTLY ASKED</span>
-              <span className="text-orange-light block">QUESTIONS</span>
+      <section className="bg-navy text-white">
+        <div
+          className={`${container} grid items-center gap-12 py-16 md:py-24 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)] lg:gap-20`}
+        >
+          <div>
+            <Eyebrow onDark>FAQ</Eyebrow>
+            <h2 className="mt-3 text-3xl leading-[1.1] font-medium md:text-4xl">
+              Frequently asked questions
             </h2>
 
-            <div className="font-minor flex flex-col">
+            <div className="mt-8 border-t border-white/15">
               {faqItems.map((item, index) => {
                 const isOpen = activeFAQ === index;
-                const isFirst = index === 0;
-
                 return (
-                  <div key={index}>
-                    {isFirst && <div className="border-t border-neutral-700" />}
-
+                  <div key={index} className="border-b border-white/15">
                     <button
-                      className="flex w-full items-start justify-between gap-4 border-b border-neutral-700 py-4 font-semibold text-white sm:py-5"
+                      type="button"
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-${index}`}
+                      className="flex min-h-11 w-full items-center justify-between gap-4 py-5 text-left text-base font-semibold md:text-lg"
                       onClick={() => setActiveFAQ(isOpen ? null : index)}
                     >
-                      <span className="pr-4 text-left leading-snug">
-                        {item.header}
-                      </span>
-                      <span className="shrink-0 text-xl">
-                        {isOpen ? "-" : "⌵"}
-                      </span>
+                      <span className="leading-snug">{item.header}</span>
+                      <svg
+                        viewBox="0 0 20 20"
+                        className={`ease-draw h-5 w-5 shrink-0 text-white/70 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        aria-hidden
+                      >
+                        <path
+                          d="M5 8l5 5 5-5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     </button>
-
                     {isOpen && (
-                      <>
-                        <p className="py-3 leading-relaxed text-neutral-300">
-                          {item.body}
-                        </p>
-                        <div className="border-b border-neutral-700" />
-                      </>
+                      <p
+                        id={`faq-${index}`}
+                        className="max-w-[60ch] pb-5 text-base leading-relaxed text-white/75"
+                      >
+                        {item.body}
+                      </p>
                     )}
                   </div>
                 );
               })}
             </div>
           </div>
+
+          <div className="flex justify-center">
+            <Image
+              src="/icons/cictlogo.svg"
+              alt="CICT seal"
+              width={300}
+              height={300}
+              className="h-auto w-52 sm:w-64 lg:w-72"
+            />
+          </div>
         </div>
       </section>
 
-      {/* GET IN TOUCH */}
-      <section className="w-full bg-white px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
-        <div className="mx-auto grid max-w-6xl gap-10 sm:gap-12 lg:grid-cols-2">
-          {/* LEFT */}
-          <div className="text-left">
-            <h2 className="font-major text-3xl sm:text-4xl md:text-5xl">
-              <span className="text-neutral-900">Get in </span>
-              <span className="text-orange-light">Touch</span>
-            </h2>
-            <p className="font-minor mt-4 max-w-md text-base text-neutral-600">
-              Whether you have questions, need support, or want to learn more —
-              our team is here to help.
+      {/* FIND US */}
+      <section className={`${container} py-16 md:py-24`}>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16">
+          <div>
+            <SectionHeading
+              eyebrow="Visit"
+              title="Get in touch"
+              intro="Whether you have questions, need support, or want to learn more — our team is here to help."
+            />
+            <p className="text-ink mt-6 text-base font-medium">
+              WVSU, La Paz, Iloilo City, Philippines
             </p>
-            <div className="mt-6 flex gap-6">
-              <a
-                href="https://www.facebook.com/WVSUCICT"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  src="/icons/facebook.svg"
-                  alt="fb"
-                  width={40}
-                  height={40}
-                />
-              </a>
-            </div>
           </div>
-
-          {/* RIGHT */}
-          <div className="grid gap-8 sm:grid-cols-2 sm:gap-10">
-            <div className="text-left">
-              <Image
-                src="/icons/home.svg"
-                alt="address"
-                width={36}
-                height={36}
-              />
-              <h3 className="font-major text-orange-light mt-4 text-lg font-bold">
-                Our Address
-              </h3>
-              <p className="font-minor mt-2 text-neutral-600">
-                WVSU, La Paz, Iloilo City, Philippines
-              </p>
-            </div>
-
-            <div className="text-left">
-              <Image
-                src="/icons/mobile.svg"
-                alt="contact"
-                width={36}
-                height={36}
-              />
-              <h3 className="font-major text-orange-light mt-4 text-lg font-bold">
-                Contact Info
-              </h3>
-              <p className="font-minor mt-2 text-neutral-600">
-                <a href="tel:+6312345689" className="hover:underline">
-                  Phone: +6312345689
-                </a>
-              </p>
-              <p className="font-minor mt-1 text-neutral-600">
-                <a href="mailto:cict@wvsu.edu.ph" className="hover:underline">
-                  Email: cict@wvsu.edu.ph
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* MAP */}
-        <section className="mt-20 flex w-full justify-center sm:mt-24">
-          <div className="aspect-[1148/539] w-full max-w-6xl overflow-hidden rounded-xl shadow-xl">
+          <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#f7f8fa] shadow-[0_12px_40px_rgba(16,32,51,0.06)]">
             <iframe
               src="https://www.google.com/maps?q=West%20Visayas%20State%20University%20La%20Paz%20Iloilo&output=embed"
               className="h-full w-full border-0"
@@ -251,8 +225,8 @@ export default function Contact() {
               title="Map of WVSU"
             />
           </div>
-        </section>
+        </div>
       </section>
-    </main>
+    </div>
   );
 }

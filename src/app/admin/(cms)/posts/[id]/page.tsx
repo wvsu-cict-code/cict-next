@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DeleteButton from "@/components/admin/DeleteButton";
-import PageHeader, { Card } from "@/components/admin/PageHeader";
+import PageHeader, { SecondaryLink } from "@/components/admin/PageHeader";
 import SavedNotice from "@/components/admin/SavedNotice";
 import { requireAdmin } from "@/lib/cms/auth";
 import { previewLabel } from "@/lib/cms/content";
@@ -49,14 +49,9 @@ export default async function EditPostPage({
         backLabel="All posts"
         actions={
           <>
-            <a
-              href={viewHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-neutral-50"
-            >
-              {isPreview ? "Preview ↗" : "View on site ↗"}
-            </a>
+            <SecondaryLink href={viewHref} icon="eye" external>
+              {isPreview ? "Preview" : "View on site"}
+            </SecondaryLink>
             <DeleteButton
               action={deletePost.bind(null, post.id)}
               confirmMessage={`Delete "${post.title}"? This cannot be undone.`}
@@ -65,9 +60,7 @@ export default async function EditPostPage({
         }
       />
       {saved && <SavedNotice />}
-      <Card>
-        <PostForm post={post} action={updatePost.bind(null, post.id)} />
-      </Card>
+      <PostForm post={post} action={updatePost.bind(null, post.id)} />
     </>
   );
 }

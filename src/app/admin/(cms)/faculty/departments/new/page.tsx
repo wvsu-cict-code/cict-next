@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import PageHeader, { Card } from "@/components/admin/PageHeader";
+import PageHeader from "@/components/admin/PageHeader";
 import { requireAdmin } from "@/lib/cms/auth";
 import { createDepartment } from "../../actions";
 import DepartmentForm from "../../DepartmentForm";
@@ -18,9 +18,7 @@ export default async function NewDepartmentPage() {
         backHref="/admin/faculty"
         backLabel="Faculty"
       />
-      <Card>
-        <DepartmentForm action={createDepartment} />
-      </Card>
+      <DepartmentForm action={createDepartment} />
     </>
   );
 }

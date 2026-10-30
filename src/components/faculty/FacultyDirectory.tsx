@@ -5,16 +5,38 @@ import { useRouter } from "next/navigation";
 import type { Department } from "@/lib/faculty";
 import InteractiveDiagram from "@/components/faculty/InteractiveDiagram";
 import MobileList from "@/components/faculty/MobileList";
+import { Eyebrow } from "@/components/PageHeader";
+
+/**
+ * Kept compact: the department page's zoomed background is lined up with
+ * where the diagram sits below this header.
+ */
+export function FacultyPageHeader() {
+  return (
+    <header className="relative z-30 w-full px-8 pt-16 pb-8 text-center">
+      <div className="flex justify-center">
+        <Eyebrow>Faculty</Eyebrow>
+      </div>
+      <h1 className="text-ink mt-3 text-3xl leading-none font-medium md:text-6xl">
+        Faculty directory
+      </h1>
+    </header>
+  );
+}
 
 /**
  * FacultyDirectory
- * 
+ *
  * Displays the interactive faculty directory with a central logo diagram.
  * Features a seamless zoom-and-pan transition to individual department pages.
  */
-export default function FacultyDirectory({ departments }: { departments: Department[] }) {
+export default function FacultyDirectory({
+  departments,
+}: {
+  departments: Department[];
+}) {
   const router = useRouter();
-  
+
   // Interaction State
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [zoomedIndex, setZoomedIndex] = useState<number | null>(null);
@@ -27,7 +49,7 @@ export default function FacultyDirectory({ departments }: { departments: Departm
     e.preventDefault();
     setZoomedIndex(index);
     setIsTransitioning(true);
-    
+
     // Allow the 1000ms CSS transition to play out before routing
     setTimeout(() => {
       router.push(departments[index].link);
@@ -41,25 +63,24 @@ export default function FacultyDirectory({ departments }: { departments: Departm
   }, []);
 
   return (
-    <main className="relative flex min-h-screen w-full flex-col items-center bg-white overflow-hidden scroll-smooth selection:bg-[#BA3D1B] selection:text-white">
+    <div className="selection:bg-theme-red relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-white selection:text-white">
       {/* Page Header */}
-      <header className={`relative z-30 w-full text-center pt-16 pb-8 px-8 transition-all duration-700 ${isTransitioning ? 'opacity-0 -translate-y-10' : 'opacity-100'}`}>
-        <h1 className="text-3xl md:text-6xl font-major tracking-tight leading-none">
-          <span className="text-neutral-900 font-bold">Faculty</span>
-          <span className="text-[#f48128] ml-2 font-medium">Directory</span>
-        </h1>
-      </header>
+      <div
+        className={`relative z-30 w-full transition-all duration-700 ${isTransitioning ? "-translate-y-10 opacity-0" : "opacity-100"}`}
+      >
+        <FacultyPageHeader />
+      </div>
 
       {/* Mobile-specific view */}
-      <MobileList 
-        departments={departments} 
-        zoomedIndex={zoomedIndex} 
-        isTransitioning={isTransitioning} 
-        onClick={handleDeptClick} 
+      <MobileList
+        departments={departments}
+        zoomedIndex={zoomedIndex}
+        isTransitioning={isTransitioning}
+        onClick={handleDeptClick}
       />
 
       {/* Desktop-specific interactive diagram */}
-      <InteractiveDiagram 
+      <InteractiveDiagram
         departments={departments}
         hoveredIndex={hoveredIndex}
         zoomedIndex={zoomedIndex}
@@ -67,10 +88,6 @@ export default function FacultyDirectory({ departments }: { departments: Departm
         onHover={setHoveredIndex}
         onClick={handleDeptClick}
       />
-
-      {/* Brand Watermarks */}
-      <div className="fixed bottom-4 left-4 h-6 w-6 rounded-full bg-neutral-900 flex items-center justify-center text-[10px] text-white font-bold opacity-80 z-50">N</div>
-      <div className="fixed bottom-0 left-0 right-0 h-4 bg-[#141414] z-50" />
-    </main>
+    </div>
   );
 }

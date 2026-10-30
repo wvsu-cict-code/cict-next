@@ -1,5 +1,8 @@
 import { Metadata } from "next";
-import PageHeader, { Card } from "@/components/admin/PageHeader";
+import PageHeader, {
+  EmptyState,
+  PrimaryLink,
+} from "@/components/admin/PageHeader";
 import { requireAdmin } from "@/lib/cms/auth";
 import { createMember } from "../../actions";
 import MemberForm from "../../MemberForm";
@@ -30,17 +33,22 @@ export default async function NewMemberPage({ searchParams }: PageProps) {
         backHref="/admin/faculty"
         backLabel="Faculty"
       />
-      <Card>
-        {departments.length === 0 ? (
-          <p className="text-sm text-neutral-500">Create a department first.</p>
-        ) : (
-          <MemberForm
-            departments={departments}
-            defaultDepartment={department}
-            action={createMember}
-          />
-        )}
-      </Card>
+      {departments.length === 0 ? (
+        <EmptyState
+          title="Create a department first."
+          action={
+            <PrimaryLink href="/admin/faculty/departments/new">
+              New department
+            </PrimaryLink>
+          }
+        />
+      ) : (
+        <MemberForm
+          departments={departments}
+          defaultDepartment={department}
+          action={createMember}
+        />
+      )}
     </>
   );
 }

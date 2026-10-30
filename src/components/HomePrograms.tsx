@@ -6,6 +6,23 @@ import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import { loadPrograms } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
 
+// Stand-in card photos until real program photography is added.
+const TEMP_PROGRAM_PHOTOS: Record<string, string> = {
+  blis: "/temp-photos/program-blis.jpg",
+  bscs: "/temp-photos/program-bscs.jpg",
+  bsemc: "/temp-photos/program-bsemc.jpg",
+  bsis: "/temp-photos/program-bsis.jpg",
+  bsit: "/temp-photos/program-bsit.jpg",
+  mit: "/temp-photos/program-mit.jpg",
+};
+
+export function programPhoto(program: { id: string; code: string }) {
+  return (
+    TEMP_PROGRAM_PHOTOS[program.id] ??
+    TEMP_PROGRAM_PHOTOS[program.code.toLowerCase()]
+  );
+}
+
 export function HomePrograms() {
   const programs = useContent("programs", loadPrograms);
 
@@ -32,13 +49,15 @@ export function HomePrograms() {
   return (
     <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {programs.data.map((program) => (
-        <li key={program.id} className="min-w-0">
+        <li key={program.id} className="flex min-w-0">
           <Link
             href={`/programs/${program.id}`}
-            className="ease-draw group block overflow-hidden rounded-2xl bg-white shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-transform duration-200 hover:-translate-y-0.5"
+            className="ease-draw group flex w-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(16,32,51,0.12)]"
           >
-            <PhotoSlot label="Photo coming" className="aspect-[16/10] w-full" />
-            <span className="flex items-center gap-3 px-4 py-4">
+            <div className="aspect-[16/10] shrink-0">
+              <PhotoSlot label="Photo coming" src={programPhoto(program)} />
+            </div>
+            <span className="flex flex-1 items-center gap-3 px-4 py-4">
               {program.logo_url ? (
                 <img
                   src={program.logo_url}

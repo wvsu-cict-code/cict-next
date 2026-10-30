@@ -1,5 +1,8 @@
 "use client";
 
+import { Icon } from "@/components/admin/icons";
+import { buttonClass } from "@/components/admin/PageHeader";
+
 interface DeleteButtonProps {
   action: () => Promise<void>;
   confirmMessage: string;
@@ -18,10 +21,8 @@ export default function DeleteButton({
         if (!window.confirm(confirmMessage)) e.preventDefault();
       }}
     >
-      <button
-        type="submit"
-        className="rounded-md border border-red-300 px-4 py-2 text-sm font-semibold text-red-700 transition-colors hover:bg-red-50"
-      >
+      <button type="submit" className={buttonClass.danger}>
+        <Icon name="trash" className="h-4 w-4" />
         {label}
       </button>
     </form>

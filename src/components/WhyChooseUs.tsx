@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ArrowIcon } from "@/components/PhotoSlot";
+import { Eyebrow, container, primaryButton } from "@/components/PageHeader";
 
 const whyChooseItems: { title: string; body: () => ReactNode }[] = [
   {
@@ -84,18 +85,22 @@ const whyChooseItems: { title: string; body: () => ReactNode }[] = [
 
 const cards = [
   {
+    figure: "Level III",
     title: "Accreditations",
     text: "AACCUP Level III for Computer Science, Information Technology, and Information Systems. BLIS reached Level I in September 2025.",
   },
   {
+    figure: "25th",
     title: "National rankings",
     text: "25th in the Philippines and 2nd in Iloilo, according to EduRank.",
   },
   {
+    figure: "48",
     title: "International relations",
     text: "3 international university partners, 7 associations, 7 government agencies and LGUs, 30 ICT companies and OJT venues, and a Jeju-based startup.",
   },
   {
+    figure: "41",
     title: "Competition recognitions",
     text: "7 national, 6 regional, and 3 provincial and local competitions. 41 major and special awards in AY 2025-2026.",
   },
@@ -106,35 +111,37 @@ export function WhyChooseUs() {
 
   return (
     <section id="why-choose-us" className="scroll-mt-24 bg-white">
-      <div className="mx-auto max-w-[1400px] px-4 py-16 md:px-8 md:py-24">
+      <div className={`${container} py-16 md:py-24`}>
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <div>
-            <p className="text-theme-red flex items-center gap-3 text-xs font-semibold tracking-[0.18em] uppercase">
-              <span className="bg-theme-red h-px w-8" aria-hidden />
-              Why choose us
-            </p>
+            <Eyebrow>Why choose us</Eyebrow>
             <h2 className="text-ink mt-3 max-w-[16ch] text-4xl leading-[1.1] font-medium md:text-5xl">
               More than a degree. A future-ready experience.
             </h2>
             <p className="text-ink-soft mt-5 max-w-[58ch] text-base leading-relaxed md:text-lg">
               {accreditation.body()}
             </p>
-            <a
-              href="#college-record"
-              className="ease-draw bg-theme-red hover:bg-accent-deep mt-8 inline-flex min-h-11 items-center gap-2 rounded-full px-5 text-sm font-semibold text-white transition-colors duration-200 active:scale-[0.98]"
-            >
+            <a href="#college-record" className={`${primaryButton} mt-8`}>
               View accreditation details
               <ArrowIcon className="h-4 w-4" />
             </a>
           </div>
 
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:self-stretch">
             {cards.map((card) => (
               <li
                 key={card.title}
-                className="rounded-2xl bg-white p-5 shadow-[0_12px_40px_rgba(16,32,51,0.06)]"
+                className="border-rule flex flex-col rounded-2xl border bg-[#f7f8fa] p-6"
               >
-                <h3 className="text-ink text-lg font-medium">{card.title}</h3>
+                <p
+                  aria-hidden
+                  className="font-major text-theme-red text-4xl leading-none md:text-5xl"
+                >
+                  {card.figure}
+                </p>
+                <h3 className="text-ink mt-6 text-lg font-medium">
+                  {card.title}
+                </h3>
                 <p className="text-ink-soft mt-2 text-sm leading-relaxed">
                   {card.text}
                 </p>
@@ -143,21 +150,31 @@ export function WhyChooseUs() {
           </ul>
         </div>
 
-        <div
-          id="college-record"
-          className="border-rule mt-16 scroll-mt-24 border-t pt-12"
-        >
-          <h3 className="text-ink text-2xl font-medium">The college record</h3>
-          <div className="mt-8 grid gap-10 md:grid-cols-2">
-            {whyChooseItems.map((item) => (
-              <div key={item.title}>
-                <h4 className="text-ink text-xl font-medium">{item.title}</h4>
-                <p className="text-ink-soft mt-3 text-base leading-relaxed">
+        <div id="college-record" className="mt-16 scroll-mt-24 md:mt-24">
+          <h3 className="text-ink text-3xl font-medium md:text-4xl">
+            The college record
+          </h3>
+          <ol className="border-rule mt-8 border-t">
+            {whyChooseItems.map((item, index) => (
+              <li
+                key={item.title}
+                className="border-rule grid gap-3 border-b py-8 md:grid-cols-[3rem_minmax(0,18rem)_minmax(0,1fr)] md:gap-8"
+              >
+                <span
+                  aria-hidden
+                  className="font-major text-theme-red text-lg leading-none md:pt-1"
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h4 className="text-ink text-xl leading-snug font-medium">
+                  {item.title}
+                </h4>
+                <p className="text-ink-soft max-w-[75ch] text-base leading-relaxed">
                   {item.body()}
                 </p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
     </section>

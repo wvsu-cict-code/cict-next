@@ -16,6 +16,7 @@ import {
   type FormState,
 } from "@/lib/cms/forms";
 import { slugify } from "@/lib/format";
+import { parseSdgs } from "@/lib/sdg";
 
 async function postFromForm(formData: FormData) {
   const { supabase } = await requireAdmin();
@@ -47,6 +48,7 @@ async function postFromForm(formData: FormData) {
     category,
     published_at: publishedAt,
     is_featured: getBoolean(formData, "is_featured"),
+    sdgs: parseSdgs(formData.getAll("sdgs")),
     excerpt: getOptionalString(formData, "excerpt"),
     body: getString(formData, "body"),
     cover_image_url: await resolveMediaField(

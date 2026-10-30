@@ -6,6 +6,7 @@ import type { Database, Enums, Tables } from "@/lib/supabase/database.types";
 export type Post = Tables<"posts">;
 export type Program = Tables<"programs">;
 export type PostCategory = Enums<"post_category">;
+export type SiteSettings = Tables<"site_settings">;
 export type ContentClient = SupabaseClient<Database>;
 
 // Content queries shared by the public site (run in the browser) and the CMS.
@@ -67,6 +68,28 @@ export async function fetchPostBySlug(client: ContentClient, slug: string) {
   return data;
 }
 
+/**
+ * The CMS's site switches. Null when the settings table hasn't been created
+ * yet (its migration not applied), so the site behaves as if every switch
+ * is off instead of failing.
+ */
+export async function fetchSiteSettings(
+  client: ContentClient,
+): Promise<SiteSettings | null> {
+  const { data, error } = await client
+    .from("site_settings")
+    .select("*")
+    .eq("id", true)
+    .maybeSingle();
+
+  if (error) {
+    // PGRST205: table missing from the schema cache; 42P01: undefined table
+    if (error.code === "PGRST205" || error.code === "42P01") return null;
+    throw new Error(`Failed to load site settings: ${error.message}`);
+  }
+  return data;
+}
+
 export async function fetchPrograms(client: ContentClient) {
   const { data, error } = await client
     .from("programs")
@@ -87,6 +110,32 @@ export async function fetchProgram(client: ContentClient, id: string) {
 
   if (error) throw new Error(`Failed to load program: ${error.message}`);
   return data;
+}
+
+/** Departments with their members, for search and the directory cache. */
+export async function fetchDepartmentsWithFaculty(client: ContentClient) {
+  const { data, error } = await client
+    .from("departments")
+    .select("*, faculty_members(*)")
+    .order("sort_order")
+    .order("name")
+    .order("sort_order", { referencedTable: "faculty_members" });
+
+  if (error) throw new Error(`Failed to load faculty: ${error.message}`);
+
+  return (data ?? []).map((row) => {
+    const { faculty_members, ...department } = row;
+    return {
+      department: toDepartment(department),
+      faculty: (faculty_members ?? []).map((member) => ({
+        id: member.id,
+        name: member.name,
+        title: member.title,
+        description: member.description,
+        member: toFacultyMember(member),
+      })),
+    };
+  });
 }
 
 export async function fetchDepartments(client: ContentClient) {

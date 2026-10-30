@@ -13,6 +13,8 @@ export interface NewsArticle {
   newsHeader: string;
   description?: string;
   category: Tables<"posts">["category"];
+  /** Sustainable Development Goal numbers the post supports */
+  sdgs: number[];
 }
 
 export function toNewsArticle(post: Tables<"posts">): NewsArticle {
@@ -25,6 +27,8 @@ export function toNewsArticle(post: Tables<"posts">): NewsArticle {
     newsHeader: post.title,
     description: post.excerpt || undefined,
     category: post.category,
+    // Rows saved before the sdgs column existed don't have it
+    sdgs: post.sdgs ?? [],
   };
 }
 

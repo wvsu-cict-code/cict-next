@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import FacultyDetail from "@/components/faculty/FacultyDetail";
+import { container } from "@/components/PageHeader";
 import { fetchDepartmentWithFaculty } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
 import { FACULTY_PREFIX, segmentFromPathname } from "@/lib/routes";
@@ -28,7 +29,14 @@ export default function FacultyDepartmentPage() {
     return <ContentError onRetry={result.retry} />;
   }
   if (result.status === "loading") {
-    return <ContentPlaceholder className="mx-auto my-12 h-[70vh] w-11/12" />;
+    return (
+      <div className="bg-white">
+        <ContentPlaceholder className="h-72 w-full rounded-none" />
+        <div className={`${container} py-16`}>
+          <ContentPlaceholder className="h-[50vh] w-full rounded-2xl" />
+        </div>
+      </div>
+    );
   }
   return (
     <FacultyDetail

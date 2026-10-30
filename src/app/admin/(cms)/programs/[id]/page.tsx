@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DeleteButton from "@/components/admin/DeleteButton";
-import PageHeader, { Card } from "@/components/admin/PageHeader";
+import PageHeader, { SecondaryLink } from "@/components/admin/PageHeader";
 import SavedNotice from "@/components/admin/SavedNotice";
 import { requireAdmin } from "@/lib/cms/auth";
 import { siteUrl } from "@/lib/site";
@@ -40,14 +40,13 @@ export default async function EditProgramPage({
         backLabel="All programs"
         actions={
           <>
-            <a
+            <SecondaryLink
               href={siteUrl(`/programs/${program.id}`)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-neutral-50"
+              icon="eye"
+              external
             >
-              View on site ↗
-            </a>
+              View on site
+            </SecondaryLink>
             <DeleteButton
               action={deleteProgram.bind(null, program.id)}
               confirmMessage={`Delete ${program.code}? Its page will stop working.`}
@@ -56,12 +55,10 @@ export default async function EditProgramPage({
         }
       />
       {saved && <SavedNotice />}
-      <Card>
-        <ProgramForm
-          program={program}
-          action={updateProgram.bind(null, program.id)}
-        />
-      </Card>
+      <ProgramForm
+        program={program}
+        action={updateProgram.bind(null, program.id)}
+      />
     </>
   );
 }

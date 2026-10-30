@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import PageHeader, { Card } from "@/components/admin/PageHeader";
+import PageHeader from "@/components/admin/PageHeader";
 import { requireAdmin } from "@/lib/cms/auth";
 import { createProgram } from "../actions";
 import ProgramForm from "../ProgramForm";
@@ -18,9 +18,7 @@ export default async function NewProgramPage() {
         backHref="/admin/programs"
         backLabel="All programs"
       />
-      <Card>
-        <ProgramForm action={createProgram} />
-      </Card>
+      <ProgramForm action={createProgram} />
     </>
   );
 }

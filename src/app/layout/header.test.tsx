@@ -3,7 +3,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import Header from "@/app/layout/header";
 
 let pathname = "/";
-vi.mock("next/navigation", () => ({ usePathname: () => pathname }));
+vi.mock("next/navigation", () => ({
+  usePathname: () => pathname,
+  useRouter: () => ({ push: vi.fn() }),
+}));
 
 const highlighted = (name: string) =>
   screen

@@ -11,24 +11,32 @@ export default function MarkdownRenderer({ content }: { content: string }) {
       remarkPlugins={[remarkGfm]}
       components={{
         h1: ({ children }) => (
-          <h1 className="mt-6 mb-4 text-3xl font-bold">{children}</h1>
+          <h1 className="text-ink mt-10 mb-4 text-3xl leading-tight font-medium">
+            {children}
+          </h1>
         ),
         h2: ({ children }) => (
-          <h2 className="mt-6 mb-3 text-2xl font-bold">{children}</h2>
+          <h2 className="text-ink mt-10 mb-3 text-2xl leading-tight font-medium">
+            {children}
+          </h2>
         ),
         h3: ({ children }) => (
-          <h3 className="mt-5 mb-3 text-xl font-bold">{children}</h3>
+          <h3 className="text-ink mt-8 mb-3 text-xl leading-snug font-medium">
+            {children}
+          </h3>
         ),
         p: ({ children }) => (
-          <p className="mb-4 leading-relaxed text-gray-700">{children}</p>
+          <p className="text-ink-soft mb-5 text-base leading-relaxed md:text-lg">
+            {children}
+          </p>
         ),
         strong: ({ children }) => (
-          <strong className="font-bold">{children}</strong>
+          <strong className="text-ink font-semibold">{children}</strong>
         ),
         a: ({ href, children }) => (
           <a
             href={href}
-            className="text-orange-dark hover:text-orange-light underline"
+            className="text-theme-red hover:text-accent-deep underline underline-offset-2"
             target={href?.startsWith("http") ? "_blank" : undefined}
             rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
           >
@@ -36,17 +44,17 @@ export default function MarkdownRenderer({ content }: { content: string }) {
           </a>
         ),
         ul: ({ children }) => (
-          <ul className="mb-4 list-disc space-y-1 pl-6 text-gray-700">
+          <ul className="text-ink-soft mb-5 list-disc space-y-1.5 pl-6 text-base leading-relaxed md:text-lg">
             {children}
           </ul>
         ),
         ol: ({ children }) => (
-          <ol className="mb-4 list-decimal space-y-1 pl-6 text-gray-700">
+          <ol className="text-ink-soft mb-5 list-decimal space-y-1.5 pl-6 text-base leading-relaxed md:text-lg">
             {children}
           </ol>
         ),
         blockquote: ({ children }) => (
-          <blockquote className="border-orange-light mb-4 border-l-4 pl-4 text-gray-600 italic">
+          <blockquote className="border-theme-red text-ink mb-5 border-l-2 pl-4 text-lg leading-relaxed">
             {children}
           </blockquote>
         ),
@@ -59,7 +67,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
               src={src}
               alt={alt || ""}
               loading="lazy"
-              className="mx-auto my-4 block h-auto w-full rounded-lg shadow-md"
+              className="my-8 block h-auto w-full rounded-2xl"
             />
           );
         },

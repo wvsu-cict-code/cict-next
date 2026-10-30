@@ -1,20 +1,25 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { Great_Vibes } from "next/font/google";
 import { NewsHomeSection } from "@/components/NewsHomeSection";
 import { HomePrograms } from "@/components/HomePrograms";
+import { LandingMaintenance } from "@/components/LandingMaintenance";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
+import { MissionVision } from "@/components/MissionVision";
+import {
+  Eyebrow,
+  container,
+  outlineButtonOnDark,
+  primaryButton,
+} from "@/components/PageHeader";
 import { ArrowIcon, PhotoSlot } from "@/components/PhotoSlot";
-
-const script = Great_Vibes({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const primaryCta =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-theme-red px-5 text-sm font-semibold whitespace-nowrap text-white transition-colors duration-200 ease-draw hover:bg-accent-deep active:scale-[0.98]";
-const secondaryCta =
-  "inline-flex min-h-11 items-center justify-center rounded-full border border-ink/15 bg-white px-5 text-sm font-semibold whitespace-nowrap text-ink transition-colors duration-200 ease-draw hover:border-ink hover:bg-paper active:scale-[0.98]";
+import {
+  SHARE_IMAGE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  pageMetadata,
+} from "@/lib/seo";
 
 const record = [
   {
@@ -88,68 +93,117 @@ function StatIcon({ name }: { name: (typeof record)[number]["icon"] }) {
   );
 }
 
-function Mark({ children }: { children: string }) {
-  return (
-    <p className="text-theme-red flex items-center gap-3 text-xs font-semibold tracking-[0.18em] uppercase">
-      <span className="bg-theme-red h-px w-8" aria-hidden />
-      {children}
-    </p>
-  );
-}
+export const metadata: Metadata = {
+  title: { absolute: SITE_TITLE },
+  ...pageMetadata({
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    path: "/",
+  }),
+};
+
+// Structured data so search engines can show the college as an organization
+const collegeJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollegeOrUniversity",
+  name: "College of Information and Communications Technology",
+  alternateName: SITE_NAME,
+  description: SITE_DESCRIPTION,
+  url: `${SITE_URL}/`,
+  logo: `${SITE_URL}/icons/cictlogo.png`,
+  image: `${SITE_URL}${SHARE_IMAGE.url}`,
+  email: "cict@wvsu.edu.ph",
+  foundingDate: "2002",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "La Paz, Iloilo City",
+    addressRegion: "Iloilo",
+    addressCountry: "PH",
+  },
+  parentOrganization: {
+    "@type": "CollegeOrUniversity",
+    name: "West Visayas State University",
+  },
+};
 
 export default function Home() {
   return (
+    <>
+      <script
+        type="application/ld+json"
+        // Static data defined above; no user content goes in here
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collegeJsonLd) }}
+      />
+      <LandingMaintenance>
+        <HomeContent />
+      </LandingMaintenance>
+    </>
+  );
+}
+
+function HomeContent() {
+  return (
     <div className="bg-white">
       <section className="rise relative">
-        <div className="lg:grid lg:grid-cols-2">
-          <div className="px-4 pt-10 pb-8 md:px-8 md:pt-14 lg:flex lg:justify-end lg:pb-28">
-            <div className="lg:w-full lg:max-w-[700px] lg:pr-12 lg:pl-8">
-              <Mark>Transforming generations</Mark>
-              <h1 className="text-ink mt-4 max-w-[12ch] text-[2.5rem] leading-[1.05] font-medium md:text-6xl">
+        <div className="relative isolate overflow-hidden">
+          <PhotoSlot
+            label="Campus photo coming"
+            src="/temp-photos/campus.jpg"
+            alt="University building on a tropical campus"
+            className="absolute inset-0 -z-10 h-full w-full [&>img]:object-[70%_center]"
+          />
+          {/* Darkens the photo behind the text: the whole frame on small
+              screens, the left side (where the text sits) on large ones */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(16,32,51,0.55)_0%,rgba(16,32,51,0.82)_100%)] lg:bg-[linear-gradient(90deg,rgba(16,32,51,0.92)_0%,rgba(16,32,51,0.78)_38%,rgba(16,32,51,0.25)_70%,rgba(16,32,51,0.1)_100%)]"
+          />
+
+          <div className="mx-auto flex min-h-[30rem] max-w-[1400px] items-center px-4 pt-16 pb-24 md:px-8 md:pt-20 lg:min-h-[40rem] lg:pb-36">
+            <div className="max-w-[40rem] text-white">
+              <Eyebrow onDark>Transforming generations</Eyebrow>
+              <h1 className="mt-4 max-w-[12ch] text-[2.75rem] leading-[1.05] font-medium md:text-7xl">
                 Building the digital leaders of tomorrow.
               </h1>
-              <p className="text-ink-soft mt-4 max-w-[36ch] text-base leading-relaxed md:text-lg">
+              <p className="mt-5 max-w-[36ch] text-base leading-relaxed text-white/85 md:text-lg">
                 College of Information and Communications Technology, West
                 Visayas State University.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/programs" className={primaryCta}>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/programs" className={primaryButton}>
                   Explore our programs
                   <ArrowIcon className="h-4 w-4" />
                 </Link>
-                <Link href="#why-choose-us" className={secondaryCta}>
+                <Link href="#why-choose-us" className={outlineButtonOnDark}>
                   Why choose us
                 </Link>
               </div>
             </div>
           </div>
 
-          <div className="relative min-h-[24rem] overflow-hidden lg:min-h-full">
-            <PhotoSlot
-              label="Campus photo coming"
-              className="absolute inset-0 h-full w-full"
-            />
-            <ul
-              aria-hidden
-              className="absolute top-1/2 right-6 hidden -translate-y-1/2 space-y-4 text-right text-[11px] font-semibold tracking-[0.22em] text-white/85 uppercase sm:block"
-            >
-              {pillars.map((word) => (
-                <li key={word}>{word}</li>
-              ))}
-            </ul>
-            <div
-              aria-hidden
-              className="bg-theme-red absolute right-0 bottom-0 h-28 w-28"
-              style={{ clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0 70%)" }}
-            />
-          </div>
+          <ul
+            aria-hidden
+            className="absolute top-1/2 right-6 hidden -translate-y-1/2 space-y-4 border-r border-white/40 pr-4 text-right text-[11px] font-semibold tracking-[0.22em] text-white uppercase md:right-8 lg:block"
+          >
+            {pillars.map((word) => (
+              <li key={word}>{word}</li>
+            ))}
+          </ul>
+          <div
+            aria-hidden
+            className="bg-theme-red absolute right-0 bottom-0 h-20 w-20 md:h-28 md:w-28"
+            style={{ clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0 70%)" }}
+          />
         </div>
 
-        <div className="relative z-10 mx-auto -mt-8 max-w-[1120px] px-4 pb-4 lg:-mt-16">
+        <div className="relative z-10 mx-auto -mt-12 max-w-[1120px] px-4 pb-4 lg:-mt-20">
           <h2 className="sr-only">College record</h2>
-          <dl className="grid grid-cols-2 gap-6 rounded-2xl bg-white px-5 py-6 shadow-[0_18px_50px_rgba(16,32,51,0.1)] sm:px-8 lg:grid-cols-4">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-7 rounded-2xl bg-white px-5 py-6 shadow-[0_18px_50px_rgba(16,32,51,0.1)] sm:px-8 sm:py-8 lg:grid-cols-4 lg:gap-0">
             {record.map((item) => (
-              <div key={item.value} className="flex min-w-0 gap-3">
+              <div
+                key={item.value}
+                className="lg:border-rule flex min-w-0 gap-3 lg:border-l lg:px-6 lg:first:border-l-0 lg:first:pl-0 lg:last:pr-0"
+              >
                 <span className="text-theme-red mt-1 shrink-0">
                   <StatIcon name={item.icon} />
                 </span>
@@ -175,113 +229,83 @@ export default function Home() {
       <NewsHomeSection />
 
       <section id="about" className="bg-navy scroll-mt-24 text-white">
-        <div className="mx-auto grid max-w-[1400px] lg:grid-cols-2">
-          <div className="px-4 py-16 md:px-8 md:py-20">
-            <p className="flex items-center gap-3 text-xs font-semibold tracking-[0.18em] text-white/70 uppercase">
-              <span className="h-px w-8 bg-white/70" aria-hidden />
-              About CICT
-            </p>
-            <h2 className="mt-3 max-w-[16ch] text-4xl leading-[1.1] font-medium md:text-5xl">
-              Innovative education for a digital tomorrow.
-            </h2>
-            <p className="mt-5 max-w-[58ch] text-base leading-relaxed text-white/80 md:text-lg">
-              Founded in <strong>2002</strong> under BOR Resolution No. 34, the
-              College of Information and Communications Technology (CICT) began
-              as the{" "}
-              <strong>
-                Institute of Information and Communications Technology (IICT)
-              </strong>{" "}
-              and launched the{" "}
-              <strong>BS in Information Technology (BSIT)</strong> and{" "}
-              <strong>BS in Information Management (BSIM)</strong> programs in
-              AY 2002-2003, producing its first graduates soon after.
-            </p>
-            <Link href="/about" className={`${primaryCta} mt-8`}>
-              Learn more about us
-              <ArrowIcon className="h-4 w-4" />
-            </Link>
+        <div className="grid lg:grid-cols-2">
+          <div className="px-4 py-16 md:px-8 md:py-20 lg:flex lg:items-center lg:justify-end lg:px-0 lg:py-24">
+            <div className="lg:w-full lg:max-w-[700px] lg:pr-12 lg:pl-8">
+              <Eyebrow onDark>About CICT</Eyebrow>
+              <h2 className="mt-4 max-w-[18ch] text-4xl leading-[1.1] font-medium text-balance md:text-5xl">
+                Innovative education for a digital tomorrow.
+              </h2>
+              <p className="mt-6 max-w-[58ch] text-base leading-relaxed text-white/75 md:text-lg [&_strong]:font-semibold [&_strong]:text-white">
+                Founded in <strong>2002</strong> under BOR Resolution No. 34,
+                the College of Information and Communications Technology (CICT)
+                began as the{" "}
+                <strong>
+                  Institute of Information and Communications Technology (IICT)
+                </strong>{" "}
+                and launched the{" "}
+                <strong>BS in Information Technology (BSIT)</strong> and{" "}
+                <strong>BS in Information Management (BSIM)</strong> programs in
+                AY 2002-2003, producing its first graduates soon after.
+              </p>
+              <Link href="/about" className={`${primaryButton} mt-8`}>
+                Learn more about us
+                <ArrowIcon className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
-          <div className="relative min-h-[22rem]">
+          <figure className="relative min-h-[22rem] overflow-hidden lg:min-h-[34rem]">
             <PhotoSlot
-              label="Classroom photo coming"
-              className="absolute inset-0 h-full w-full"
+              label="Building photo coming"
+              src="/program_assets/cict.webp"
+              alt="The CICT building at West Visayas State University"
+              className="absolute inset-0 h-full w-full [&>img]:object-[60%_center]"
+            />
+            {/* Blends the photo into the navy text panel beside it */}
+            <div
+              aria-hidden
+              className="from-navy/70 absolute inset-0 hidden bg-gradient-to-r via-transparent to-transparent lg:block"
             />
             <div
               aria-hidden
-              className="bg-theme-red absolute inset-y-0 right-0 w-2/5"
-              style={{ clipPath: "polygon(42% 0, 100% 0, 100% 100%, 0 100%)" }}
+              className="from-navy/60 absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t to-transparent"
             />
-            <p
-              className={`${script.className} absolute right-6 bottom-8 left-6 text-right text-4xl text-white md:text-5xl`}
-            >
-              Transforming Generations
-            </p>
-          </div>
+            <figcaption className="absolute bottom-6 left-6 flex items-center gap-2 text-sm font-medium text-white md:left-8">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-4 w-4 text-white/80"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.7"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
+                <circle cx="12" cy="9.5" r="2.5" />
+              </svg>
+              CICT Building, WVSU La Paz, Iloilo City
+            </figcaption>
+            <div
+              aria-hidden
+              className="bg-theme-red absolute right-0 bottom-0 h-20 w-20 md:h-28 md:w-28"
+              style={{ clipPath: "polygon(30% 0, 100% 0, 100% 100%, 0 70%)" }}
+            />
+          </figure>
         </div>
       </section>
 
       <section className="bg-white">
-        <div className="mx-auto grid max-w-[1400px] gap-10 px-4 py-16 md:grid-cols-2 md:px-8 md:py-20">
-          <div className="flex gap-4">
-            <span className="text-theme-red border-theme-red/30 mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                aria-hidden
-              >
-                <circle cx="12" cy="12" r="8" />
-                <circle cx="12" cy="12" r="3" />
-                <path
-                  d="M12 2v3M12 19v3M2 12h3M19 12h3"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-            <div>
-              <h2 className="text-ink text-2xl font-medium">Mission</h2>
-              <p className="text-ink-soft mt-3 text-base leading-relaxed md:text-lg">
-                The WVSU-CICT aims to develop professionals who shall be able to
-                meet the growing manpower demand by expanding the ICT industries
-                in the country. Being the lead institution of higher learning in{" "}
-                <strong>Western Visayas.</strong>
-              </p>
-            </div>
-          </div>
-          <div className="md:border-rule flex gap-4 md:border-l md:pl-10">
-            <span className="text-theme-red border-theme-red/30 mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border">
-              <svg
-                viewBox="0 0 24 24"
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                aria-hidden
-              >
-                <path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z" />
-                <circle cx="12" cy="12" r="2.5" />
-              </svg>
-            </span>
-            <div>
-              <h2 className="text-ink text-2xl font-medium">Vision</h2>
-              <p className="text-ink-soft mt-3 text-base leading-relaxed md:text-lg">
-                To be the leading provider of ICT education in{" "}
-                <strong>Western Visayas</strong>, aligned with the broader
-                mandate of WVSU as the lead institution of higher learning in
-                the region.
-              </p>
-            </div>
-          </div>
+        <div className={`${container} py-16 md:py-20`}>
+          <MissionVision />
         </div>
       </section>
 
       <section id="courses-offered" className="scroll-mt-24 bg-[#f7f8fa]">
-        <div className="mx-auto max-w-[1400px] px-4 py-16 md:px-8 md:py-24">
+        <div className={`${container} py-16 md:py-24`}>
           <div className="flex items-end justify-between gap-4">
             <div>
-              <Mark>Our programs</Mark>
+              <Eyebrow>Our programs</Eyebrow>
               <h2 className="text-ink mt-3 text-4xl font-medium md:text-5xl">
                 Offered programs
               </h2>
@@ -306,10 +330,12 @@ export default function Home() {
       <WhyChooseUs />
 
       <section className="bg-[#f7f8fa]">
-        <div className="mx-auto grid max-w-[1400px] lg:grid-cols-2">
-          <div className="relative min-h-[22rem]">
+        <div className="grid lg:grid-cols-2">
+          <div className="relative min-h-[22rem] lg:min-h-[30rem]">
             <PhotoSlot
               label="Students photo coming"
+              src="/temp-photos/students.jpg"
+              alt="Students walking across a campus lawn"
               className="absolute inset-0 h-full w-full"
             />
             <div
@@ -318,21 +344,21 @@ export default function Home() {
               style={{ clipPath: "polygon(55% 0, 100% 0, 100% 100%, 0 100%)" }}
             />
           </div>
-          <div className="relative flex items-center overflow-hidden px-4 py-16 md:px-12 md:py-20">
+          <div className="relative flex items-center overflow-hidden px-4 py-16 md:px-8 md:py-20 lg:pr-8 lg:pl-12">
             <img
               src="/cict-emblem.png"
               alt=""
               className="pointer-events-none absolute -right-6 -bottom-8 w-56 opacity-[0.06]"
             />
             <div className="relative max-w-[36rem]">
-              <Mark>Admission</Mark>
+              <Eyebrow>Admission</Eyebrow>
               <h2 className="text-ink mt-3 max-w-[16ch] text-4xl leading-[1.1] font-medium md:text-5xl">
                 Questions about admission or a program?
               </h2>
               <p className="text-ink-soft mt-4 max-w-[42ch] text-base leading-relaxed md:text-lg">
                 Write to the CICT office about programs, visits, and enrollment.
               </p>
-              <Link href="/contact" className={`${primaryCta} mt-8`}>
+              <Link href="/contact" className={`${primaryButton} mt-8`}>
                 Contact us
                 <ArrowIcon className="h-4 w-4" />
               </Link>

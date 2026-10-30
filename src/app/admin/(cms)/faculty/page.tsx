@@ -1,6 +1,11 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import PageHeader, { Card, PrimaryLink } from "@/components/admin/PageHeader";
+import { Icon } from "@/components/admin/icons";
+import PageHeader, {
+  EmptyState,
+  PrimaryLink,
+  SecondaryLink,
+} from "@/components/admin/PageHeader";
 import { requireAdmin } from "@/lib/cms/auth";
 import { PLACEHOLDER_IMAGE } from "@/lib/faculty";
 
@@ -28,12 +33,9 @@ export default async function AdminFacultyPage() {
         description="Departments and faculty members shown in the Faculty Directory."
         actions={
           <>
-            <Link
-              href="/admin/faculty/departments/new"
-              className="rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-semibold hover:bg-neutral-50"
-            >
+            <SecondaryLink href="/admin/faculty/departments/new" icon="plus">
               New department
-            </Link>
+            </SecondaryLink>
             <PrimaryLink href="/admin/faculty/members/new">
               New member
             </PrimaryLink>
@@ -41,62 +43,109 @@ export default async function AdminFacultyPage() {
         }
       />
 
-      <div className="space-y-6">
-        {departments.length === 0 && (
-          <p className="text-sm text-neutral-500">No departments yet.</p>
-        )}
-        {departments.map((dept) => (
-          <Card key={dept.slug} className="p-0">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 px-6 py-4">
-              <h2 className="text-xl font-medium">{dept.name}</h2>
-              <div className="flex gap-4 text-sm">
-                <Link
-                  href={`/admin/faculty/members/new?department=${dept.slug}`}
-                  className="text-orange-dark hover:underline"
-                >
-                  + Add member
-                </Link>
-                <Link
-                  href={`/admin/faculty/departments/${dept.slug}`}
-                  className="text-neutral-500 hover:text-neutral-900"
-                >
-                  Edit department
-                </Link>
-              </div>
-            </div>
-            <ul className="divide-y divide-neutral-100">
-              {dept.faculty_members.length === 0 && (
-                <li className="px-6 py-4 text-sm text-neutral-500">
-                  No members yet.
-                </li>
-              )}
-              {dept.faculty_members.map((member) => (
-                <li key={member.id}>
-                  <Link
-                    href={`/admin/faculty/members/${member.id}`}
-                    className="flex items-center gap-4 px-6 py-3 hover:bg-neutral-50"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={member.image_url || PLACEHOLDER_IMAGE}
-                      alt=""
-                      className="h-10 w-10 rounded object-cover"
+      {departments.length === 0 ? (
+        <EmptyState
+          title="No departments yet."
+          action={
+            <PrimaryLink href="/admin/faculty/departments/new">
+              New department
+            </PrimaryLink>
+          }
+        />
+      ) : (
+        <>
+          {/* Jump to a department; the list below is long */}
+          <nav aria-label="Departments" className="mb-6 flex flex-wrap gap-2">
+            {departments.map((dept) => (
+              <a
+                key={dept.slug}
+                href={`#dept-${dept.slug}`}
+                className="border-rule text-ink hover:border-theme-red/50 hover:text-theme-red inline-flex min-h-9 items-center gap-2 rounded-full border bg-white px-3 text-sm transition-colors"
+              >
+                {dept.name}
+                <span className="text-ink-soft text-xs">
+                  {dept.faculty_members.length}
+                </span>
+              </a>
+            ))}
+          </nav>
+
+          <div className="space-y-4">
+            {departments.map((dept) => (
+              <details
+                key={dept.slug}
+                id={`dept-${dept.slug}`}
+                open
+                className="group/dept border-rule/70 scroll-mt-6 overflow-hidden rounded-2xl border bg-white"
+              >
+                <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-3 px-6 py-4 [&::-webkit-details-marker]:hidden">
+                  <span className="flex items-center gap-3">
+                    <Icon
+                      name="chevron"
+                      className="text-ink-soft h-4 w-4 -rotate-90 transition-transform group-open/dept:rotate-0"
                     />
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">
-                        {member.name}
-                      </p>
-                      <p className="truncate text-xs text-neutral-500">
-                        {member.title}
-                      </p>
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        ))}
-      </div>
+                    <span className="text-ink text-lg font-medium">
+                      {dept.name}
+                    </span>
+                    <span className="bg-paper text-ink-soft rounded-full px-2 py-0.5 text-xs font-semibold">
+                      {dept.faculty_members.length}
+                    </span>
+                  </span>
+                  <span className="flex gap-1 text-sm">
+                    <Link
+                      href={`/admin/faculty/members/new?department=${dept.slug}`}
+                      className="text-theme-red hover:bg-theme-red/5 inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 font-semibold"
+                    >
+                      <Icon name="plus" className="h-4 w-4" />
+                      Add member
+                    </Link>
+                    <Link
+                      href={`/admin/faculty/departments/${dept.slug}`}
+                      className="text-ink-soft hover:bg-paper hover:text-ink inline-flex min-h-9 items-center rounded-lg px-2.5"
+                    >
+                      Edit department
+                    </Link>
+                  </span>
+                </summary>
+                {dept.faculty_members.length === 0 ? (
+                  <p className="border-rule/70 text-ink-soft border-t px-6 py-4 text-sm">
+                    No members yet.
+                  </p>
+                ) : (
+                  <ul className="border-rule/70 grid border-t md:grid-cols-2">
+                    {dept.faculty_members.map((member) => (
+                      <li
+                        key={member.id}
+                        className="border-rule/70 border-b md:odd:border-r"
+                      >
+                        <Link
+                          href={`/admin/faculty/members/${member.id}`}
+                          className="group hover:bg-paper/60 flex items-center gap-3 px-6 py-3 transition-colors"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={member.image_url || PLACEHOLDER_IMAGE}
+                            alt=""
+                            className="bg-paper h-10 w-10 shrink-0 rounded-full object-cover"
+                          />
+                          <span className="min-w-0">
+                            <span className="text-ink group-hover:text-theme-red block truncate text-sm font-semibold">
+                              {member.name}
+                            </span>
+                            <span className="text-ink-soft block truncate text-xs">
+                              {member.title || "No title"}
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </details>
+            ))}
+          </div>
+        </>
+      )}
     </>
   );
 }

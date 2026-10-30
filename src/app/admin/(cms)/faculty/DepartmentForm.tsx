@@ -1,4 +1,5 @@
 import AdminForm from "@/components/admin/AdminForm";
+import { FormSection } from "@/components/admin/PageHeader";
 import { FieldGrid, SelectField, TextField } from "@/components/admin/fields";
 import type { FormState } from "@/lib/cms/forms";
 import type { Tables } from "@/lib/supabase/database.types";
@@ -19,43 +20,46 @@ export default function DepartmentForm({
       action={action}
       submitLabel={department ? "Save changes" : "Create department"}
     >
-      <FieldGrid>
-        <TextField
-          label="Name"
-          name="name"
-          required
-          defaultValue={department?.name}
-        />
-        <TextField
-          label="Slug"
-          name="slug"
-          defaultValue={department?.slug}
-          readOnly={Boolean(department)}
-          placeholder="Generated from the name"
-          hint={
-            department
-              ? "The slug is part of the page URL and can't be changed."
-              : "Used in the URL: /faculty-profiles/<slug>"
-          }
-        />
-        <TextField
-          label="Sort order"
-          name="sort_order"
-          type="number"
-          defaultValue={department?.sort_order ?? 0}
-          hint="Order in the mobile directory list."
-        />
-      </FieldGrid>
+      <FormSection title="Department">
+        <FieldGrid>
+          <TextField
+            label="Name"
+            name="name"
+            required
+            defaultValue={department?.name}
+          />
+          <TextField
+            label="Slug"
+            name="slug"
+            defaultValue={department?.slug}
+            readOnly={Boolean(department)}
+            placeholder="Generated from the name"
+            hint={
+              department
+                ? "The slug is part of the page URL and can't be changed."
+                : "Used in the URL: /faculty-profiles/<slug>"
+            }
+          />
+          <TextField
+            label="Sort order"
+            name="sort_order"
+            type="number"
+            defaultValue={department?.sort_order ?? 0}
+            hint="Order in the mobile directory list."
+          />
+        </FieldGrid>
+      </FormSection>
 
-      <fieldset className="space-y-4 rounded-md border border-neutral-200 p-4">
-        <legend className="px-1 text-sm font-semibold">
-          Directory diagram placement (desktop)
-        </legend>
-        <p className="text-xs text-neutral-500">
-          Coordinates use the diagram&apos;s 1600 × 1000 canvas (x from −300 to
-          1300). The label sits at (x, y) and a line connects it to the logo
-          anchor, which is also where the page zooms in.
-        </p>
+      <FormSection
+        title="Directory diagram placement (desktop)"
+        description={
+          <>
+            Coordinates use the diagram&apos;s 1600 × 1000 canvas (x from −300
+            to 1300). The label sits at (x, y) and a line connects it to the
+            logo anchor, which is also where the page zooms in.
+          </>
+        }
+      >
         <FieldGrid>
           <SelectField
             label="Label side"
@@ -97,7 +101,7 @@ export default function DepartmentForm({
             defaultValue={department?.logo_anchor_y ?? 500}
           />
         </FieldGrid>
-      </fieldset>
+      </FormSection>
     </AdminForm>
   );
 }

@@ -9,6 +9,7 @@ import {
   fetchProgram,
   fetchPrograms,
   fetchPublishedPosts,
+  fetchSiteSettings,
   previewLabel,
 } from "@/lib/cms/content";
 
@@ -133,5 +134,28 @@ describe("previewLabel", () => {
     expect(
       previewLabel(post({ published_at: "2026-11-15T02:00:00.000Z" }), NOW),
     ).toBe("Preview — scheduled for November 15, 2026");
+  });
+});
+
+describe("fetchSiteSettings", () => {
+  it("reads the single settings row", async () => {
+    const row = { id: true, maintenance_mode: true, maintenance_message: "" };
+    const { client, calls } = recordingClient(ok(row));
+    await expect(fetchSiteSettings(client)).resolves.toEqual(row);
+    expect(calls).toContainEqual(["from", "site_settings"]);
+    expect(calls).toContainEqual(["eq", "id", true]);
+  });
+
+  it("treats a missing settings table as no settings", async () => {
+    const { client } = recordingClient({
+      data: null,
+      error: { code: "PGRST205", message: "Could not find the table" },
+    });
+    await expect(fetchSiteSettings(client)).resolves.toBeNull();
+  });
+
+  it("throws on other errors", async () => {
+    const { client } = recordingClient(failed);
+    await expect(fetchSiteSettings(client)).rejects.toThrow("network down");
   });
 });

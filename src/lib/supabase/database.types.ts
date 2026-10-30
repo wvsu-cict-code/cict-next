@@ -145,6 +145,7 @@ export type Database = {
           id: string
           is_featured: boolean
           published_at: string | null
+          sdgs: number[]
           slug: string
           status: Database["public"]["Enums"]["post_status"]
           title: string
@@ -159,6 +160,7 @@ export type Database = {
           id?: string
           is_featured?: boolean
           published_at?: string | null
+          sdgs?: number[]
           slug: string
           status?: Database["public"]["Enums"]["post_status"]
           title: string
@@ -173,6 +175,7 @@ export type Database = {
           id?: string
           is_featured?: boolean
           published_at?: string | null
+          sdgs?: number[]
           slug?: string
           status?: Database["public"]["Enums"]["post_status"]
           title?: string
@@ -221,6 +224,30 @@ export type Database = {
           objectives?: string
           semesters?: string | null
           sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      site_settings: {
+        Row: {
+          created_at: string
+          id: boolean
+          maintenance_message: string
+          maintenance_mode: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: boolean
+          maintenance_message?: string
+          maintenance_mode?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: boolean
+          maintenance_message?: string
+          maintenance_mode?: boolean
           updated_at?: string
         }
         Relationships: []

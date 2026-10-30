@@ -6,7 +6,9 @@ import {
   loadHomeNews,
   loadNewsAnnouncements,
   loadPrograms,
+  loadSearch,
 } from "@/lib/cms/siteContent";
+import { fetchSiteSettings } from "@/lib/cms/content";
 import { prefetchContent } from "@/lib/cms/useContent";
 
 /**
@@ -20,6 +22,8 @@ export function SiteContentPrefetch() {
       prefetchContent("home-news", loadHomeNews),
       prefetchContent("news-announcements", loadNewsAnnouncements),
       prefetchContent("departments", loadDepartments),
+      prefetchContent("search", loadSearch),
+      prefetchContent("site-settings", fetchSiteSettings),
     ];
     for (const request of pending) void request.catch(() => {});
   }, []);

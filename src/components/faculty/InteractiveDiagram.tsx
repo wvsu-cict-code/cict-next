@@ -86,8 +86,8 @@ export default function InteractiveDiagram({
                   onClick={(e) => onClick(e, index)}
                   className={`flex items-center gap-4 ${dept.side === "left" ? "flex-row" : "flex-row-reverse"}`}
                 >
-                  <div className={`px-4 py-2 bg-white border border-neutral-100 rounded-[2px] shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all duration-300 ${hoveredIndex === index ? 'scale-110 shadow-[0_10px_30px_rgba(0,0,0,0.12)] -translate-y-1' : 'scale-100'}`}>
-                    <span className={`font-minor text-[12px] lg:text-[13px] font-bold tracking-tight whitespace-nowrap transition-all duration-300 ${hoveredIndex === null || hoveredIndex === index ? "text-neutral-900" : "text-neutral-400 opacity-40"}`}>
+                  <div className={`px-4 py-2 bg-white border border-rule rounded-full shadow-[0_4px_20px_rgba(16,32,51,0.08)] transition-all duration-300 ${hoveredIndex === index ? 'scale-110 shadow-[0_10px_30px_rgba(0,0,0,0.12)] -translate-y-1' : 'scale-100'}`}>
+                    <span className={`text-[12px] lg:text-[13px] font-semibold whitespace-nowrap transition-all duration-300 ${hoveredIndex === null || hoveredIndex === index ? "text-ink" : "text-ink-soft opacity-40"}`}>
                       {dept.name}
                     </span>
                   </div>

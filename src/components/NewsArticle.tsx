@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { PageHeader, container } from "@/components/PageHeader";
+import { SdgList } from "@/components/SdgBadges";
 import { fetchPostBySlug, previewLabel } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
 import { formatDate } from "@/lib/format";
@@ -31,65 +31,59 @@ export default function NewsArticle() {
 
   if (article.status === "loading") {
     return (
-      <div className="mx-auto max-w-4xl space-y-4 px-8 py-8">
-        <ContentPlaceholder className="h-9 w-3/4" />
-        <ContentPlaceholder className="h-4 w-40" />
-        <ContentPlaceholder className="h-64 w-full max-w-xl" />
+      <div className="bg-white">
+        <ContentPlaceholder className="h-72 w-full rounded-none" />
+        <div className={`${container} grid gap-4 py-16`}>
+          <ContentPlaceholder className="h-80 w-full max-w-3xl rounded-2xl" />
+          <ContentPlaceholder className="h-4 w-full max-w-2xl" />
+          <ContentPlaceholder className="h-4 w-full max-w-xl" />
+        </div>
       </div>
     );
   }
 
+  const back = { href: "/news-announcements", label: "All news" };
+
   if (!post) {
     return (
-      <div className="flex h-[60vh] flex-col items-center justify-center px-6 text-center">
-        <Image
-          src="/not-found-icon.svg"
-          alt="Not Found"
-          width={120}
-          height={120}
-          className="mb-6"
-        />
-        <h2 className="mb-2 text-2xl font-semibold text-gray-700 sm:text-3xl">
-          Article Not Found
-        </h2>
-        <p className="mb-6 text-gray-500">
-          The article you are looking for does not exist or has been removed.
-        </p>
-        <Link
-          href="/news-announcements"
-          className="font-minor bg-orange-dark hover:bg-orange-light rounded-full px-6 py-2 text-sm font-semibold text-white transition-colors"
-        >
-          Back to News
-        </Link>
-      </div>
+      <PageHeader
+        eyebrow="News"
+        title="Article not found"
+        intro="The article you are looking for does not exist or has been removed."
+        back={back}
+      />
     );
   }
 
   const preview = previewLabel(post);
 
   return (
-    <>
+    <div className="bg-white">
       {preview && (
-        <div className="font-minor flex items-center justify-center gap-4 bg-[#373737] px-6 py-2 text-sm text-white">
+        <div className="flex items-center justify-center gap-4 bg-[#373737] px-6 py-2 text-sm text-white">
           <span>{preview}</span>
         </div>
       )}
-      <div className="mx-auto max-w-4xl px-8 py-8">
-        <h1 className="mb-4 text-3xl font-bold">{post.title}</h1>
-        <p className="mb-6 text-sm text-gray-500">
-          {formatDate(post.published_at ?? post.created_at)}
-        </p>
-        {post.cover_image_url && (
-          <Image
-            src={post.cover_image_url}
-            alt={post.title}
-            className="mb-6 w-full max-w-xl rounded-lg"
-            width={800}
-            height={450}
-          />
-        )}
-        <MarkdownRenderer content={post.body} />
+      <PageHeader
+        eyebrow={post.category === "announcement" ? "Announcement" : "News"}
+        title={post.title}
+        intro={formatDate(post.published_at ?? post.created_at)}
+        back={back}
+      />
+      <div className={`${container} py-12 md:py-16`}>
+        <div className="max-w-3xl">
+          {post.cover_image_url && (
+            // eslint-disable-next-line @next/next/no-img-element -- matches the home page cards
+            <img
+              src={post.cover_image_url}
+              alt=""
+              className="mb-10 w-full rounded-2xl object-cover"
+            />
+          )}
+          <MarkdownRenderer content={post.body} />
+          <SdgList sdgs={post.sdgs} />
+        </div>
       </div>
-    </>
+    </div>
   );
 }
