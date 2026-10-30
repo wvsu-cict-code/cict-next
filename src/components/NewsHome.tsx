@@ -1,33 +1,49 @@
 import Link from "next/link";
+import { ArrowCircle } from "@/components/PhotoSlot";
+import { SdgBadges } from "@/components/SdgBadges";
 
 interface CardProps {
-  className?: string;
   date: string;
   tag: string;
   title: string;
   href: string;
+  image?: string | null;
+  sdgs?: number[];
 }
 
-export function HomeNewsCard({ date, tag, title, href, className }: CardProps) {
+export function HomeNewsCard({
+  date,
+  tag,
+  title,
+  href,
+  image,
+  sdgs,
+}: CardProps) {
   return (
-    <div className={className}>
-      <div className="flex items-center">
-        <p className="font-minor text-[8px] font-normal text-[#4D4D4D]">
-          {date}
-        </p>
-        <span className="font-minor border-orange-light bg-orange-light ml-auto h-3.5 w-8 rounded-sm border text-center text-[8px] font-bold text-white">
-          {tag}
-        </span>
-      </div>
-      <div className="mt-1 flex h-20 flex-col md:mt-3">
-        <h1 className="md:text-4 text-sm font-bold">{title}</h1>
-        <Link
-          href={href}
-          className="border-orange-light text-orange-light hover:bg-orange-light group mt-auto ml-auto flex h-4.5 w-17.5 items-center justify-center rounded-full border text-[8px] font-normal transition duration-200 hover:text-white"
-        >
-          Read More →
-        </Link>
-      </div>
-    </div>
+    <article className="min-w-0">
+      <Link
+        href={href}
+        className="ease-draw group border-rule hover:border-theme-red/40 flex h-full items-center gap-4 rounded-2xl border bg-white p-3 pr-4 shadow-[0_10px_30px_rgba(16,32,51,0.05)] transition-[transform,border-color] duration-200 hover:-translate-y-0.5"
+      >
+        <img
+          src={image || "/home-page_assets/featured-card-image.png"}
+          alt=""
+          className="min-h-20 w-24 shrink-0 self-stretch rounded-xl object-cover sm:w-32"
+        />
+        <div className="min-w-0 flex-1">
+          {tag ? (
+            <span className="text-theme-red text-[11px] font-semibold tracking-[0.14em] uppercase">
+              {tag}
+            </span>
+          ) : null}
+          <span className="text-ink-soft mt-1 block text-xs">{date}</span>
+          <span className="text-ink group-hover:text-theme-red mt-1 block text-base leading-snug font-medium">
+            {title}
+          </span>
+          <SdgBadges sdgs={sdgs} max={5} className="mt-2" />
+        </div>
+        <ArrowCircle className="text-ink-soft group-hover:text-theme-red group-hover:border-theme-red" />
+      </Link>
+    </article>
   );
 }

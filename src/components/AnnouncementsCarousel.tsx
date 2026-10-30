@@ -1,18 +1,15 @@
 "use client";
 
 // [IMPORT] Standard
-import Image from "next/image";
+import { ArrowIcon } from "@/components/PhotoSlot";
+import { SdgBadges } from "@/components/SdgBadges";
 import Link from "next/link";
 
 // [IMPORT] Hooks
 import { useState, useEffect, useRef } from "react";
 
-interface NewsArticle {
-  id: number;
-  imgSrc?: string;
-  date: string;
-  newsHeader: string;
-}
+// [IMPORT] Types
+import { newsHref, type NewsArticle } from "@/lib/news";
 
 interface AnnouncementsCarouselProps {
   articles: NewsArticle[];
@@ -34,14 +31,6 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
   // [CONSTANTS] Carousel configuration
   const GAP = 40; // space-x-10
   const offset = activeIndex * (cardWidth + GAP) + cardWidth / 2;
-
-  // [FUNCTION] Generate URL slug from news header
-  const generateSlug = (text: string) =>
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
 
   // [EFFECT] Update card width based on window size
   useEffect(() => {
@@ -119,19 +108,19 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
           {/* [BUTTON] Left Arrow */}
           <button
             onClick={goPrev}
-            className="absolute top-1/2 left-1 z-20 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/80 shadow-md transition-all duration-200 hover:bg-white/80 sm:left-4 md:bg-white"
+            className="text-ink hover:text-theme-red absolute top-1/2 left-1 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-colors duration-200 sm:left-4"
             aria-label="Previous"
           >
-            ←
+            <ArrowIcon className="h-4 w-4 rotate-180" />
           </button>
 
           {/* [BUTTON] Right Arrow */}
           <button
             onClick={goNext}
-            className="absolute top-1/2 right-1 z-20 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white/80 shadow-md transition-all duration-200 hover:bg-white/80 sm:right-4 md:bg-white"
+            className="text-ink hover:text-theme-red absolute top-1/2 right-1 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-colors duration-200 sm:right-4"
             aria-label="Next"
           >
-            →
+            <ArrowIcon className="h-4 w-4" />
           </button>
         </div>
         <div
@@ -140,7 +129,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
         >
           {articles.map((article, index) => {
             const daysAgo = Math.floor(
-              (new Date().getTime() - new Date(article.date).getTime()) /
+              (new Date().getTime() - new Date(article.publishedAt).getTime()) /
                 (1000 * 60 * 60 * 24),
             );
 
@@ -152,46 +141,46 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
                 className={`relative w-60 flex-none transition-all duration-700 sm:w-66 md:w-72 ${
                   isActive
                     ? "z-10 scale-105 sm:scale-110"
-                    : "scale-100 opacity-20"
+                    : "scale-100 opacity-30"
                 }`}
               >
-                <div className="space-y-3 overflow-hidden rounded-xl bg-white p-4 pb-5 sm:space-y-4 sm:p-5 md:space-y-5 md:p-6">
-                  <p className="font-minor mb-4 text-end text-xs text-[#4D4D4D]">
-                    {daysAgo} days ago
-                  </p>
+                <div className="flex flex-col gap-4 overflow-hidden rounded-2xl bg-white p-4 pb-5 shadow-[0_18px_50px_rgba(16,32,51,0.25)] sm:p-5">
+                  <p className="text-ink-soft text-xs">{daysAgo} days ago</p>
 
-                  {article.imgSrc ? (
-                    <Image
-                      src={article.imgSrc}
-                      alt={article.newsHeader}
-                      className="aspect-[16/9] rounded-xl object-cover"
-                      width={240}
-                      height={135}
+                  <div className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- same fallback as the home page cards */}
+                    <img
+                      src={
+                        article.imgSrc ||
+                        "/home-page_assets/featured-card-image.png"
+                      }
+                      alt=""
+                      className="aspect-[16/9] w-full rounded-xl object-cover"
                     />
-                  ) : (
-                    <div className="aspect-[16/9] rounded-xl bg-gray-300" />
-                  )}
+                    <SdgBadges
+                      sdgs={article.sdgs}
+                      max={3}
+                      className="absolute bottom-2 left-2"
+                    />
+                  </div>
 
                   <h3
-                    className="text-xl leading-6 font-bold text-black sm:text-2xl"
+                    className="font-major text-ink text-xl leading-snug font-medium sm:text-2xl"
                     style={{ minHeight: "4.5rem" }}
                   >
                     {article.newsHeader}
                   </h3>
 
                   <Link
-                    href={
+                    href={isActive ? newsHref(article.slug) : "#"}
+                    className={`ease-draw inline-flex min-h-10 items-center gap-2 self-start rounded-full px-4 text-sm font-semibold transition-colors duration-200 ${
                       isActive
-                        ? `/news-announcements/news/${generateSlug(article.newsHeader)}`
-                        : "#"
-                    }
-                    className={`font-minor mt-4 self-start rounded-full px-3 py-1 text-xs font-semibold tracking-wider transition-colors duration-300 ease-in-out md:text-sm ${
-                      isActive
-                        ? "bg-orange-dark border-orange-dark hover:text-orange-dark hover:border-orange-dark cursor-pointer border text-white hover:bg-white"
-                        : "pointer-events-none border border-gray-200 bg-gray-200 text-gray-400"
+                        ? "bg-theme-red hover:bg-accent-deep text-white"
+                        : "text-ink-soft pointer-events-none bg-neutral-200"
                     }`}
                   >
-                    Read More &nbsp;→
+                    Read more
+                    <ArrowIcon className="h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -206,8 +195,12 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
           <button
             key={index}
             onClick={() => goToIndex(index)}
-            className={`h-3 w-3 rounded-full transition-colors ${
-              index === activeIndex ? "bg-orange-dark" : "bg-gray-300"
+            aria-label={`Show announcement ${index + 1}`}
+            aria-current={index === activeIndex ? "true" : undefined}
+            className={`h-2.5 rounded-full transition-all duration-300 ${
+              index === activeIndex
+                ? "bg-orange-light w-6"
+                : "w-2.5 bg-white/50"
             }`}
           />
         ))}

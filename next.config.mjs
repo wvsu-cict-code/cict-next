@@ -1,39 +1,65 @@
-const CONFIG = {
-  protocol: "http",
-  hostname: "localhost",
-  port: "1337",
-}
+import { siteBuildEnvProblem } from "./src/lib/siteBuildEnv.mjs";
 
-const strapiUrlEnv = process.env.STRAPI_URL;
-let imageProtocol = CONFIG.protocol;
-let imageHostname = CONFIG.hostname;
-let imagePort = CONFIG.port;
-if (strapiUrlEnv) {
+// Allow next/image to optimize files served from Supabase Storage.
+const remotePatterns = [];
+let isLocalSupabase = false;
+const supabaseUrlEnv = process.env.NEXT_PUBLIC_SUPABASE_URL;
+if (supabaseUrlEnv) {
   try {
-    const parsed = new URL(strapiUrlEnv);
-    imageProtocol = parsed.protocol.replace(":", "") || imageProtocol;
-    imageHostname = parsed.hostname || imageHostname;
-    imagePort = parsed.port || imagePort;
+    const parsed = new URL(supabaseUrlEnv);
+    remotePatterns.push({
+      protocol: parsed.protocol.replace(":", ""),
+      hostname: parsed.hostname,
+      port: parsed.port,
+      pathname: "/storage/v1/object/public/**",
+    });
+    isLocalSupabase = ["127.0.0.1", "localhost"].includes(parsed.hostname);
   } catch {
-    // If STRAPI_URL is invalid, fall back to defaults.
+    // If NEXT_PUBLIC_SUPABASE_URL is invalid, only local images are allowed.
   }
 }
 
+// Two builds from one codebase:
+// - `npm run build` (CMS, deployed to Vercel): the whole app.
+// - `npm run build:site` (BUILD_TARGET=site): a static export of the public
+//   site for the school's Apache server. It only includes `*.site.tsx` route
+//   files, which leaves out the CMS (`admin/`, `api/`, `proxy.ts`).
+// New public pages and layouts MUST be named `page.site.tsx` /
+// `layout.site.tsx`, or they won't be on the school site.
+const isSiteBuild = process.env.BUILD_TARGET === "site";
+
+// The school site's pages load content from Supabase in visitors' browsers;
+// stop before producing an upload that can't reach it
+if (isSiteBuild) {
+  const problem = siteBuildEnvProblem(process.env);
+  if (problem) throw new Error(`Can't build the school site: ${problem}`);
+}
+
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  /* config options here */
+const cmsConfig = {
   reactCompiler: true,
-   images: {
-    remotePatterns: [
-      {
-        protocol: imageProtocol,
-        hostname: imageHostname,
-        port: imagePort,
-        pathname: "/**",
-      },
-    ],
-    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
+  pageExtensions: ["tsx", "ts", "site.tsx", "site.ts"],
+  images: {
+    remotePatterns,
+    // Local Supabase (`supabase start`) serves images from 127.0.0.1
+    dangerouslyAllowLocalIP: isLocalSupabase,
+  },
+  experimental: {
+    serverActions: {
+      // CMS image and PDF uploads go through server actions
+      bodySizeLimit: "10mb",
+    },
   },
 };
 
-export default nextConfig;
+/** @type {import('next').NextConfig} */
+const siteConfig = {
+  reactCompiler: true,
+  pageExtensions: ["site.tsx", "site.ts"],
+  output: "export",
+  trailingSlash: true,
+  // There's no image optimization server on static hosting
+  images: { unoptimized: true },
+};
+
+export default isSiteBuild ? siteConfig : cmsConfig;
