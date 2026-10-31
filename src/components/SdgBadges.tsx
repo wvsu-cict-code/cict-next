@@ -76,7 +76,11 @@ export function SdgBadges({
   );
 }
 
-/** Every goal a post supports, with its name; for the article page. */
+/**
+ * Every goal a post supports, as the official UN goal icons (which carry
+ * the goal's name); for the article page. The icons in `public/sdg/` are
+ * open-sdg's inverted artwork on the goal's official color.
+ */
 export function SdgList({
   sdgs,
 }: {
@@ -96,14 +100,19 @@ export function SdgList({
       >
         Sustainable Development Goals
       </h2>
-      <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+      <ul className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
         {goals.map((goal) => (
-          <li key={goal.number} className="flex items-center gap-3">
-            <Tile goal={goal} size="md" />
-            <span className="text-ink text-sm leading-snug">
-              <span className="text-ink-soft">SDG {goal.number}:</span>{" "}
-              {goal.name}
-            </span>
+          <li key={goal.number}>
+            {/* eslint-disable-next-line @next/next/no-img-element -- static SVGs; the school site has no image optimizer */}
+            <img
+              src={`/sdg/${goal.number}.svg`}
+              alt={`SDG ${goal.number}: ${goal.name}`}
+              title={`SDG ${goal.number}: ${goal.name}`}
+              width={1000}
+              height={1000}
+              loading="lazy"
+              className="aspect-square h-auto w-full"
+            />
           </li>
         ))}
       </ul>

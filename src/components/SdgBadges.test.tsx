@@ -29,9 +29,14 @@ describe("SdgBadges", () => {
 });
 
 describe("SdgList", () => {
-  it("lists every goal with its name", () => {
-    render(<SdgList sdgs={[13]} />);
-    expect(screen.getByText("Climate Action")).toBeTruthy();
+  it("shows each goal as its official icon, named in the alt text", () => {
+    render(<SdgList sdgs={[13, 4]} />);
+    const icons = screen.getAllByRole("img");
+    expect(icons.map((icon) => icon.getAttribute("alt"))).toEqual([
+      "SDG 4: Quality Education",
+      "SDG 13: Climate Action",
+    ]);
+    expect(icons[1].getAttribute("src")).toBe("/sdg/13.svg");
   });
 
   it("renders nothing without goals", () => {
