@@ -137,7 +137,7 @@ export default function WorkList({
                   disabled={index === 0}
                   onClick={() => void reorder(index, index - 1)}
                 >
-                  <Icon name="chevron" className="h-[18px] w-[18px] -rotate-90" />
+                  <Icon name="chevron" className="h-[18px] w-[18px] rotate-180" />
                 </button>
                 <button
                   type="button"
@@ -146,7 +146,7 @@ export default function WorkList({
                   disabled={index === works.length - 1}
                   onClick={() => void reorder(index, index + 1)}
                 >
-                  <Icon name="chevron" className="h-[18px] w-[18px] rotate-90" />
+                  <Icon name="chevron" className="h-[18px] w-[18px]" />
                 </button>
               </div>
             </li>
