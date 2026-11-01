@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeWork } from "./fixtures";
 import { StudentWorksSection } from "./StudentWorksSection";
@@ -113,5 +113,27 @@ describe("StudentWorksSection", () => {
       ),
     );
     expect(loadMore).not.toHaveBeenCalled();
+  });
+
+  it("opens the spotlight and returns focus to the tile on close", () => {
+    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+      cb(0);
+      return 0;
+    });
+    const works = [
+      makeWork({ id: "a", title: "First", student: "Ana" }),
+      makeWork({ id: "b", title: "Second", student: "Ben" }),
+    ];
+    state({ works, total: 2 });
+    render(<StudentWorksSection />);
+    measure();
+    fireEvent.click(screen.getByRole("button", { name: "First by Ana" }));
+    expect(screen.getByRole("dialog", { name: "First" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Next work" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Second by Ben" }),
+    );
   });
 });

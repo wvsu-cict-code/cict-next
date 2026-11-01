@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Eyebrow } from "@/components/PageHeader";
 import { useStudentWorks } from "@/lib/studentWorks/useStudentWorks";
+import { WorkSpotlight } from "./WorkSpotlight";
 import { WorkWall } from "./WorkWall";
 
 /** Featured student works for the BSEMC page. Hidden until there is something to show. */
 export function StudentWorksSection() {
   const { status, works, total, hasMore, loadMore } = useStudentWorks();
-  // Index of the opened work. Task 10 renders the spotlight from it and
-  // returns focus with tileRefs.current[openIndex] on close.
-  const [, setOpenIndex] = useState<number | null>(null);
+  // Index of the work shown in the spotlight, or null while it is closed.
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
   const tileRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const sentinel = useRef<HTMLDivElement>(null);
 
@@ -35,6 +35,15 @@ export function StudentWorksSection() {
 
   if (!active) return null;
 
+  function closeSpotlight() {
+    const index = openIndex;
+    setOpenIndex(null);
+    if (index !== null) {
+      // The tile is not covered any more once the overlay unmounts.
+      requestAnimationFrame(() => tileRefs.current[index]?.focus());
+    }
+  }
+
   return (
     <section className="border-rule mt-12 border-t pt-12">
       <Eyebrow>Student showcase</Eyebrow>
@@ -42,6 +51,16 @@ export function StudentWorksSection() {
         Featured student works
       </h2>
       <WorkWall works={works} onOpen={setOpenIndex} tileRefs={tileRefs} />
+      {openIndex !== null ? (
+        <WorkSpotlight
+          works={works}
+          total={total}
+          index={openIndex}
+          onIndexChange={setOpenIndex}
+          onClose={closeSpotlight}
+          loadMore={loadMore}
+        />
+      ) : null}
       <div ref={sentinel} aria-hidden className="h-px" />
     </section>
   );
