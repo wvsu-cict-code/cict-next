@@ -45,3 +45,6 @@ bun.lock
 
 # allow the env template
 !.env.example
+
+# Brainstorming mockups
+.superpowers/
