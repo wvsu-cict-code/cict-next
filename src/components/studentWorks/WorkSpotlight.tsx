@@ -5,6 +5,7 @@ import type { StudentWork } from "@/lib/cms/content";
 import { classifySwipe } from "@/lib/studentWorks/gestures";
 import { isWebUrl, storeLabel } from "@/lib/studentWorks/links";
 import { youtubeEmbedUrl } from "@/lib/studentWorks/youtube";
+import { ZoomableImage } from "./ZoomableImage";
 
 const KIND_LABEL: Record<StudentWork["kind"], string> = {
   art: "Digital art",
@@ -42,8 +43,8 @@ export function WorkSpotlight({
   const closed = useRef(false);
   const indexRef = useRef(index);
   const downOnBackdrop = useRef(false);
-  // Task 11's ZoomableImage drives this; swipes are ignored while zoomed.
-  const [zoomed] = useState(false);
+  // ZoomableImage drives this; swipes are ignored while zoomed.
+  const [zoomed, setZoomed] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
 
   const canPrevious = index > 0;
@@ -221,13 +222,7 @@ export function WorkSpotlight({
               />
             </div>
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={work.image_url ?? undefined}
-              alt={`${work.title} by ${work.student}`}
-              draggable={false}
-              className="max-h-[calc(55dvh-5rem)] max-w-full rounded object-contain lg:max-h-[80vh]"
-            />
+            <ZoomableImage work={work} onZoomedChange={setZoomed} />
           )}
         </div>
 

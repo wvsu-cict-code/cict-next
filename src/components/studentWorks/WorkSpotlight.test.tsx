@@ -150,6 +150,62 @@ describe("WorkSpotlight", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it("still swipes from the artwork itself at scale 1", () => {
+    const { onIndexChange } = setup();
+    drag(screen.getByAltText("Second by Ben"), -80, 0);
+    expect(onIndexChange).toHaveBeenCalledWith(2);
+  });
+
+  it("pans instead of changing pieces while zoomed", () => {
+    vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(400);
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(300);
+    try {
+      const { onIndexChange, onClose } = setup();
+      fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+      const image = screen.getByAltText("Second by Ben");
+      const before = screen.getByTestId("zoom-image").style.transform;
+      drag(image, -80, 0);
+      drag(image, 0, 120);
+      expect(screen.getByTestId("zoom-image").style.transform).not.toBe(before);
+      expect(onIndexChange).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
+  it("swipes again after leaving a zoomed artwork for a video", () => {
+    const works = [
+      makeWork({ id: "a", kind: "video", youtube_id: "abcdefghijk", image_url: null }),
+      makeWork({ id: "b", title: "Second", student: "Ben" }),
+    ];
+    const onIndexChange = vi.fn();
+    const props = { works, total: 2, onIndexChange, onClose: vi.fn(), loadMore: vi.fn() };
+    const { rerender } = render(<WorkSpotlight {...props} index={1} />);
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    rerender(<WorkSpotlight {...props} index={0} />);
+    drag(screen.getByTestId("spotlight-media"), -80, 0);
+    expect(onIndexChange).toHaveBeenCalledWith(1);
+  });
+
+  it("never treats a pinch as a swipe", () => {
+    const { onIndexChange } = setup();
+    const image = screen.getByAltText("Second by Ben");
+    const touch = (id: number, x: number) => ({
+      pointerId: id,
+      clientX: x,
+      clientY: 200,
+      isPrimary: id === 1,
+      pointerType: "touch",
+    });
+    fireEvent.pointerDown(image, touch(1, 200));
+    fireEvent.pointerDown(image, touch(2, 260));
+    fireEvent.pointerMove(image, touch(1, 100));
+    fireEvent.pointerUp(image, touch(1, 100));
+    fireEvent.pointerUp(image, touch(2, 260));
+    expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
   it("moves focus into the dialog on open", () => {
     setup();
     expect(screen.getByRole("dialog").contains(document.activeElement)).toBe(true);
