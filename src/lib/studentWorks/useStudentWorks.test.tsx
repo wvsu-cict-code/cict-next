@@ -1,7 +1,8 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { StudentWork } from "@/lib/cms/content";
 import { fetchStudentWorks } from "@/lib/cms/content";
+import { CONTENT_TIMEOUT_MS } from "@/lib/cms/useContent";
 import { useStudentWorks } from "@/lib/studentWorks/useStudentWorks";
 
 const fakeClient = { fake: true };
@@ -42,7 +43,11 @@ describe("useStudentWorks", () => {
     expect(result.current.works).toHaveLength(12);
     expect(result.current.hasMore).toBe(true);
 
-    await act(() => result.current.loadMore());
+    let ok: boolean | undefined;
+    await act(async () => {
+      ok = await result.current.loadMore();
+    });
+    expect(ok).toBe(true);
     expect(fetchMock).toHaveBeenLastCalledWith(fakeClient, {
       offset: 12,
       limit: 12,
@@ -60,17 +65,19 @@ describe("useStudentWorks", () => {
     const { result } = renderHook(() => useStudentWorks());
     await waitFor(() => expect(result.current.status).toBe("ready"));
 
-    let a!: Promise<void>;
-    let b!: Promise<void>;
+    let a!: Promise<boolean>;
+    let b!: Promise<boolean>;
     act(() => {
       a = result.current.loadMore();
       b = result.current.loadMore();
     });
     expect(fetchMock).toHaveBeenCalledTimes(2);
+    let results: boolean[] = [];
     await act(async () => {
       second.resolve({ works: batch(12, 12), total: 30 });
-      await Promise.all([a, b]);
+      results = await Promise.all([a, b]);
     });
+    expect(results).toEqual([true, true]);
 
     const ids = result.current.works.map((w) => w.id);
     expect(ids).toHaveLength(24);
@@ -83,7 +90,11 @@ describe("useStudentWorks", () => {
     await waitFor(() => expect(result.current.status).toBe("ready"));
     expect(result.current.hasMore).toBe(false);
 
-    await act(() => result.current.loadMore());
+    let ok: boolean | undefined;
+    await act(async () => {
+      ok = await result.current.loadMore();
+    });
+    expect(ok).toBe(false);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
@@ -97,5 +108,55 @@ describe("useStudentWorks", () => {
     act(() => result.current.retry());
     await waitFor(() => expect(result.current.status).toBe("ready"));
     expect(result.current.works).toHaveLength(3);
+  });
+
+  it("resolves false and keeps the works when loading more fails", async () => {
+    fetchMock
+      .mockResolvedValueOnce({ works: batch(0, 12), total: 30 })
+      .mockRejectedValueOnce(new Error("offline"));
+    const { result } = renderHook(() => useStudentWorks());
+    await waitFor(() => expect(result.current.status).toBe("ready"));
+
+    let ok: boolean | undefined;
+    await act(async () => {
+      ok = await result.current.loadMore();
+    });
+    expect(ok).toBe(false);
+    expect(result.current.works).toHaveLength(12);
+    expect(result.current.status).toBe("ready");
+  });
+
+  describe("when a request hangs", () => {
+    afterEach(() => vi.useRealTimers());
+
+    it("resolves false after the timeout, ignores the late page, and the next call fetches again", async () => {
+      fetchMock
+        .mockResolvedValueOnce({ works: batch(0, 12), total: 30 })
+        .mockReturnValueOnce(new Promise(() => {}))
+        .mockResolvedValueOnce({ works: batch(12, 12), total: 30 });
+      const { result } = renderHook(() => useStudentWorks());
+      await waitFor(() => expect(result.current.status).toBe("ready"));
+
+      vi.useFakeTimers();
+      let hung!: Promise<boolean>;
+      act(() => {
+        hung = result.current.loadMore();
+      });
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(CONTENT_TIMEOUT_MS);
+      });
+      await expect(hung).resolves.toBe(false);
+
+      let ok: boolean | undefined;
+      await act(async () => {
+        ok = await result.current.loadMore();
+      });
+      expect(ok).toBe(true);
+      expect(fetchMock).toHaveBeenLastCalledWith(fakeClient, {
+        offset: 12,
+        limit: 12,
+      });
+      expect(result.current.works).toHaveLength(24);
+    });
   });
 });
