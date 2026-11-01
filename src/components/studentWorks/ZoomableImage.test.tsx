@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeWork } from "./fixtures";
 import { ZoomableImage } from "./ZoomableImage";
@@ -213,6 +219,84 @@ describe("ZoomableImage", () => {
     expect(scale()).toBeGreaterThan(1);
     fireEvent.wheel(viewport, { deltaY: 3000, clientX: 0, clientY: 0 });
     expect(scale()).toBe(1);
+  });
+
+  it("pans with a two-finger trackpad scroll while zoomed", () => {
+    setup();
+    fireEvent.click(button("Zoom in"));
+    const viewport = screen.getByTestId("zoom-viewport");
+    const notCancelled = fireEvent.wheel(viewport, { deltaX: 30, deltaY: 10 });
+    expect(notCancelled).toBe(false);
+    expect(transform()).toBe("translate(-30px, -10px) scale(2)");
+    // Later events in the same stream pan even without sideways movement.
+    fireEvent.wheel(viewport, { deltaX: 0, deltaY: 20 });
+    expect(transform()).toBe("translate(-30px, -30px) scale(2)");
+  });
+
+  it("keeps zooming with a mouse wheel or trackpad pinch while zoomed", () => {
+    setup();
+    fireEvent.click(button("Zoom in"));
+    const viewport = screen.getByTestId("zoom-viewport");
+    fireEvent.wheel(viewport, { deltaY: -100, clientX: 0, clientY: 0 });
+    expect(scale()).toBeGreaterThan(2);
+    const afterWheel = scale();
+    fireEvent.wheel(viewport, {
+      deltaX: 3,
+      deltaY: -5,
+      ctrlKey: true,
+      clientX: 0,
+      clientY: 0,
+    });
+    expect(scale()).toBeGreaterThan(afterWheel);
+  });
+
+  it("only promotes the image layer for gestures that move it", () => {
+    setup();
+    const img = screen.getByAltText(ALT);
+    const willChange = () => screen.getByTestId("zoom-image").style.willChange;
+    fireEvent.pointerDown(img, pointer(1, 200, 200));
+    expect(willChange()).toBe("auto");
+    fireEvent.pointerDown(img, pointer(2, 260, 200));
+    expect(willChange()).toBe("transform");
+    fireEvent.pointerUp(img, pointer(2, 260, 200));
+    fireEvent.pointerUp(img, pointer(1, 200, 200));
+    expect(willChange()).toBe("auto");
+    fireEvent.click(button("Zoom in"));
+    fireEvent.pointerDown(img, pointer(3, 200, 200));
+    expect(willChange()).toBe("transform");
+    fireEvent.pointerUp(img, pointer(3, 200, 200));
+    expect(willChange()).toBe("auto");
+  });
+
+  it("keeps the image in view when the viewport resizes", () => {
+    let resized: (() => void) | undefined;
+    vi.stubGlobal(
+      "ResizeObserver",
+      class {
+        constructor(callback: () => void) {
+          resized = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    try {
+      setup();
+      fireEvent.click(button("Zoom in"));
+      const img = screen.getByAltText(ALT);
+      fireEvent.pointerDown(img, pointer(1, 200, 200));
+      fireEvent.pointerMove(img, pointer(1, 900, 200));
+      fireEvent.pointerUp(img, pointer(1, 900, 200));
+      expect(transform()).toBe("translate(200px, 0px) scale(2)");
+      // Image and viewport shrink to 200 wide: at ×2 the limit is 100.
+      vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(
+        200,
+      );
+      act(() => resized!());
+      expect(transform()).toBe("translate(100px, 0px) scale(2)");
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it("resets the zoom when the work changes", () => {

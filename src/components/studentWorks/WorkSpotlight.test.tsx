@@ -188,6 +188,44 @@ describe("WorkSpotlight", () => {
     expect(onIndexChange).toHaveBeenCalledWith(1);
   });
 
+  it("doesn't fetch the next work's zoom image after zooming the current one", () => {
+    const zoomA = "https://cdn.test/a-zoom.webp";
+    const zoomB = "https://cdn.test/b-zoom.webp";
+    const works = [
+      makeWork({ id: "a", title: "First", student: "Ana", zoom_url: zoomA }),
+      makeWork({ id: "b", title: "Second", student: "Ben", zoom_url: zoomB }),
+    ];
+    const props = { works, total: 2, onIndexChange: vi.fn(), onClose: vi.fn(), loadMore: vi.fn() };
+    const { container, rerender } = render(<WorkSpotlight {...props} index={0} />);
+    fireEvent.click(screen.getByRole("button", { name: "Zoom in" }));
+    expect(container.querySelector(`img[src="${zoomA}"]`)).toBeTruthy();
+
+    const requested: string[] = [];
+    const observer = new MutationObserver(() => {});
+    observer.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["src"],
+    });
+    rerender(<WorkSpotlight {...props} index={1} />);
+    for (const record of observer.takeRecords()) {
+      if (record.type === "attributes") {
+        requested.push((record.target as Element).getAttribute("src") ?? "");
+      }
+      record.addedNodes.forEach((node) => {
+        if (!(node instanceof Element)) return;
+        for (const img of [node, ...Array.from(node.querySelectorAll("img"))]) {
+          if (img instanceof HTMLImageElement) requested.push(img.getAttribute("src") ?? "");
+        }
+      });
+    }
+    observer.disconnect();
+    expect(requested).not.toContain(zoomB);
+    expect(container.querySelector(`img[src="${zoomB}"]`)).toBeNull();
+    expect(screen.getByAltText("Second by Ben")).toBeTruthy();
+  });
+
   it("never treats a pinch as a swipe", () => {
     const { onIndexChange } = setup();
     const image = screen.getByAltText("Second by Ben");

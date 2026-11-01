@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type PointerEvent,
-} from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { StudentWork } from "@/lib/cms/content";
 import type { Size } from "@/lib/studentWorks/layout";
 import {
@@ -24,6 +18,8 @@ const DOUBLE_TAP_DISTANCE = 24;
 const TAP_SLOP = 10;
 const BUTTON_STEP = 2;
 const DOUBLE_TAP_SCALE = 2;
+/** Wheel events this close to a detected trackpad scroll belong to it. */
+const TRACKPAD_STREAM_MS = 300;
 
 const zoomButton =
   "inline-flex h-11 min-w-11 items-center justify-center rounded border border-white/40 px-3 text-lg text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent";
@@ -46,18 +42,23 @@ function prefersReducedMotion() {
   );
 }
 
+type Props = {
+  work: StudentWork;
+  onZoomedChange(zoomed: boolean): void;
+};
+
 /**
  * A work's image that can be zoomed by pinch, wheel, double-tap/click and
  * buttons, and panned by dragging while zoomed. Single-pointer gestures at
  * scale 1 bubble up so the spotlight can still swipe between works.
  */
-export function ZoomableImage({
-  work,
-  onZoomedChange,
-}: {
-  work: StudentWork;
-  onZoomedChange(zoomed: boolean): void;
-}) {
+export function ZoomableImage(props: Props) {
+  // A fresh instance per work: no zoom state (or a requested zoom file)
+  // carries over to the next piece, even for one render.
+  return <ZoomView key={props.work.id} {...props} />;
+}
+
+function ZoomView({ work, onZoomedChange }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const displayRef = useRef<HTMLImageElement>(null);
   const zoomInRef = useRef<HTMLButtonElement>(null);
@@ -143,22 +144,8 @@ export function ZoomableImage({
     else zoomTo(DOUBLE_TAP_SCALE, focusOf(clientX, clientY), true);
   }
 
-  // A new work starts unzoomed, before it paints.
-  useLayoutEffect(() => {
-    zoomRef.current = RESET;
-    pointers.current.clear();
-    press.current = null;
-    multiTouch.current = false;
-    lastTap.current = null;
-    setZoom(RESET);
-    setAnimate(false);
-    setGesturing(false);
-    setZoomRequested(false);
-    setZoomLoaded(false);
-    onZoomedChangeRef.current(false);
-  }, [work.id]);
-
-  // Moving on to a video unmounts this; the spotlight must not stay "zoomed".
+  // Moving to another work (or a video) unmounts this; the spotlight must
+  // not stay "zoomed".
   useEffect(() => {
     const notify = onZoomedChangeRef;
     return () => notify.current(false);
@@ -174,8 +161,28 @@ export function ZoomableImage({
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
+    let trackpadAt = -Infinity;
     const onWheel = (event: WheelEvent) => {
       event.preventDefault();
+      // Two-finger trackpad scrolls come in pixels, often sideways or
+      // fractional; mouse wheels scroll straight down in whole steps.
+      const now = Date.now();
+      if (
+        !event.ctrlKey &&
+        event.deltaMode === 0 &&
+        (event.deltaX !== 0 ||
+          !Number.isInteger(event.deltaY) ||
+          now - trackpadAt <= TRACKPAD_STREAM_MS)
+      ) {
+        trackpadAt = now;
+        if (zoomRef.current.scale > MIN_SCALE) {
+          const { image, viewport: size } = handlers.current.measure();
+          handlers.current.apply(
+            panBy(zoomRef.current, -event.deltaX, -event.deltaY, image, size),
+          );
+          return;
+        }
+      }
       const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? 400 : 1;
       // Trackpad pinches arrive as small ctrl+wheel deltas: zoom faster.
       const factor = Math.exp(
@@ -191,12 +198,26 @@ export function ZoomableImage({
     return () => viewport.removeEventListener("wheel", onWheel);
   }, []);
 
-  // Keep the image in view when the layout changes size.
+  // Keep the image in view when the viewport changes size.
   useEffect(() => {
     const onResize = () => {
       const { image, viewport } = handlers.current.measure();
-      handlers.current.apply(panBy(zoomRef.current, 0, 0, image, viewport));
+      const current = zoomRef.current;
+      const next = panBy(current, 0, 0, image, viewport);
+      if (
+        next.scale !== current.scale ||
+        next.x !== current.x ||
+        next.y !== current.y
+      ) {
+        handlers.current.apply(next);
+      }
     };
+    const viewport = viewportRef.current;
+    if (typeof ResizeObserver !== "undefined" && viewport) {
+      const observer = new ResizeObserver(onResize);
+      observer.observe(viewport);
+      return () => observer.disconnect();
+    }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -230,7 +251,10 @@ export function ZoomableImage({
     } catch {
       // Synthetic or already-released pointers can't be captured.
     }
-    setGesturing(true);
+    // Swipes at scale 1 don't move the image, so they don't promote it.
+    if (zoomRef.current.scale > MIN_SCALE || multiTouch.current) {
+      setGesturing(true);
+    }
     swallow(event);
   }
 
