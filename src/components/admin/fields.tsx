@@ -32,9 +32,11 @@ export function TextField({
   type = "text",
   placeholder,
   readOnly,
+  onValueChange,
   ...props
 }: BaseFieldProps & {
   defaultValue?: string | number | null;
+  onValueChange?: (value: string) => void;
   type?: "text" | "email" | "password" | "number" | "datetime-local";
   placeholder?: string;
   readOnly?: boolean;
@@ -50,6 +52,7 @@ export function TextField({
         defaultValue={defaultValue ?? ""}
         placeholder={placeholder}
         readOnly={readOnly}
+        onChange={onValueChange && ((e) => onValueChange(e.target.value))}
         className={`${inputClass} ${readOnly ? "!bg-paper text-ink-soft cursor-not-allowed" : ""}`}
       />
     </FieldShell>
@@ -77,10 +80,15 @@ export function TextAreaField({
 
 export function SelectField({
   defaultValue,
+  value,
+  onValueChange,
   options,
   ...props
 }: BaseFieldProps & {
   defaultValue?: string | null;
+  /** Makes the select controlled; pair with onValueChange. */
+  value?: string;
+  onValueChange?: (value: string) => void;
   options: { value: string; label: string }[];
 }) {
   return (
@@ -89,7 +97,11 @@ export function SelectField({
         id={props.name}
         name={props.name}
         required={props.required}
-        defaultValue={defaultValue ?? undefined}
+        defaultValue={
+          value === undefined ? (defaultValue ?? undefined) : undefined
+        }
+        value={value}
+        onChange={onValueChange && ((e) => onValueChange(e.target.value))}
         className={inputClass}
       >
         {options.map((option) => (
