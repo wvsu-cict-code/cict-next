@@ -6,6 +6,7 @@ import { Icon } from "@/components/admin/icons";
 import type { StudentWork } from "@/lib/cms/content";
 import { tileImage } from "@/lib/studentWorks/layout";
 import { moveItem } from "@/lib/studentWorks/order";
+import { isYouTubePlaceholder } from "@/lib/studentWorks/youtube";
 
 type Result = Promise<{ error?: string }>;
 
@@ -98,6 +99,15 @@ export default function WorkList({
                 alt=""
                 onError={(e) => {
                   if (image.fallbackSrc && e.currentTarget.src !== image.fallbackSrc) {
+                    e.currentTarget.src = image.fallbackSrc;
+                  }
+                }}
+                onLoad={(e) => {
+                  if (
+                    image.fallbackSrc &&
+                    e.currentTarget.src !== image.fallbackSrc &&
+                    isYouTubePlaceholder(e.currentTarget)
+                  ) {
                     e.currentTarget.src = image.fallbackSrc;
                   }
                 }}

@@ -85,6 +85,29 @@ describe("WorkSpotlight", () => {
     expect(frame.parentElement!.style.aspectRatio).toBe(ratio);
   });
 
+  it("sizes a vertical frame from its height cap so it stays 9:16", () => {
+    setup({
+      works: [makeWork({ kind: "video", youtube_id: "abcdefghijk", orientation: "vertical" })],
+      index: 0,
+      total: 1,
+    });
+    const box = document.querySelector("iframe")!.parentElement!;
+    expect(box.style.aspectRatio).toBe("9 / 16");
+    expect(box.getAttribute("style")).toMatch(/width:\s*min\(100%,\s*calc\(var\(--video-cap\) \* 9 \/ 16\)\)/);
+    expect(box.className).not.toMatch(/max-h-/);
+  });
+
+  it("shows a game screenshot without zoom controls", () => {
+    setup({
+      works: [makeWork({ kind: "game", title: "Quest", student: "Dee", store_url: "https://x.itch.io/q", zoom_url: "https://cdn.test/q-zoom.webp" })],
+      index: 0,
+      total: 1,
+    });
+    expect(screen.getByAltText("Quest by Dee")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Zoom in" })).toBeNull();
+    expect(screen.queryByTestId("zoom-viewport")).toBeNull();
+  });
+
   it("renders no iframe for art", () => {
     setup();
     expect(document.querySelector("iframe")).toBeNull();
@@ -148,6 +171,55 @@ describe("WorkSpotlight", () => {
     expect(onIndexChange).toHaveBeenCalledWith(2);
     drag(screen.getByTestId("spotlight-media"), 0, 120);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("swipes between works from the details too, but never closes from there", () => {
+    const { onIndexChange, onClose } = setup();
+    const details = screen.getByTestId("spotlight-details");
+    expect(details.style.touchAction).toBe("pan-y");
+    drag(screen.getByRole("heading", { name: "Second" }), -80, 0);
+    expect(onIndexChange).toHaveBeenLastCalledWith(2);
+    drag(details, 80, 0);
+    expect(onIndexChange).toHaveBeenLastCalledWith(0);
+    drag(details, 0, 120);
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onIndexChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores details swipes that start on a link or button, or use a mouse", () => {
+    const { onIndexChange } = setup({
+      works: [makeWork({ id: "a" }), makeWork({ id: "b", portfolio_url: "https://folio.test" })],
+    });
+    drag(screen.getByRole("link", { name: "View portfolio" }), -80, 0);
+    const details = screen.getByTestId("spotlight-details");
+    const mouse = { pointerId: 2, isPrimary: true, pointerType: "mouse" };
+    fireEvent.pointerDown(details, { ...mouse, clientX: 200, clientY: 200 });
+    fireEvent.pointerUp(details, { ...mouse, clientX: 100, clientY: 200 });
+    expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
+  it("ignores a two-finger gesture on the details", () => {
+    const { onIndexChange } = setup();
+    const details = screen.getByTestId("spotlight-details");
+    const touch = (id: number, x: number) => ({
+      pointerId: id,
+      clientX: x,
+      clientY: 200,
+      isPrimary: id === 1,
+      pointerType: "touch",
+    });
+    fireEvent.pointerDown(details, touch(1, 200));
+    fireEvent.pointerDown(details, touch(2, 260));
+    fireEvent.pointerUp(details, touch(1, 100));
+    fireEvent.pointerUp(details, touch(2, 260));
+    expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
+  it("lets the details scroll vertically without chaining to the page", () => {
+    setup({ works: [makeWork({ description: "Long text" })], index: 0, total: 1 });
+    const scroller = screen.getByText("Long text").parentElement!;
+    expect(scroller.className).toMatch(/overflow-y-auto/);
+    expect(scroller.className).toMatch(/overscroll-contain/);
   });
 
   it("still swipes from the artwork itself at scale 1", () => {
@@ -303,6 +375,24 @@ describe("WorkSpotlight", () => {
     expect(document.body.style.overflow).toBe("hidden");
     unmount();
     expect(document.body.style.overflow).toBe("auto");
+    document.body.style.overflow = "";
+  });
+
+  it("doesn't lock body scroll when there is no work to show", () => {
+    document.body.style.overflow = "auto";
+    const { unmount } = render(
+      <WorkSpotlight
+        works={[makeWork()]}
+        total={3}
+        index={1}
+        onIndexChange={vi.fn()}
+        onClose={vi.fn()}
+        loadMore={vi.fn()}
+      />,
+    );
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.body.style.overflow).toBe("auto");
+    unmount();
     document.body.style.overflow = "";
   });
 

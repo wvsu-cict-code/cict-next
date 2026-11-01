@@ -45,3 +45,11 @@ export function youtubeEmbedUrl(id: string): string {
 export function youtubeThumbnail(id: string, quality: "maxresdefault" | "hqdefault"): string {
   return `https://i.ytimg.com/vi/${id}/${quality}.jpg`;
 }
+
+/**
+ * YouTube answers a missing maxresdefault with a 404 that still carries a
+ * 120x90 grey placeholder, so browsers fire `load` rather than `error`.
+ */
+export function isYouTubePlaceholder(img: HTMLImageElement): boolean {
+  return img.naturalWidth === 120 && img.naturalHeight === 90;
+}

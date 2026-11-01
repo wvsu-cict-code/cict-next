@@ -136,4 +136,33 @@ describe("StudentWorksSection", () => {
       screen.getByRole("button", { name: "Second by Ben" }),
     );
   });
+
+  it("closes the spotlight when loading more added nothing to move to", async () => {
+    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+      cb(0);
+      return 0;
+    });
+    document.body.style.overflow = "auto";
+    const works = [
+      makeWork({ id: "a", title: "First", student: "Ana" }),
+      makeWork({ id: "b", title: "Second", student: "Ben" }),
+    ];
+    // The next page came back empty: an admin hid the remaining work.
+    const loadMore = vi.fn().mockResolvedValue(true);
+    state({ works, total: 3, hasMore: true, loadMore });
+    render(<StudentWorksSection />);
+    measure();
+    fireEvent.click(screen.getByRole("button", { name: "Second by Ben" }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Next work" }));
+    });
+    expect(loadMore).toHaveBeenCalled();
+    expect(screen.queryByRole("dialog")).toBeNull();
+    expect(document.querySelector("[data-testid=spotlight-backdrop]")).toBeNull();
+    expect(document.body.style.overflow).toBe("auto");
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Second by Ben" }),
+    );
+    document.body.style.overflow = "";
+  });
 });

@@ -33,6 +33,17 @@ export function StudentWorksSection() {
     return () => observer.disconnect();
   }, [active, hasMore, works.length, loadMore]);
 
+  // The spotlight moved past the last loaded work, but loading more added
+  // nothing (an admin hid or reordered works meanwhile). Close it rather than
+  // leave an empty overlay, and put focus back on the last tile.
+  const stranded = openIndex !== null && openIndex >= works.length;
+  useEffect(() => {
+    if (!stranded) return;
+    setOpenIndex(null);
+    const last = works.length - 1;
+    requestAnimationFrame(() => tileRefs.current[last]?.focus());
+  }, [stranded, works.length]);
+
   if (!active) return null;
 
   function closeSpotlight() {
@@ -51,7 +62,7 @@ export function StudentWorksSection() {
         Featured student works
       </h2>
       <WorkWall works={works} onOpen={setOpenIndex} tileRefs={tileRefs} />
-      {openIndex !== null ? (
+      {openIndex !== null && !stranded ? (
         <WorkSpotlight
           works={works}
           total={total}

@@ -57,6 +57,16 @@ describe("WorkList", () => {
     expect(link.getAttribute("href")).toBe("/admin/student-works/a");
   });
 
+  it("swaps a missing YouTube thumbnail's placeholder for hqdefault", () => {
+    render(<WorkList works={works} onReorder={vi.fn()} onToggleVisible={vi.fn()} />);
+    const img = document.querySelectorAll("img")[1];
+    expect(img.getAttribute("src")).toContain("maxresdefault.jpg");
+    Object.defineProperty(img, "naturalWidth", { configurable: true, value: 120 });
+    Object.defineProperty(img, "naturalHeight", { configurable: true, value: 90 });
+    fireEvent.load(img);
+    expect(img.getAttribute("src")).toContain("hqdefault.jpg");
+  });
+
   it("moves a work down, calling onReorder and updating immediately", async () => {
     const onReorder = vi.fn().mockResolvedValue({});
     render(<WorkList works={works} onReorder={onReorder} onToggleVisible={vi.fn()} />);

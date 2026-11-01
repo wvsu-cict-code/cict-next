@@ -3,6 +3,7 @@
 import { useState, type Ref } from "react";
 import type { StudentWork } from "@/lib/cms/content";
 import { tileImage, workAspect } from "@/lib/studentWorks/layout";
+import { isYouTubePlaceholder } from "@/lib/studentWorks/youtube";
 
 const TYPE_LABELS: Record<StudentWork["kind"], string> = {
   art: "Digital art",
@@ -62,6 +63,9 @@ export function WorkTile({
           loading="lazy"
           decoding="async"
           onError={() => setFailed(true)}
+          onLoad={(event) => {
+            if (isYouTubePlaceholder(event.currentTarget)) setFailed(true);
+          }}
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <span className="bg-navy/80 absolute top-2 left-2 rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.06em] text-white uppercase">

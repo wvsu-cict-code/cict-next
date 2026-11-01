@@ -42,6 +42,24 @@ describe("WorkTile", () => {
     expect(img.getAttribute("src")).toContain("hqdefault.jpg");
   });
 
+  it("falls back when YouTube serves its 120x90 placeholder", () => {
+    const { container } = render(<WorkTile work={video} onOpen={() => {}} />);
+    const img = container.querySelector("img")!;
+    Object.defineProperty(img, "naturalWidth", { configurable: true, value: 120 });
+    Object.defineProperty(img, "naturalHeight", { configurable: true, value: 90 });
+    fireEvent.load(img);
+    expect(img.getAttribute("src")).toContain("hqdefault.jpg");
+  });
+
+  it("keeps maxresdefault when it loads at full size", () => {
+    const { container } = render(<WorkTile work={video} onOpen={() => {}} />);
+    const img = container.querySelector("img")!;
+    Object.defineProperty(img, "naturalWidth", { configurable: true, value: 1280 });
+    Object.defineProperty(img, "naturalHeight", { configurable: true, value: 720 });
+    fireEvent.load(img);
+    expect(img.getAttribute("src")).toContain("maxresdefault.jpg");
+  });
+
   it("gives a vertical video a 9 / 16 media box", () => {
     const { container } = render(
       <WorkTile work={{ ...video, orientation: "vertical" }} onOpen={() => {}} />,

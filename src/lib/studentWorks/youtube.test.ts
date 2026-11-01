@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isYouTubePlaceholder,
   parseYouTubeUrl,
   youtubeEmbedUrl,
   youtubeThumbnail,
@@ -43,5 +44,20 @@ describe("youtube urls", () => {
 
   it("builds thumbnail urls", () => {
     expect(youtubeThumbnail("abc", "hqdefault")).toBe("https://i.ytimg.com/vi/abc/hqdefault.jpg");
+  });
+});
+
+describe("isYouTubePlaceholder", () => {
+  const img = (naturalWidth: number, naturalHeight: number) =>
+    ({ naturalWidth, naturalHeight }) as HTMLImageElement;
+
+  it("spots YouTube's 120x90 missing-thumbnail placeholder", () => {
+    expect(isYouTubePlaceholder(img(120, 90))).toBe(true);
+  });
+
+  it("accepts real thumbnails", () => {
+    expect(isYouTubePlaceholder(img(1280, 720))).toBe(false);
+    expect(isYouTubePlaceholder(img(480, 360))).toBe(false);
+    expect(isYouTubePlaceholder(img(90, 120))).toBe(false);
   });
 });

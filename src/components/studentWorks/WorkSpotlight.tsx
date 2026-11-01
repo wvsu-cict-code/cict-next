@@ -39,6 +39,11 @@ export function WorkSpotlight({
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const start = useRef<{ x: number; y: number; id: number } | null>(null);
+  // Swipes on the details text: touch only, one finger, next/previous only.
+  const detailsStart = useRef<{ x: number; y: number; id: number } | null>(
+    null,
+  );
+  const detailsPointers = useRef(new Set<number>());
   const busy = useRef(false);
   const closed = useRef(false);
   const indexRef = useRef(index);
@@ -124,14 +129,17 @@ export function WorkSpotlight({
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
+  // Lock page scroll only while a work is actually shown.
+  const hasWork = work !== undefined;
   useEffect(() => {
+    if (!hasWork) return;
     closeRef.current?.focus();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, []);
+  }, [hasWork]);
 
   if (!work) return null;
 
@@ -154,6 +162,39 @@ export function WorkSpotlight({
     else if (action === "close") close();
   }
 
+  function onDetailsPointerDown(event: PointerEvent) {
+    // A mouse drag here selects text. Mouse pointers aren't captured, so
+    // their pointerup may never reach this region: don't track them at all.
+    if (event.pointerType === "mouse") return;
+    detailsPointers.current.add(event.pointerId);
+    const target = event.target as Element;
+    if (detailsPointers.current.size > 1 || target.closest("a, button")) {
+      detailsStart.current = null;
+      return;
+    }
+    detailsStart.current = {
+      x: event.clientX,
+      y: event.clientY,
+      id: event.pointerId,
+    };
+  }
+
+  function onDetailsPointerEnd(event: PointerEvent, cancelled: boolean) {
+    detailsPointers.current.delete(event.pointerId);
+    const origin = detailsStart.current;
+    if (!origin || origin.id !== event.pointerId) return;
+    detailsStart.current = null;
+    if (cancelled) return;
+    const action = classifySwipe(
+      event.clientX - origin.x,
+      event.clientY - origin.y,
+      false,
+    );
+    // Vertical drags here scroll the text, so they never close.
+    if (action === "next") void next();
+    else if (action === "previous") previous();
+  }
+
   const titleId = `spotlight-title-${work.id}`;
   const portfolio =
     work.portfolio_url && isWebUrl(work.portfolio_url)
@@ -162,11 +203,12 @@ export function WorkSpotlight({
   const store =
     work.store_url && isWebUrl(work.store_url) ? work.store_url : null;
   const vertical = work.orientation === "vertical";
+  const videoRatio = vertical ? "9 / 16" : "16 / 9";
 
   return (
     <div
       data-testid="spotlight-backdrop"
-      className="bg-navy/95 fixed inset-0 z-50 flex items-stretch justify-center lg:items-center lg:p-8"
+      className="bg-navy lg:bg-navy/90 fixed inset-0 z-50 flex items-stretch justify-center lg:items-center lg:p-8"
       onPointerDown={(event) => {
         downOnBackdrop.current = event.target === event.currentTarget;
       }}
@@ -181,7 +223,7 @@ export function WorkSpotlight({
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative flex h-dvh w-full max-w-6xl flex-col lg:grid lg:h-auto lg:max-h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:overflow-hidden"
+        className="bg-navy relative flex h-dvh w-full max-w-6xl flex-col lg:grid lg:h-auto lg:max-h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:overflow-hidden"
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -196,7 +238,7 @@ export function WorkSpotlight({
 
         <div
           data-testid="spotlight-media"
-          className="flex max-h-[55dvh] min-h-0 shrink-0 items-center justify-center p-4 pt-16 lg:max-h-none lg:p-8"
+          className="flex max-h-[55dvh] min-h-0 shrink-0 items-center justify-center p-4 pt-16 lg:max-h-none lg:min-h-0 lg:p-8"
           style={{ touchAction: "none" }}
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
@@ -205,11 +247,13 @@ export function WorkSpotlight({
           }}
         >
           {work.kind === "video" && work.youtube_id ? (
+            // The width comes from the height cap (the media cell's height
+            // less its padding), so the frame keeps its true ratio.
             <div
-              className="max-h-[calc(55dvh-5rem)] w-full"
+              className="[--video-cap:calc(55dvh-5rem)] lg:[--video-cap:calc(100dvh-8rem)]"
               style={{
-                aspectRatio: vertical ? "9 / 16" : "16 / 9",
-                maxWidth: vertical ? "min(100%, 35dvh)" : "100%",
+                aspectRatio: videoRatio,
+                width: `min(100%, calc(var(--video-cap) * ${videoRatio}))`,
               }}
             >
               <iframe
@@ -221,13 +265,33 @@ export function WorkSpotlight({
                 className="h-full w-full rounded"
               />
             </div>
-          ) : (
+          ) : work.kind === "art" ? (
             <ZoomableImage work={work} onZoomedChange={setZoomed} />
+          ) : (
+            // Game screenshots don't zoom.
+            // eslint-disable-next-line @next/next/no-img-element -- the static site can't optimize images
+            <img
+              key={work.id}
+              src={work.image_url ?? undefined}
+              alt={`${work.title} by ${work.student}`}
+              draggable={false}
+              className="max-h-[calc(55dvh-8.25rem)] max-w-full rounded object-contain select-none lg:max-h-[calc(80vh-3.25rem)]"
+            />
           )}
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col text-white">
-          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6 lg:p-8 lg:pt-16">
+        <div
+          data-testid="spotlight-details"
+          className="flex min-h-0 flex-1 flex-col text-white"
+          style={{ touchAction: "pan-y" }}
+          onPointerDown={onDetailsPointerDown}
+          onPointerUp={(event) => onDetailsPointerEnd(event, false)}
+          onPointerCancel={(event) => onDetailsPointerEnd(event, true)}
+        >
+          <div
+            className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain p-6 lg:p-8 lg:pt-16"
+            style={{ touchAction: "pan-y" }}
+          >
             <p className="text-orange-light text-sm tracking-widest uppercase">
               {KIND_LABEL[work.kind]}
             </p>
