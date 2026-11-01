@@ -35,7 +35,29 @@ export function fitWithin(size: Size, max: number): Size {
   };
 }
 
-async function renderWebp(
+/** File name for an encoded work image, named after its real format. */
+export function encodedName(
+  base: "display" | "zoom",
+  blobType: string,
+): string {
+  return `${base}.${blobType === "image/webp" ? "webp" : "jpg"}`;
+}
+
+/** Extension for an original upload, from its (already validated) MIME type. */
+export function originalExtension(type: string): string {
+  if (type === "image/jpeg") return "jpg";
+  if (type === "image/webp") return "webp";
+  return "png";
+}
+
+function canvasBlob(
+  canvas: HTMLCanvasElement,
+  type: string,
+): Promise<Blob | null> {
+  return new Promise((resolve) => canvas.toBlob(resolve, type, WEBP_QUALITY));
+}
+
+async function renderEncoded(
   bitmap: ImageBitmap,
   max: number,
 ): Promise<{ blob: Blob } & Size> {
@@ -46,9 +68,10 @@ async function renderWebp(
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Your browser couldn't process that image.");
   context.drawImage(bitmap, 0, 0, size.width, size.height);
-  const blob = await new Promise<Blob | null>((resolve) =>
-    canvas.toBlob(resolve, "image/webp", WEBP_QUALITY),
-  );
+  let blob = await canvasBlob(canvas, "image/webp");
+  // Browsers that can't encode WebP fall back to PNG; use JPEG instead.
+  if (blob && blob.type !== "image/webp")
+    blob = await canvasBlob(canvas, "image/jpeg");
   if (!blob) throw new Error("Your browser couldn't process that image.");
   return { blob, ...size };
 }
@@ -63,17 +86,6 @@ async function uploadBlob(
     .upload(path, blob, { contentType: blob.type, upsert: false });
   if (error) throw new Error(`Upload failed: ${error.message}`);
   return client.storage.from(MEDIA_BUCKET).getPublicUrl(path).data.publicUrl;
-}
-
-function originalExtension(file: File): string {
-  if (!file.name.includes(".")) return "bin";
-  return (
-    file.name
-      .split(".")
-      .pop()!
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "") || "bin"
-  );
 }
 
 /**
@@ -97,21 +109,27 @@ export async function uploadWorkImage(
 
   try {
     const folder = `student-works/${crypto.randomUUID()}`;
-    const display = await renderWebp(bitmap, DISPLAY_MAX);
-    const zoom = options.withZoom ? await renderWebp(bitmap, ZOOM_MAX) : null;
+    const display = await renderEncoded(bitmap, DISPLAY_MAX);
+    const zoom = options.withZoom
+      ? await renderEncoded(bitmap, ZOOM_MAX)
+      : null;
 
     const original_url = await uploadBlob(
       client,
-      `${folder}/original.${originalExtension(file)}`,
+      `${folder}/original.${originalExtension(file.type)}`,
       file,
     );
     const image_url = await uploadBlob(
       client,
-      `${folder}/display.webp`,
+      `${folder}/${encodedName("display", display.blob.type)}`,
       display.blob,
     );
     const zoom_url = zoom
-      ? await uploadBlob(client, `${folder}/zoom.webp`, zoom.blob)
+      ? await uploadBlob(
+          client,
+          `${folder}/${encodedName("zoom", zoom.blob.type)}`,
+          zoom.blob,
+        )
       : null;
 
     return {

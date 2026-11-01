@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { checkImageFile, fitWithin } from "@/lib/studentWorks/images";
+import {
+  checkImageFile,
+  encodedName,
+  fitWithin,
+  originalExtension,
+} from "@/lib/studentWorks/images";
 
 describe("checkImageFile", () => {
   it("rejects non PNG/JPEG/WebP types", () => {
@@ -36,5 +41,21 @@ describe("fitWithin", () => {
   it("returns integers", () => {
     const r = fitWithin({ width: 1000, height: 333 }, 400);
     expect(Number.isInteger(r.width) && Number.isInteger(r.height)).toBe(true);
+  });
+});
+
+describe("encodedName", () => {
+  it("names files after the real format", () => {
+    expect(encodedName("display", "image/webp")).toBe("display.webp");
+    expect(encodedName("display", "image/jpeg")).toBe("display.jpg");
+    expect(encodedName("zoom", "image/jpeg")).toBe("zoom.jpg");
+  });
+});
+
+describe("originalExtension", () => {
+  it("maps MIME types to extensions", () => {
+    expect(originalExtension("image/png")).toBe("png");
+    expect(originalExtension("image/jpeg")).toBe("jpg");
+    expect(originalExtension("image/webp")).toBe("webp");
   });
 });
