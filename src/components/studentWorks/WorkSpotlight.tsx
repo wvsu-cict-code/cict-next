@@ -39,6 +39,9 @@ export function WorkSpotlight({
   const closeRef = useRef<HTMLButtonElement>(null);
   const start = useRef<{ x: number; y: number; id: number } | null>(null);
   const busy = useRef(false);
+  const closed = useRef(false);
+  const indexRef = useRef(index);
+  const downOnBackdrop = useRef(false);
   // Task 11's ZoomableImage drives this; swipes are ignored while zoomed.
   const [zoomed] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
@@ -46,13 +49,24 @@ export function WorkSpotlight({
   const canPrevious = index > 0;
   const canNext = index < total - 1;
 
+  function close() {
+    closed.current = true;
+    onClose();
+  }
+
   async function next() {
     if (!canNext || busy.current) return;
     setLoadFailed(false);
     if (index >= works.length - 1) {
       busy.current = true;
-      const ok = await loadMore();
-      busy.current = false;
+      let ok: boolean;
+      try {
+        ok = await loadMore();
+      } finally {
+        busy.current = false;
+      }
+      // The visitor may have closed or moved while the page loaded.
+      if (closed.current || indexRef.current !== index) return;
       if (!ok) {
         setLoadFailed(true);
         return;
@@ -69,15 +83,18 @@ export function WorkSpotlight({
   }
 
   // Latest handlers for the document listener without re-subscribing.
-  const handlers = useRef({ next, previous, onClose });
+  const handlers = useRef({ next, previous, close });
   useEffect(() => {
-    handlers.current = { next, previous, onClose };
+    handlers.current = { next, previous, close };
+    indexRef.current = index;
   });
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        handlers.current.onClose();
+        handlers.current.close();
+      } else if (event.altKey || event.ctrlKey || event.metaKey) {
+        return;
       } else if (event.key === "ArrowRight") {
         void handlers.current.next();
       } else if (event.key === "ArrowLeft") {
@@ -133,34 +150,44 @@ export function WorkSpotlight({
     );
     if (action === "next") void next();
     else if (action === "previous") previous();
-    else if (action === "close") onClose();
+    else if (action === "close") close();
   }
 
   const titleId = `spotlight-title-${work.id}`;
   const portfolio =
-    work.portfolio_url && isWebUrl(work.portfolio_url) ? work.portfolio_url : null;
-  const store = work.store_url && isWebUrl(work.store_url) ? work.store_url : null;
+    work.portfolio_url && isWebUrl(work.portfolio_url)
+      ? work.portfolio_url
+      : null;
+  const store =
+    work.store_url && isWebUrl(work.store_url) ? work.store_url : null;
   const vertical = work.orientation === "vertical";
 
   return (
     <div
       data-testid="spotlight-backdrop"
       className="bg-navy/95 fixed inset-0 z-50 flex items-stretch justify-center lg:items-center lg:p-8"
-      onClick={onClose}
+      onPointerDown={(event) => {
+        downOnBackdrop.current = event.target === event.currentTarget;
+      }}
+      onClick={(event) => {
+        if (event.target === event.currentTarget && downOnBackdrop.current)
+          close();
+        downOnBackdrop.current = false;
+      }}
     >
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative flex h-full w-full max-w-6xl flex-col overflow-y-auto lg:grid lg:h-auto lg:max-h-full lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:overflow-hidden"
+        className="relative flex h-dvh w-full max-w-6xl flex-col lg:grid lg:h-auto lg:max-h-[calc(100dvh-4rem)] lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)] lg:overflow-hidden"
         onClick={(event) => event.stopPropagation()}
       >
         <button
           ref={closeRef}
           type="button"
           aria-label="Close"
-          onClick={onClose}
+          onClick={close}
           className={`${navButton} absolute top-3 right-3 z-10 bg-black/40`}
         >
           <span aria-hidden>✕</span>
@@ -168,7 +195,7 @@ export function WorkSpotlight({
 
         <div
           data-testid="spotlight-media"
-          className="flex min-h-[50vh] shrink-0 items-center justify-center p-4 pt-16 lg:min-h-0 lg:p-8"
+          className="flex max-h-[55dvh] min-h-0 shrink-0 items-center justify-center p-4 pt-16 lg:max-h-none lg:p-8"
           style={{ touchAction: "none" }}
           onPointerDown={onPointerDown}
           onPointerUp={onPointerUp}
@@ -178,10 +205,10 @@ export function WorkSpotlight({
         >
           {work.kind === "video" && work.youtube_id ? (
             <div
-              className="max-h-[70vh] w-full"
+              className="max-h-[calc(55dvh-5rem)] w-full"
               style={{
                 aspectRatio: vertical ? "9 / 16" : "16 / 9",
-                maxWidth: vertical ? "min(100%, 40vh)" : "100%",
+                maxWidth: vertical ? "min(100%, 35dvh)" : "100%",
               }}
             >
               <iframe
@@ -199,44 +226,47 @@ export function WorkSpotlight({
               src={work.image_url ?? undefined}
               alt={`${work.title} by ${work.student}`}
               draggable={false}
-              className="max-h-[70vh] max-w-full rounded object-contain lg:max-h-[80vh]"
+              className="max-h-[calc(55dvh-5rem)] max-w-full rounded object-contain lg:max-h-[80vh]"
             />
           )}
         </div>
 
-        <div className="flex flex-col gap-4 p-6 text-white lg:overflow-y-auto lg:p-8 lg:pt-16">
-          <p className="text-orange-light text-sm tracking-widest uppercase">
-            {KIND_LABEL[work.kind]}
-          </p>
-          <h2 id={titleId} className="font-major text-3xl leading-tight">
-            {work.title}
-          </h2>
-          <p className="text-lg text-white/80">{work.student}</p>
-          {work.description ? (
-            <p className="whitespace-pre-line text-white/90">{work.description}</p>
-          ) : null}
-          {work.kind === "game" && store ? (
-            <a
-              href={store}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-theme-red inline-flex min-h-11 items-center justify-center rounded px-5 font-bold text-white hover:opacity-90"
-            >
-              {storeLabel(store)}
-            </a>
-          ) : null}
-          {portfolio ? (
-            <a
-              href={portfolio}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center justify-center rounded border border-white/60 px-5 font-bold text-white hover:bg-white/10"
-            >
-              View portfolio
-            </a>
-          ) : null}
-
-          <div className="mt-auto flex items-center justify-between gap-3 pt-4">
+        <div className="flex min-h-0 flex-1 flex-col text-white">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6 lg:p-8 lg:pt-16">
+            <p className="text-orange-light text-sm tracking-widest uppercase">
+              {KIND_LABEL[work.kind]}
+            </p>
+            <h2 id={titleId} className="font-major text-3xl leading-tight">
+              {work.title}
+            </h2>
+            <p className="text-lg text-white/80">{work.student}</p>
+            {work.description ? (
+              <p className="whitespace-pre-line text-white/90">
+                {work.description}
+              </p>
+            ) : null}
+            {work.kind === "game" && store ? (
+              <a
+                href={store}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-theme-red inline-flex min-h-11 items-center justify-center rounded px-5 font-bold text-white hover:opacity-90"
+              >
+                {storeLabel(store)}
+              </a>
+            ) : null}
+            {portfolio ? (
+              <a
+                href={portfolio}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center justify-center rounded border border-white/60 px-5 font-bold text-white hover:bg-white/10"
+              >
+                View portfolio
+              </a>
+            ) : null}
+          </div>
+          <div className="flex items-center justify-between gap-3 border-t border-white/15 px-6 py-3 lg:px-8">
             <button
               type="button"
               aria-label="Previous work"
@@ -260,7 +290,10 @@ export function WorkSpotlight({
             </button>
           </div>
           {loadFailed ? (
-            <p role="status" className="text-sm text-white/70">
+            <p
+              role="status"
+              className="px-6 pb-3 text-sm text-white/70 lg:px-8"
+            >
               Couldn&apos;t load more works.
             </p>
           ) : null}

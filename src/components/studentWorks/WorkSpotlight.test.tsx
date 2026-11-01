@@ -136,7 +136,9 @@ describe("WorkSpotlight", () => {
     expect(onClose).toHaveBeenCalledTimes(2);
     fireEvent.click(screen.getByRole("heading", { name: "Second" }));
     expect(onClose).toHaveBeenCalledTimes(2);
-    fireEvent.click(screen.getByTestId("spotlight-backdrop"));
+    const backdrop = screen.getByTestId("spotlight-backdrop");
+    fireEvent.pointerDown(backdrop);
+    fireEvent.click(backdrop);
     expect(onClose).toHaveBeenCalledTimes(3);
   });
 
@@ -151,5 +153,77 @@ describe("WorkSpotlight", () => {
   it("moves focus into the dialog on open", () => {
     setup();
     expect(screen.getByRole("dialog").contains(document.activeElement)).toBe(true);
+  });
+
+  it("does not close when a press started inside the panel ends on the backdrop", () => {
+    const { onClose } = setup();
+    fireEvent.pointerDown(screen.getByRole("heading", { name: "Second" }));
+    fireEvent.click(screen.getByTestId("spotlight-backdrop"));
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("ignores arrow keys with modifiers", () => {
+    const { onIndexChange } = setup();
+    fireEvent.keyDown(document, { key: "ArrowRight", altKey: true });
+    fireEvent.keyDown(document, { key: "ArrowLeft", metaKey: true });
+    expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
+  it("does not advance if closed while more works were loading", async () => {
+    let resolve!: (ok: boolean) => void;
+    const loadMore = vi.fn(() => new Promise<boolean>((r) => (resolve = r)));
+    const { onIndexChange } = setup({ index: 2, loadMore });
+    fireEvent.click(screen.getByRole("button", { name: "Next work" }));
+    fireEvent.keyDown(document, { key: "Escape" });
+    await act(async () => resolve(true));
+    expect(onIndexChange).not.toHaveBeenCalled();
+  });
+
+  it("does not jump forward if the visitor moved while more works were loading", async () => {
+    let resolve!: (ok: boolean) => void;
+    const loadMore = vi.fn(() => new Promise<boolean>((r) => (resolve = r)));
+    const works = [makeWork({ id: "a" }), makeWork({ id: "b" }), makeWork({ id: "c" })];
+    const onIndexChange = vi.fn();
+    const props = { works, total: 20, onIndexChange, onClose: vi.fn(), loadMore };
+    const { rerender } = render(<WorkSpotlight {...props} index={2} />);
+    fireEvent.click(screen.getByRole("button", { name: "Next work" }));
+    fireEvent.click(screen.getByRole("button", { name: "Previous work" }));
+    expect(onIndexChange).toHaveBeenLastCalledWith(1);
+    rerender(<WorkSpotlight {...props} index={1} />);
+    await act(async () => resolve(true));
+    expect(onIndexChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("locks body scroll while open and restores it on close", () => {
+    document.body.style.overflow = "auto";
+    const { unmount } = render(
+      <WorkSpotlight
+        works={[makeWork()]}
+        total={1}
+        index={0}
+        onIndexChange={vi.fn()}
+        onClose={vi.fn()}
+        loadMore={vi.fn()}
+      />,
+    );
+    expect(document.body.style.overflow).toBe("hidden");
+    unmount();
+    expect(document.body.style.overflow).toBe("auto");
+    document.body.style.overflow = "";
+  });
+
+  it("wraps Tab focus from the last control to the first and back", () => {
+    setup({ works: [makeWork({ portfolio_url: "https://folio.test" })], index: 0, total: 1 });
+    const dialog = screen.getByRole("dialog");
+    const items = Array.from(
+      dialog.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"),
+    );
+    const first = items[0];
+    const last = items[items.length - 1];
+    last.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(document.activeElement).toBe(first);
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(document.activeElement).toBe(last);
   });
 });
