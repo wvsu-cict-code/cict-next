@@ -6,6 +6,7 @@ import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import { programPhoto } from "@/components/HomePrograms";
 import { PageHeader, container } from "@/components/PageHeader";
 import { ProgramBrochure, ProgramSection } from "@/components/ProgramBrochure";
+import { StudentWorksSection } from "@/components/studentWorks/StudentWorksSection";
 import { fetchProgram } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
 import { PROGRAMS_PREFIX, segmentFromPathname } from "@/lib/routes";
@@ -90,6 +91,8 @@ export default function ProgramDetails() {
           semesters={program.semesters}
           curriculumUrl={uploadedFileUrl(program.curriculum_pdf_url)}
         />
+
+        {program.id === "bsemc" && <StudentWorksSection />}
       </div>
     </div>
   );
