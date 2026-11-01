@@ -6,6 +6,9 @@ import type { Database, Enums, Tables } from "@/lib/supabase/database.types";
 
 export type Post = Tables<"posts">;
 export type Program = Tables<"programs">;
+export type StudentWork = Tables<"student_works">;
+export type StudentWorkKind = Enums<"student_work_kind">;
+export type VideoOrientation = Enums<"video_orientation">;
 export type PostCategory = Enums<"post_category">;
 export type SiteSettings = Tables<"site_settings">;
 export type Page = Tables<"pages">;

@@ -330,6 +330,75 @@ export type Database = {
         };
         Relationships: [];
       };
+      student_works: {
+        Row: {
+          created_at: string;
+          description: string;
+          id: string;
+          image_height: number | null;
+          image_url: string | null;
+          image_width: number | null;
+          kind: Database["public"]["Enums"]["student_work_kind"];
+          orientation: Database["public"]["Enums"]["video_orientation"] | null;
+          original_url: string | null;
+          portfolio_url: string | null;
+          sort_order: number;
+          store_url: string | null;
+          student: string;
+          title: string;
+          updated_at: string;
+          visible: boolean;
+          youtube_id: string | null;
+          zoom_height: number | null;
+          zoom_url: string | null;
+          zoom_width: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          description: string;
+          id?: string;
+          image_height?: number | null;
+          image_url?: string | null;
+          image_width?: number | null;
+          kind: Database["public"]["Enums"]["student_work_kind"];
+          orientation?: Database["public"]["Enums"]["video_orientation"] | null;
+          original_url?: string | null;
+          portfolio_url?: string | null;
+          sort_order?: number;
+          store_url?: string | null;
+          student: string;
+          title: string;
+          updated_at?: string;
+          visible?: boolean;
+          youtube_id?: string | null;
+          zoom_height?: number | null;
+          zoom_url?: string | null;
+          zoom_width?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          id?: string;
+          image_height?: number | null;
+          image_url?: string | null;
+          image_width?: number | null;
+          kind?: Database["public"]["Enums"]["student_work_kind"];
+          orientation?: Database["public"]["Enums"]["video_orientation"] | null;
+          original_url?: string | null;
+          portfolio_url?: string | null;
+          sort_order?: number;
+          store_url?: string | null;
+          student?: string;
+          title?: string;
+          updated_at?: string;
+          visible?: boolean;
+          youtube_id?: string | null;
+          zoom_height?: number | null;
+          zoom_url?: string | null;
+          zoom_width?: number | null;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -340,6 +409,8 @@ export type Database = {
     Enums: {
       post_category: "news" | "announcement";
       post_status: "draft" | "published";
+      student_work_kind: "art" | "video" | "game";
+      video_orientation: "landscape" | "vertical";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -475,6 +546,8 @@ export const Constants = {
     Enums: {
       post_category: ["news", "announcement"],
       post_status: ["draft", "published"],
+      student_work_kind: ["art", "video", "game"],
+      video_orientation: ["landscape", "vertical"],
     },
   },
 } as const;
