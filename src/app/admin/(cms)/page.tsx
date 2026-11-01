@@ -74,6 +74,11 @@ export default async function DashboardPage() {
     { href: "/admin/posts/new", label: "Write a post", icon: "news" },
     { href: "/admin/events/new", label: "Add an event", icon: "calendar" },
     {
+      href: "/admin/student-works/new",
+      label: "Add a student work",
+      icon: "works",
+    },
+    {
       href: "/admin/faculty/members/new",
       label: "Add a faculty member",
       icon: "faculty",

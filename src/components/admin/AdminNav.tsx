@@ -8,6 +8,7 @@ const links: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin", label: "Dashboard", icon: "dashboard" },
   { href: "/admin/posts", label: "News & Announcements", icon: "news" },
   { href: "/admin/events", label: "Events", icon: "calendar" },
+  { href: "/admin/student-works", label: "Student works", icon: "works" },
   { href: "/admin/pages", label: "Pages", icon: "page" },
   { href: "/admin/programs", label: "Programs", icon: "programs" },
   { href: "/admin/faculty", label: "Faculty", icon: "faculty" },

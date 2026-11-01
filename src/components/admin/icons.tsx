@@ -7,6 +7,7 @@ export type IconName =
   | "calendar"
   | "programs"
   | "faculty"
+  | "works"
   | "settings"
   | "plus"
   | "external"
@@ -114,6 +115,13 @@ const paths: Record<IconName, React.ReactNode> = {
     <>
       <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z" />
       <circle cx="12" cy="12" r="2.8" />
+    </>
+  ),
+  works: (
+    <>
+      <rect x="3" y="3" width="18" height="13" rx="1.5" />
+      <path d="M12 16v5M8 21l4-5 4 5" />
+      <path d="M6.5 13l3.5-4 3 3 2-2 2.5 3" />
     </>
   ),
   "eye-off": (
