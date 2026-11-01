@@ -104,7 +104,7 @@ export default function WorkForm({ work, action }: WorkFormProps) {
               <WorkImageField
                 name="image"
                 label="Screenshot"
-                withZoom
+                withZoom={false}
                 defaultValue={image}
               />
               <TextField

@@ -3,6 +3,7 @@ import {
   checkImageFile,
   encodedName,
   fitWithin,
+  needsZoomVersion,
   originalExtension,
 } from "@/lib/studentWorks/images";
 
@@ -57,5 +58,18 @@ describe("originalExtension", () => {
     expect(originalExtension("image/png")).toBe("png");
     expect(originalExtension("image/jpeg")).toBe("jpg");
     expect(originalExtension("image/webp")).toBe("webp");
+  });
+});
+
+describe("needsZoomVersion", () => {
+  it("skips the zoom file when it would match the display size", () => {
+    expect(needsZoomVersion({ width: 1600, height: 900 })).toBe(false);
+    expect(needsZoomVersion({ width: 800, height: 1600 })).toBe(false);
+    expect(needsZoomVersion({ width: 400, height: 300 })).toBe(false);
+  });
+
+  it("makes one when the original is larger than the display size", () => {
+    expect(needsZoomVersion({ width: 1601, height: 900 })).toBe(true);
+    expect(needsZoomVersion({ width: 3000, height: 6000 })).toBe(true);
   });
 });

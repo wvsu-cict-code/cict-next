@@ -35,6 +35,14 @@ export function fitWithin(size: Size, max: number): Size {
   };
 }
 
+/**
+ * Whether a zoom version adds anything: an original no larger than the
+ * display size would only produce a duplicate of the display file.
+ */
+export function needsZoomVersion(size: Size): boolean {
+  return Math.max(size.width, size.height) > DISPLAY_MAX;
+}
+
 /** File name for an encoded work image, named after its real format. */
 export function encodedName(
   base: "display" | "zoom",
@@ -65,15 +73,21 @@ async function renderEncoded(
   const canvas = document.createElement("canvas");
   canvas.width = size.width;
   canvas.height = size.height;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("Your browser couldn't process that image.");
-  context.drawImage(bitmap, 0, 0, size.width, size.height);
-  let blob = await canvasBlob(canvas, "image/webp");
-  // Browsers that can't encode WebP fall back to PNG; use JPEG instead.
-  if (blob && blob.type !== "image/webp")
-    blob = await canvasBlob(canvas, "image/jpeg");
-  if (!blob) throw new Error("Your browser couldn't process that image.");
-  return { blob, ...size };
+  try {
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Your browser couldn't process that image.");
+    context.drawImage(bitmap, 0, 0, size.width, size.height);
+    let blob = await canvasBlob(canvas, "image/webp");
+    // Browsers that can't encode WebP fall back to PNG; use JPEG instead.
+    if (blob && blob.type !== "image/webp")
+      blob = await canvasBlob(canvas, "image/jpeg");
+    if (!blob) throw new Error("Your browser couldn't process that image.");
+    return { blob, ...size };
+  } finally {
+    // Safari caps total canvas memory; free the pixels now, not at GC.
+    canvas.width = 0;
+    canvas.height = 0;
+  }
 }
 
 async function uploadBlob(
@@ -90,7 +104,8 @@ async function uploadBlob(
 
 /**
  * Resizes a work image in the browser and uploads the original, a display
- * version and (optionally) a larger zoom version straight to storage.
+ * version and (optionally) a larger zoom version straight to storage. The
+ * zoom version is skipped when the original is no larger than the display.
  */
 export async function uploadWorkImage(
   client: ContentClient,
@@ -110,9 +125,11 @@ export async function uploadWorkImage(
   try {
     const folder = `student-works/${crypto.randomUUID()}`;
     const display = await renderEncoded(bitmap, DISPLAY_MAX);
-    const zoom = options.withZoom
-      ? await renderEncoded(bitmap, ZOOM_MAX)
-      : null;
+    const zoom =
+      options.withZoom &&
+      needsZoomVersion({ width: bitmap.width, height: bitmap.height })
+        ? await renderEncoded(bitmap, ZOOM_MAX)
+        : null;
 
     const original_url = await uploadBlob(
       client,

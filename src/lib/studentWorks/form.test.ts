@@ -106,6 +106,18 @@ describe("parseStudentWork", () => {
     });
   });
 
+  it("keeps a game screenshot without zoom", () => {
+    const v = values({ kind: "game", store_url: "https://a.itch.io/g" });
+    expect(v).toMatchObject({
+      image_url: image.image_url,
+      image_width: 800,
+      image_height: 600,
+      zoom_url: null,
+      zoom_width: null,
+      zoom_height: null,
+    });
+  });
+
   it("drops fields that don't belong to the chosen type", () => {
     const v = values({
       kind: "video",

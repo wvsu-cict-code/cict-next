@@ -124,7 +124,8 @@ export function parseStudentWork(
     return { error: "The portfolio link must start with http:// or https://." };
   }
 
-  const keepZoom = kind !== "video";
+  // Only digital art zooms; video thumbnails and game screenshots don't.
+  const keepZoom = kind === "art";
   return {
     values: {
       kind,
