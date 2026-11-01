@@ -259,3 +259,23 @@ export function previewLabel(post: Post, now = new Date()) {
   }
   return null;
 }
+
+/**
+ * One page of the student works visitors can see, in display order, plus how
+ * many there are in all so the caller knows when to stop asking for more.
+ */
+export async function fetchStudentWorks(
+  client: ContentClient,
+  page: { offset: number; limit: number },
+) {
+  const { data, error, count } = await client
+    .from("student_works")
+    .select("*", { count: "exact" })
+    .eq("visible", true)
+    .order("sort_order")
+    .order("created_at")
+    .range(page.offset, page.offset + page.limit - 1);
+
+  if (error) throw new Error(`Failed to load student works: ${error.message}`);
+  return { works: data, total: count ?? data.length };
+}

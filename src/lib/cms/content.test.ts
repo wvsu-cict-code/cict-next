@@ -13,13 +13,14 @@ import {
   fetchPrograms,
   fetchPublishedPosts,
   fetchSiteSettings,
+  fetchStudentWorks,
   previewLabel,
 } from "@/lib/cms/content";
 
 type Call = [method: string, ...args: unknown[]];
 
 /** Supabase-like client that records the query chain and resolves to `result`. */
-function recordingClient(result: { data: unknown; error: unknown }) {
+function recordingClient(result: { data: unknown; error: unknown; count?: number | null }) {
   const calls: Call[] = [];
   const builder: Record<string, unknown> = new Proxy(
     {},
@@ -216,5 +217,31 @@ describe("fetchSiteSettings", () => {
   it("throws on other errors", async () => {
     const { client } = recordingClient(failed);
     await expect(fetchSiteSettings(client)).rejects.toThrow("network down");
+  });
+});
+
+describe("fetchStudentWorks", () => {
+  it("loads one page of visible works in display order with the total", async () => {
+    const rows = [{ id: "w1" }];
+    const { client, calls } = recordingClient({
+      data: rows,
+      error: null,
+      count: 30,
+    });
+    const result = await fetchStudentWorks(client, { offset: 12, limit: 12 });
+    expect(calls).toContainEqual(["from", "student_works"]);
+    expect(calls).toContainEqual(["select", "*", { count: "exact" }]);
+    expect(calls).toContainEqual(["eq", "visible", true]);
+    expect(calls).toContainEqual(["order", "sort_order"]);
+    expect(calls).toContainEqual(["order", "created_at"]);
+    expect(calls).toContainEqual(["range", 12, 23]);
+    expect(result).toEqual({ works: rows, total: 30 });
+  });
+
+  it("throws a readable error when the query fails", async () => {
+    const { client } = recordingClient(failed);
+    await expect(
+      fetchStudentWorks(client, { offset: 0, limit: 12 }),
+    ).rejects.toThrow("Failed to load student works: network down");
   });
 });
