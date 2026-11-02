@@ -24,7 +24,7 @@ export default function FacultyGallery({ faculty, memberIndex, onSelect }: Facul
               key={originalIdx}
               onMouseEnter={() => onSelect(originalIdx)}
               onClick={() => onSelect(originalIdx)}
-              className={`relative aspect-square w-[180px] md:w-[200px] lg:w-[220px] rounded-sm overflow-hidden transition-all duration-700 cursor-pointer outline-none ${isActive ? 'scale-105 z-20 shadow-2xl' : 'grayscale opacity-30 hover:opacity-100 hover:grayscale-0'}`}
+              className={`relative aspect-square w-[180px] md:w-[200px] lg:w-[220px] rounded-2xl overflow-hidden bg-[#f7f8fa] transition-all duration-700 cursor-pointer outline-none ${isActive ? 'scale-105 z-20 shadow-2xl' : 'grayscale opacity-30 hover:opacity-100 hover:grayscale-0'}`}
             >
               <Image src={member.image} alt={member.name} fill className="object-cover" />
             </button>
@@ -40,7 +40,7 @@ export default function FacultyGallery({ faculty, memberIndex, onSelect }: Facul
               key={originalIdx}
               onMouseEnter={() => onSelect(originalIdx)}
               onClick={() => onSelect(originalIdx)}
-              className={`relative aspect-square w-[180px] md:w-[200px] lg:w-[220px] rounded-sm overflow-hidden transition-all duration-700 cursor-pointer outline-none ${isActive ? 'scale-105 z-20 shadow-2xl' : 'grayscale opacity-30 hover:opacity-100 hover:grayscale-0'}`}
+              className={`relative aspect-square w-[180px] md:w-[200px] lg:w-[220px] rounded-2xl overflow-hidden bg-[#f7f8fa] transition-all duration-700 cursor-pointer outline-none ${isActive ? 'scale-105 z-20 shadow-2xl' : 'grayscale opacity-30 hover:opacity-100 hover:grayscale-0'}`}
             >
               <Image src={member.image} alt={member.name} fill className="object-cover" />
             </button>
