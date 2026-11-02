@@ -91,3 +91,69 @@ insert into public.posts (slug, title, excerpt, body, category, status, is_featu
    'WVSU-CICT is launching a new scholarship program for underprivileged students pursuing degrees in computer science and information technology.',
    'Full content for technology workshops news goes here...',
    'announcement', 'published', false, '2026-02-04 08:00:00+08');
+
+-- Possible careers (same starting lists as the program_careers migration).
+update public.programs set careers = array[
+  'Software engineer',
+  'Software developer',
+  'Data scientist',
+  'Machine learning / AI engineer',
+  'Systems architect',
+  'Computer science researcher',
+  'Database administrator',
+  'Computer science instructor'
+] where id = 'bscs';
+
+update public.programs set careers = array[
+  'Software developer',
+  'Web developer',
+  'Mobile app developer',
+  'Network administrator',
+  'Systems administrator',
+  'Cybersecurity analyst',
+  'Cloud engineer',
+  'IT support specialist'
+] where id = 'bsit';
+
+update public.programs set careers = array[
+  'Business analyst',
+  'Systems analyst',
+  'Data analyst',
+  'Business application developer',
+  'ERP consultant',
+  'Database administrator',
+  'IT auditor',
+  'IS project manager'
+] where id = 'bsis';
+
+update public.programs set careers = array[
+  'Game developer',
+  'Game designer',
+  '2D / 3D animator',
+  '3D modeler and artist',
+  'Technical artist',
+  'Visual effects artist',
+  'Level designer',
+  'Multimedia designer'
+] where id = 'bsemc';
+
+update public.programs set careers = array[
+  'Licensed librarian',
+  'Archivist',
+  'Records manager',
+  'Cataloger and metadata specialist',
+  'Digital librarian',
+  'Knowledge manager',
+  'Information specialist',
+  'Library systems administrator'
+] where id = 'blis';
+
+update public.programs set careers = array[
+  'IT manager',
+  'Chief information officer',
+  'IT consultant',
+  'Solutions architect',
+  'IT project manager',
+  'Research and development specialist',
+  'College instructor or professor'
+] where id = 'mit';

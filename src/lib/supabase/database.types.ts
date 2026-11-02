@@ -268,6 +268,7 @@ export type Database = {
       };
       programs: {
         Row: {
+          careers: string[];
           code: string;
           created_at: string;
           curriculum_pdf_url: string | null;
@@ -282,6 +283,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          careers?: string[];
           code: string;
           created_at?: string;
           curriculum_pdf_url?: string | null;
@@ -296,6 +298,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          careers?: string[];
           code?: string;
           created_at?: string;
           curriculum_pdf_url?: string | null;

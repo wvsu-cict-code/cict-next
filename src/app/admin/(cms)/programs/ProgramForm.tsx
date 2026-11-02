@@ -67,6 +67,13 @@ export default function ProgramForm({ program, action }: ProgramFormProps) {
           defaultValue={program?.objectives}
           hint="Blank lines start a new paragraph."
         />
+        <TextAreaField
+          label="Possible careers"
+          name="careers"
+          rows={8}
+          defaultValue={(program?.careers ?? []).join("\n")}
+          hint="One career per line, such as “Software developer”. Leave empty to hide the section."
+        />
       </FormSection>
 
       <FormSection title="Details">

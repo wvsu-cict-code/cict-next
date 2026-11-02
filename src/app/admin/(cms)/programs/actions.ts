@@ -13,6 +13,7 @@ import {
   type FormState,
 } from "@/lib/cms/forms";
 import { slugify } from "@/lib/format";
+import { parseCareers } from "@/lib/programs/careers";
 
 async function programFromForm(formData: FormData) {
   const { supabase } = await requireAdmin();
@@ -22,6 +23,7 @@ async function programFromForm(formData: FormData) {
     name: requireValue(getString(formData, "name"), "Name is required."),
     description: getString(formData, "description"),
     objectives: getString(formData, "objectives"),
+    careers: parseCareers(getString(formData, "careers")),
     duration: getOptionalString(formData, "duration"),
     semesters: getOptionalString(formData, "semesters"),
     sort_order: getNumber(formData, "sort_order"),

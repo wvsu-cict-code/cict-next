@@ -6,6 +6,7 @@ import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import { programPhoto } from "@/components/HomePrograms";
 import { PageHeader, container } from "@/components/PageHeader";
 import { ProgramBrochure, ProgramSection } from "@/components/ProgramBrochure";
+import { ProgramCareers } from "@/components/ProgramCareers";
 import { StudentWorksSection } from "@/components/studentWorks/StudentWorksSection";
 import { fetchProgram } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
@@ -85,6 +86,8 @@ export default function ProgramDetails() {
             {program.objectives}
           </p>
         </ProgramSection>
+
+        <ProgramCareers careers={program.careers} />
 
         <ProgramFacts
           duration={program.duration}
