@@ -114,6 +114,7 @@ export default function Contact() {
         eyebrow="Contact"
         title="College contact information"
         intro="For any inquiries or collaborations, we'd love to hear from you. Reach out and let's connect."
+        image="/temp-photos/campus.jpg"
       />
 
       {/* INFO CARDS */}
