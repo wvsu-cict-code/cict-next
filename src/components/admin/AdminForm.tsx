@@ -1,9 +1,29 @@
 "use client";
 
-import { startTransition, useActionState, useEffect, useState } from "react";
+import {
+  createContext,
+  startTransition,
+  useActionState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Icon } from "@/components/admin/icons";
 import { buttonClass } from "@/components/admin/PageHeader";
 import type { FormState } from "@/lib/cms/forms";
+
+interface AdminFormBusy {
+  /** Marks a child (by key) as busy, e.g. mid-upload; saving waits for it. */
+  setBusy: (key: string, busy: boolean) => void;
+  /** For changes the form's onChange can't see (hidden inputs, buttons). */
+  markDirty: () => void;
+}
+
+export const AdminFormBusyContext = createContext<AdminFormBusy>({
+  setBusy: () => {},
+  markDirty: () => {},
+});
 
 interface AdminFormProps {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
@@ -24,6 +44,20 @@ export default function AdminForm({
 }: AdminFormProps) {
   const [state, formAction, pending] = useActionState(action, undefined);
   const [dirty, setDirty] = useState(false);
+  const [busyKeys, setBusyKeys] = useState<ReadonlySet<string>>(new Set());
+  const anyBusy = busyKeys.size > 0;
+
+  const setBusy = useCallback((key: string, busy: boolean) => {
+    setBusyKeys((prev) => {
+      if (prev.has(key) === busy) return prev;
+      const next = new Set(prev);
+      if (busy) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }, []);
+  const markDirty = useCallback(() => setDirty(true), []);
+  const busyApi = useMemo(() => ({ setBusy, markDirty }), [setBusy, markDirty]);
 
   // Ask before leaving the page with edits that haven't been saved
   useEffect(() => {
@@ -39,6 +73,7 @@ export default function AdminForm({
       onChange={() => setDirty(true)}
       onSubmit={(e) => {
         e.preventDefault();
+        if (anyBusy) return;
         const formData = new FormData(e.currentTarget);
         startTransition(() => formAction(formData));
       }}
@@ -53,7 +88,9 @@ export default function AdminForm({
         </p>
       )}
 
-      {children}
+      <AdminFormBusyContext.Provider value={busyApi}>
+        {children}
+      </AdminFormBusyContext.Provider>
 
       <div className="border-rule/70 sticky bottom-4 z-10 flex items-center justify-between gap-4 rounded-2xl border bg-white/95 px-4 py-3 shadow-[0_12px_40px_rgba(16,32,51,0.12)] backdrop-blur">
         <p
@@ -71,7 +108,7 @@ export default function AdminForm({
         </p>
         <button
           type="submit"
-          disabled={pending}
+          disabled={pending || anyBusy}
           className={buttonClass.primary}
         >
           {pending ? (

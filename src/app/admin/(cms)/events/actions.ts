@@ -15,6 +15,7 @@ import {
   type FormState,
 } from "@/lib/cms/forms";
 import { slugify } from "@/lib/format";
+import { parsePhotos } from "@/lib/photos";
 
 /** All-day events are stored at midnight Philippine time on their dates. */
 function parseEventTime(value: string, allDay: boolean) {
@@ -54,6 +55,7 @@ async function eventFromForm(formData: FormData) {
     location: getOptionalString(formData, "location"),
     summary: getOptionalString(formData, "summary"),
     body: getString(formData, "body"),
+    photos: parsePhotos(getString(formData, "photos")),
     cover_image_url: await resolveMediaField(
       supabase,
       formData,

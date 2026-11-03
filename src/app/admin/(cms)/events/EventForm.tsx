@@ -1,6 +1,7 @@
 import AdminForm from "@/components/admin/AdminForm";
 import MarkdownEditor from "@/components/admin/MarkdownEditor";
 import MediaField from "@/components/admin/MediaField";
+import PhotosField from "@/components/admin/PhotosField";
 import { FormSection } from "@/components/admin/PageHeader";
 import {
   CheckboxField,
@@ -10,6 +11,7 @@ import {
 } from "@/components/admin/fields";
 import { toManilaDateTimeInput } from "@/lib/cms/dates";
 import type { FormState } from "@/lib/cms/forms";
+import { parsePhotos } from "@/lib/photos";
 import type { CalendarEvent } from "@/lib/events";
 import { uploadPostImage } from "../posts/actions";
 
@@ -98,6 +100,17 @@ export default function EventForm({ event, action }: EventFormProps) {
               label="Image"
               name="cover_image_url"
               defaultValue={event?.cover_image_url}
+            />
+          </FormSection>
+
+          <FormSection
+            title="Photos"
+            description="Shown below the article. Also used when exporting for social media."
+          >
+            <PhotosField
+              name="photos"
+              folder="events"
+              defaultValue={parsePhotos(event?.photos)}
             />
           </FormSection>
 

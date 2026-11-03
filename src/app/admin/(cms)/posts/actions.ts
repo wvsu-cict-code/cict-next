@@ -16,6 +16,7 @@ import {
   type FormState,
 } from "@/lib/cms/forms";
 import { slugify } from "@/lib/format";
+import { parsePhotos } from "@/lib/photos";
 import { parseSdgs } from "@/lib/sdg";
 
 async function postFromForm(formData: FormData) {
@@ -51,6 +52,7 @@ async function postFromForm(formData: FormData) {
     sdgs: parseSdgs(formData.getAll("sdgs")),
     excerpt: getOptionalString(formData, "excerpt"),
     body: getString(formData, "body"),
+    photos: parsePhotos(getString(formData, "photos")),
     cover_image_url: await resolveMediaField(
       supabase,
       formData,
