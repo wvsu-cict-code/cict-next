@@ -52,6 +52,26 @@ describe("markdownToPlain", () => {
   });
 });
 
+describe("markdownToPlain structure and underscores", () => {
+  it("keeps snake_case words and URL underscores", () => {
+    expect(
+      markdownToPlain("see my_var and other_var https://x.com/a_b_c"),
+    ).toBe("see my_var and other_var https://x.com/a_b_c");
+    expect(markdownToPlain("an _emphasised_ and __strong__ word")).toBe(
+      "an emphasised and strong word",
+    );
+  });
+  it("keeps the blank line between a paragraph and a list", () => {
+    expect(markdownToPlain("para\n\n- item\n- two")).toBe("para\n\nitem\ntwo");
+  });
+  it("does not swallow the newline after a bare quote marker", () => {
+    expect(markdownToPlain("a\n>\nb")).toBe("a\n\nb");
+  });
+  it("does not swallow the newline after a bare heading marker", () => {
+    expect(markdownToPlain("a\n#\nb")).toBe("a\n#\nb");
+  });
+});
+
 describe("summaryFor", () => {
   it("truncates the body at a word boundary", () => {
     const s = summaryFor(null, "word ".repeat(100));
