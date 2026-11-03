@@ -3,11 +3,13 @@
 import { usePathname } from "next/navigation";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import PhotoGallery from "@/components/PhotoGallery";
 import { PageHeader, container } from "@/components/PageHeader";
 import { SdgList } from "@/components/SdgBadges";
 import { fetchPostBySlug, previewLabel } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
 import { formatDate } from "@/lib/format";
+import { parsePhotos } from "@/lib/photos";
 import { NEWS_PREFIX, segmentFromPathname } from "@/lib/routes";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
@@ -81,6 +83,7 @@ export default function NewsArticle() {
             />
           )}
           <MarkdownRenderer content={post.body} />
+          <PhotoGallery photos={parsePhotos(post.photos)} />
           <SdgList sdgs={post.sdgs} />
         </div>
       </div>

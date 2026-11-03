@@ -3,10 +3,12 @@
 import { usePathname } from "next/navigation";
 import { ContentError, ContentPlaceholder } from "@/components/ContentState";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import PhotoGallery from "@/components/PhotoGallery";
 import { PageHeader, container } from "@/components/PageHeader";
 import { fetchEventBySlug } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
 import { formatEventWhen } from "@/lib/events";
+import { parsePhotos } from "@/lib/photos";
 import { EVENTS_PREFIX, segmentFromPathname } from "@/lib/routes";
 import { useDocumentTitle } from "@/lib/useDocumentTitle";
 
@@ -97,6 +99,7 @@ export default function EventDetail() {
             />
           )}
           <MarkdownRenderer content={event.body} />
+          <PhotoGallery photos={parsePhotos(event.photos)} />
         </div>
       </div>
     </div>
