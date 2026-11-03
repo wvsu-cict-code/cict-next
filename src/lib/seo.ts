@@ -1,9 +1,28 @@
 import type { Metadata } from "next";
 
-/** The public site's address; share links and canonical URLs point here. */
-export const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL || "https://cict.wvsu.edu.ph"
-).replace(/\/+$/, "");
+const SCHOOL_SITE_URL = "https://cict.wvsu.edu.ph";
+
+/**
+ * The public site's address; share links, canonical URLs and the share image
+ * point here.
+ * - NEXT_PUBLIC_SITE_URL when it's set.
+ * - The school site build: the school domain.
+ * - A Vercel deployment without NEXT_PUBLIC_SITE_URL serves the public pages
+ *   itself (see routeAccess), so it points at its own production domain.
+ *   Otherwise Facebook follows og:url to a site that may not be up yet and
+ *   the share preview breaks.
+ */
+export function resolveSiteUrl(env: Record<string, string | undefined>) {
+  const vercelDomain = env.VERCEL_PROJECT_PRODUCTION_URL;
+  const url =
+    env.NEXT_PUBLIC_SITE_URL ||
+    (env.BUILD_TARGET !== "site" && vercelDomain
+      ? `https://${vercelDomain}`
+      : SCHOOL_SITE_URL);
+  return url.replace(/\/+$/, "");
+}
+
+export const SITE_URL = resolveSiteUrl(process.env);
 
 export const SITE_NAME = "WVSU CICT";
 

@@ -85,8 +85,16 @@ describe("robotsTxt", () => {
   });
 
   it("keeps the CMS deployment out of search engines", () => {
-    expect(robotsTxt("https://cict.wvsu.edu.ph", false)).toBe(
-      "User-agent: *\nDisallow: /\n",
-    );
+    const groups = robotsTxt("https://cict.wvsu.edu.ph", false).split("\n\n");
+    expect(groups.at(-1)).toBe("User-agent: *\nDisallow: /\n");
+  });
+
+  it("lets link-preview crawlers read the CMS deployment's public pages, not the CMS", () => {
+    const robots = robotsTxt("https://cict.wvsu.edu.ph", false);
+    const previewGroup = robots
+      .split("\n\n")
+      .find((group) => group.includes("User-agent: facebookexternalhit"));
+    expect(previewGroup).toContain("Allow: /");
+    expect(previewGroup).toContain("Disallow: /admin/");
   });
 });

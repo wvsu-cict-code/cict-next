@@ -100,12 +100,24 @@ export const LINK_PREVIEW_BOTS = [
 
 /**
  * robots.txt. The school site is indexed (search results aside); the CMS
- * deployment never is.
+ * deployment never is, but its public pages can still be shared with a
+ * preview.
  */
 export function robotsTxt(siteUrl: string, isSchoolSite: boolean) {
-  if (!isSchoolSite) return "User-agent: *\nDisallow: /\n";
+  const previewBots = LINK_PREVIEW_BOTS.map((bot) => `User-agent: ${bot}`);
+  if (!isSchoolSite) {
+    return [
+      ...previewBots,
+      "Allow: /",
+      "Disallow: /admin/",
+      "",
+      "User-agent: *",
+      "Disallow: /",
+      "",
+    ].join("\n");
+  }
   return [
-    ...LINK_PREVIEW_BOTS.map((bot) => `User-agent: ${bot}`),
+    ...previewBots,
     "Allow: /",
     "",
     "User-agent: *",
