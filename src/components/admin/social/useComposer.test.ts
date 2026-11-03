@@ -132,7 +132,7 @@ describe("selectSlot", () => {
 
 describe("pan", () => {
   it("only changes the selected slot's crop", () => {
-    const image = { width: 1600, height: 900 };
+    const image = { width: 4000, height: 900 };
     let state = initialComposerState(source);
     state = composerReducer(state, { type: "selectSlot", index: 1 });
     state = composerReducer(state, { type: "pan", dx: 40, dy: 0, image });
