@@ -17,6 +17,7 @@ export type IconName =
   | "alert"
   | "image"
   | "upload"
+  | "download"
   | "trash"
   | "eye"
   | "eye-off"
@@ -102,6 +103,12 @@ const paths: Record<IconName, React.ReactNode> = {
   upload: (
     <>
       <path d="M12 16V4M7 9l5-5 5 5" />
+      <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M12 4v12M7 11l5 5 5-5" />
       <path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
     </>
   ),

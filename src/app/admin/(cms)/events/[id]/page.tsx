@@ -51,6 +51,12 @@ export default async function EditEventPage({
             <SecondaryLink href={viewHref} icon="eye" external>
               {isDraft ? "Preview" : "View on site"}
             </SecondaryLink>
+            <SecondaryLink
+              href={`/admin/social/events/${event.id}`}
+              icon="download"
+            >
+              Export for social media
+            </SecondaryLink>
             <DeleteButton
               action={deleteEvent.bind(null, event.id)}
               confirmMessage={`Delete "${event.title}"? This cannot be undone.`}

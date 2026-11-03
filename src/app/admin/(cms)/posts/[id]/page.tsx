@@ -52,6 +52,12 @@ export default async function EditPostPage({
             <SecondaryLink href={viewHref} icon="eye" external>
               {isPreview ? "Preview" : "View on site"}
             </SecondaryLink>
+            <SecondaryLink
+              href={`/admin/social/posts/${post.id}`}
+              icon="download"
+            >
+              Export for social media
+            </SecondaryLink>
             <DeleteButton
               action={deletePost.bind(null, post.id)}
               confirmMessage={`Delete "${post.title}"? This cannot be undone.`}
