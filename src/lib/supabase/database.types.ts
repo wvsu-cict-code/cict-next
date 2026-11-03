@@ -105,6 +105,7 @@ export type Database = {
           ends_at: string | null;
           id: string;
           location: string | null;
+          photos: Json;
           slug: string;
           starts_at: string;
           status: Database["public"]["Enums"]["post_status"];
@@ -120,6 +121,7 @@ export type Database = {
           ends_at?: string | null;
           id?: string;
           location?: string | null;
+          photos?: Json;
           slug: string;
           starts_at: string;
           status?: Database["public"]["Enums"]["post_status"];
@@ -135,6 +137,7 @@ export type Database = {
           ends_at?: string | null;
           id?: string;
           location?: string | null;
+          photos?: Json;
           slug?: string;
           starts_at?: string;
           status?: Database["public"]["Enums"]["post_status"];
@@ -227,6 +230,7 @@ export type Database = {
           excerpt: string | null;
           id: string;
           is_featured: boolean;
+          photos: Json;
           published_at: string | null;
           sdgs: number[];
           slug: string;
@@ -242,6 +246,7 @@ export type Database = {
           excerpt?: string | null;
           id?: string;
           is_featured?: boolean;
+          photos?: Json;
           published_at?: string | null;
           sdgs?: number[];
           slug: string;
@@ -257,6 +262,7 @@ export type Database = {
           excerpt?: string | null;
           id?: string;
           is_featured?: boolean;
+          photos?: Json;
           published_at?: string | null;
           sdgs?: number[];
           slug?: string;
