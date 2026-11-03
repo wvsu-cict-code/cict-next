@@ -6,6 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Photo } from "@/lib/photos";
 import AdminForm from "./AdminForm";
@@ -99,6 +100,36 @@ describe("PhotosField", () => {
     expect(
       active.closest("li")?.querySelector("img")?.getAttribute("src"),
     ).toBe("https://x/c.jpg");
+  });
+
+  it("falls back to Move right when the moved photo reaches the start", async () => {
+    renderField([photo("a"), photo("b")]);
+    const button = screen.getAllByRole("button", { name: /move left/i })[1];
+    button.focus();
+    await user.click(button);
+    const active = document.activeElement as HTMLElement;
+    expect(active.dataset.move).toBe("right");
+    expect(
+      active.closest("li")?.querySelector("img")?.getAttribute("src"),
+    ).toBe("https://x/b.jpg");
+  });
+
+  it("renders the same photo ids on every server render and on the client", () => {
+    const element = (
+      <PhotosField
+        name="photos"
+        folder="posts"
+        defaultValue={[photo("a"), photo("b")]}
+      />
+    );
+    const ids = (html: string) =>
+      Array.from(html.matchAll(/data-photo-id="(\d+)"/g), (m) => m[1]);
+    const first = ids(renderToString(element));
+    const second = ids(renderToString(element));
+    const client = ids(render(element).container.innerHTML);
+    expect(first).toEqual(["0", "1"]);
+    expect(second).toEqual(first);
+    expect(client).toEqual(first);
   });
 
   it("removes a photo and edits alt text", async () => {

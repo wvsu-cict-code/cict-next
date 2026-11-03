@@ -16,10 +16,6 @@ interface PhotosFieldProps {
   defaultValue?: Photo[];
 }
 
-// Stable per-photo ids so reordering keeps each item's DOM (and focus)
-let nextPhotoId = 0;
-const makeItem = (photo: Photo) => ({ id: nextPhotoId++, photo });
-
 const smallButton =
   "border-rule text-ink-soft hover:text-theme-red rounded-md border bg-white px-2 py-1 text-xs disabled:opacity-40";
 
@@ -33,7 +29,12 @@ export default function PhotosField({
   folder,
   defaultValue = [],
 }: PhotosFieldProps) {
-  const [items, setItems] = useState(() => defaultValue.map(makeItem));
+  const [items, setItems] = useState(() =>
+    // Ids come from the index so server and client render the same markup
+    defaultValue.map((photo, id) => ({ id, photo })),
+  );
+  // Ids for uploaded photos; only read in the upload handler
+  const nextId = useRef(defaultValue.length);
   const photos = items.map((item) => item.photo);
   const refocus = useRef<{ id: number; dir: "left" | "right" } | null>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -94,7 +95,9 @@ export default function PhotosField({
             folder,
           );
           setItems((prev) =>
-            prev.length >= MAX_PHOTOS ? prev : [...prev, makeItem(uploaded)],
+            prev.length >= MAX_PHOTOS
+              ? prev
+              : [...prev, { id: nextId.current++, photo: uploaded }],
           );
         } catch (err) {
           failures.push(
