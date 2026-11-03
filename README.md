@@ -95,6 +95,18 @@ The project deploys as two parts from this one codebase:
 3. Create the first admin with `npm run cms:create-admin -- <email> <password>`
    (using the project's URL and secret key in `.env.local`).
 
+### Photo galleries and social export (one-time deploy order)
+
+The post and event save actions now write a `photos` column, so the database
+must be updated first:
+
+1. Apply `supabase/migrations/20261103000000_photo_galleries.sql` to the
+   production project: `npx supabase db push`. Do this **before** deploying
+   the CMS, or saving a post or event will fail.
+2. Run `npm run db:types` and commit any diff (the `photos` types were added
+   by hand).
+3. Deploy the CMS, then run `npm run build:site` and upload `out/`.
+
 ### CMS on Vercel
 
 1. Import the repository in Vercel. The default build settings are correct.
