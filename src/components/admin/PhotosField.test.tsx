@@ -88,6 +88,19 @@ describe("PhotosField", () => {
     ]);
   });
 
+  it("keeps focus on the moved photo's move button", async () => {
+    renderField([photo("a"), photo("b"), photo("c")]);
+    const button = screen.getAllByRole("button", { name: /move left/i })[2];
+    button.focus();
+    await user.click(button);
+    const active = document.activeElement as HTMLElement;
+    expect(active).not.toBe(document.body);
+    expect(active.dataset.move).toBe("left");
+    expect(
+      active.closest("li")?.querySelector("img")?.getAttribute("src"),
+    ).toBe("https://x/c.jpg");
+  });
+
   it("removes a photo and edits alt text", async () => {
     renderField([photo("a"), photo("b")]);
     fireEvent.change(screen.getAllByLabelText(/alt text/i)[1], {

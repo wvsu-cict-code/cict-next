@@ -16,6 +16,10 @@ interface PhotosFieldProps {
   defaultValue?: Photo[];
 }
 
+// Stable per-photo ids so reordering keeps each item's DOM (and focus)
+let nextPhotoId = 0;
+const makeItem = (photo: Photo) => ({ id: nextPhotoId++, photo });
+
 const smallButton =
   "border-rule text-ink-soft hover:text-theme-red rounded-md border bg-white px-2 py-1 text-xs disabled:opacity-40";
 
@@ -29,7 +33,10 @@ export default function PhotosField({
   folder,
   defaultValue = [],
 }: PhotosFieldProps) {
-  const [photos, setPhotos] = useState<Photo[]>(defaultValue);
+  const [items, setItems] = useState(() => defaultValue.map(makeItem));
+  const photos = items.map((item) => item.photo);
+  const refocus = useRef<{ id: number; dir: "left" | "right" } | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const [progress, setProgress] = useState<{
     current: number;
     total: number;
@@ -46,7 +53,22 @@ export default function PhotosField({
       return;
     }
     markDirty();
-  }, [photos, markDirty]);
+  }, [items, markDirty]);
+
+  // After a move, put focus back on the moved photo's button
+  useEffect(() => {
+    const target = refocus.current;
+    refocus.current = null;
+    if (!target) return;
+    const row = listRef.current?.querySelector(
+      `[data-photo-id="${target.id}"]`,
+    );
+    const pick = (dir: string) =>
+      row?.querySelector<HTMLButtonElement>(`[data-move="${dir}"]`);
+    const other = target.dir === "left" ? "right" : "left";
+    const button = pick(target.dir)?.disabled ? pick(other) : pick(target.dir);
+    button?.focus();
+  }, [items]);
 
   // Don't leave the form stuck busy if this field unmounts mid-upload
   useEffect(() => () => setBusy(busyKey, false), [setBusy, busyKey]);
@@ -71,8 +93,8 @@ export default function PhotosField({
             picked[i],
             folder,
           );
-          setPhotos((prev) =>
-            prev.length >= MAX_PHOTOS ? prev : [...prev, uploaded],
+          setItems((prev) =>
+            prev.length >= MAX_PHOTOS ? prev : [...prev, makeItem(uploaded)],
           );
         } catch (err) {
           failures.push(
@@ -88,17 +110,20 @@ export default function PhotosField({
   }
 
   const update = (index: number, patch: Partial<Photo>) =>
-    setPhotos((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, ...patch } : p)),
+    setItems((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, photo: { ...item.photo, ...patch } } : item,
+      ),
     );
 
   return (
     <div className="space-y-4">
       {photos.length > 0 && (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {photos.map((photo, i) => (
+        <ul ref={listRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {items.map(({ id, photo }, i) => (
             <li
-              key={`${photo.url}-${i}`}
+              key={id}
+              data-photo-id={id}
               className="border-rule space-y-2 rounded-xl border bg-white p-2"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -121,7 +146,11 @@ export default function PhotosField({
                   className={smallButton}
                   disabled={i === 0}
                   aria-label={`Move left (photo ${i + 1})`}
-                  onClick={() => setPhotos(moveItem(photos, i, i - 1))}
+                  data-move="left"
+                  onClick={() => {
+                    refocus.current = { id, dir: "left" };
+                    setItems((prev) => moveItem(prev, i, i - 1));
+                  }}
                 >
                   Move left
                 </button>
@@ -130,7 +159,11 @@ export default function PhotosField({
                   className={smallButton}
                   disabled={i === photos.length - 1}
                   aria-label={`Move right (photo ${i + 1})`}
-                  onClick={() => setPhotos(moveItem(photos, i, i + 1))}
+                  data-move="right"
+                  onClick={() => {
+                    refocus.current = { id, dir: "right" };
+                    setItems((prev) => moveItem(prev, i, i + 1));
+                  }}
                 >
                   Move right
                 </button>
@@ -139,7 +172,7 @@ export default function PhotosField({
                   className={smallButton}
                   aria-label={`Remove (photo ${i + 1})`}
                   onClick={() =>
-                    setPhotos(photos.filter((_, index) => index !== i))
+                    setItems((prev) => prev.filter((_, index) => index !== i))
                   }
                 >
                   Remove
