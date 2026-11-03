@@ -18,6 +18,7 @@ import {
   type Fonts,
   type LoadedImage,
 } from "@/lib/socialPack/draw";
+import { MAX_ZOOM, MIN_ZOOM } from "@/lib/socialPack/crop";
 import { LAYOUTS, type LayoutId, type Rect } from "@/lib/socialPack/layouts";
 import {
   fewImagesWarning,
@@ -39,8 +40,8 @@ const PREVIEW_WIDTH = 240;
 const THUMB_PREVIEW = 188;
 /** Cover pixels moved per arrow key press (with Shift: ×4). */
 const KEY_STEP = 20;
-const ZOOM_MIN = 1;
-const ZOOM_MAX = 4;
+/** How long one image may take before it counts as unavailable. */
+const IMAGE_TIMEOUT_MS = 15_000;
 /** Wheel delta that doubles (or halves) the zoom. */
 const WHEEL_PER_DOUBLING = 350;
 
@@ -51,8 +52,22 @@ type Assets = {
   images: Map<string, LoadedImage>;
 };
 
-const loadOrNull = (url: string) =>
-  loadImage(url).catch(() => null as LoadedImage | null);
+/** The image, or null if it fails to load or stalls past the timeout. */
+function loadOrNull(url: string): Promise<LoadedImage | null> {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(null), IMAGE_TIMEOUT_MS);
+    loadImage(url).then(
+      (image) => {
+        clearTimeout(timer);
+        resolve(image);
+      },
+      () => {
+        clearTimeout(timer);
+        resolve(null);
+      },
+    );
+  });
+}
 
 async function loadAssets(source: PackSource): Promise<Assets> {
   const urls = packPhotoUrls(source).map((p) => p.url);
@@ -72,7 +87,14 @@ async function loadAssets(source: PackSource): Promise<Assets> {
 }
 
 /** Loads fonts, logos and every photo, then opens the editor. */
-export default function Composer({ source }: { source: PackSource }) {
+export default function Composer({
+  source,
+  notice = null,
+}: {
+  source: PackSource;
+  /** Set when the item isn't public yet, so its caption link won't work. */
+  notice?: string | null;
+}) {
   const [assets, setAssets] = useState<Assets | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -101,7 +123,7 @@ export default function Composer({ source }: { source: PackSource }) {
       </p>
     );
   }
-  return <Editor source={source} assets={assets} />;
+  return <Editor source={source} assets={assets} notice={notice} />;
 }
 
 function fileLabel(url: string): string {
@@ -145,7 +167,15 @@ function coverInput(state: ComposerState, assets: Assets): CoverInput {
   };
 }
 
-function Editor({ source, assets }: { source: PackSource; assets: Assets }) {
+function Editor({
+  source,
+  assets,
+  notice,
+}: {
+  source: PackSource;
+  assets: Assets;
+  notice: string | null;
+}) {
   const photos = packPhotoUrls(source);
   const available = photos.flatMap((p) => assets.images.get(p.url) ?? []);
   const unavailable = photos
@@ -192,7 +222,8 @@ function Editor({ source, assets }: { source: PackSource; assets: Assets }) {
       link.click();
       link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 0);
-    } catch {
+    } catch (error) {
+      console.error(error);
       setError("The zip couldn't be made. Try again, or reload the page.");
     } finally {
       setBusy(false);
@@ -278,6 +309,7 @@ function Editor({ source, assets }: { source: PackSource; assets: Assets }) {
         </FormSection>
 
         <Card className="space-y-4">
+          {notice && <Notice tone="warning">{notice}</Notice>}
           {warning && <Notice tone="warning">{warning}</Notice>}
           {leftOut.length > 0 && (
             <Notice tone="warning">
@@ -625,7 +657,7 @@ function CropControls({
   dispatch: React.Dispatch<ComposerAction>;
 }) {
   const selected = state.slots[state.selectedSlot];
-  const zoom = selected?.crop.zoom ?? ZOOM_MIN;
+  const zoom = selected?.crop.zoom ?? MIN_ZOOM;
   return (
     <div className="flex flex-wrap items-end gap-x-8 gap-y-4">
       <fieldset>
@@ -659,8 +691,8 @@ function CropControls({
         <input
           id="social-zoom"
           type="range"
-          min={ZOOM_MIN}
-          max={ZOOM_MAX}
+          min={MIN_ZOOM}
+          max={MAX_ZOOM}
           step={0.05}
           value={zoom}
           disabled={!selected?.url}

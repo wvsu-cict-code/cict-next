@@ -68,3 +68,20 @@ export function fewImagesWarning(photoCount: number): string | null {
 export function formatCoverDate(iso: string): string {
   return formatDate(iso);
 }
+
+/**
+ * A warning for an item the public can't see yet, since the link in its
+ * caption won't work until it is live; null when it is already visible.
+ */
+export function notLiveNotice(
+  item: { status: string; publishedAt: string | null },
+  now = new Date(),
+): string | null {
+  if (item.status !== "published") {
+    return "This is still a draft, so the link in the caption won't work until you publish it.";
+  }
+  if (item.publishedAt && new Date(item.publishedAt) > now) {
+    return "This is scheduled for later, so the link in the caption won't work until it goes live.";
+  }
+  return null;
+}

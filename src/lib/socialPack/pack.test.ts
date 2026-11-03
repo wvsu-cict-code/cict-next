@@ -7,6 +7,7 @@ import {
   fewImagesWarning,
   fileNames,
   formatCoverDate,
+  notLiveNotice,
   packPhotoUrls,
   zipName,
   type PackSource,
@@ -90,5 +91,36 @@ describe("formatCoverDate", () => {
   it("uses Manila time", () => {
     expect(formatCoverDate("2026-10-29T01:00:00Z")).toBe("October 29, 2026");
     expect(formatCoverDate("2026-10-28T20:00:00Z")).toBe("October 29, 2026");
+  });
+});
+
+describe("notLiveNotice", () => {
+  const now = new Date("2026-11-03T00:00:00Z");
+
+  it("is null for something already published", () => {
+    expect(
+      notLiveNotice({ status: "published", publishedAt: null }, now),
+    ).toBeNull();
+    expect(
+      notLiveNotice(
+        { status: "published", publishedAt: "2026-11-02T00:00:00Z" },
+        now,
+      ),
+    ).toBeNull();
+  });
+
+  it("warns about drafts", () => {
+    expect(notLiveNotice({ status: "draft", publishedAt: null }, now)).toMatch(
+      /draft.*link/i,
+    );
+  });
+
+  it("warns about a publish date in the future", () => {
+    expect(
+      notLiveNotice(
+        { status: "published", publishedAt: "2026-12-01T00:00:00Z" },
+        now,
+      ),
+    ).toMatch(/scheduled.*link/i);
   });
 });

@@ -4,7 +4,7 @@ import PageHeader from "@/components/admin/PageHeader";
 import Composer from "@/components/admin/social/Composer";
 import { requireAdmin } from "@/lib/cms/auth";
 import { parsePhotos } from "@/lib/photos";
-import type { PackSource } from "@/lib/socialPack/pack";
+import { notLiveNotice, type PackSource } from "@/lib/socialPack/pack";
 
 export const metadata: Metadata = {
   title: "Export for social media",
@@ -14,12 +14,14 @@ interface PageProps {
   params: Promise<{ kind: string; id: string }>;
 }
 
+type Loaded = { source: PackSource; notice: string | null };
+
 type Supabase = Awaited<ReturnType<typeof requireAdmin>>["supabase"];
 
 async function loadPost(
   supabase: Supabase,
   id: string,
-): Promise<PackSource | null> {
+): Promise<Loaded | null> {
   const { data: post } = await supabase
     .from("posts")
     .select("*")
@@ -27,21 +29,27 @@ async function loadPost(
     .maybeSingle();
   if (!post) return null;
   return {
-    kind: "post",
-    slug: post.slug,
-    title: post.title,
-    summary: post.excerpt ?? "",
-    date: post.published_at ?? post.created_at,
-    body: post.body,
-    coverImageUrl: post.cover_image_url,
-    photos: parsePhotos(post.photos),
+    source: {
+      kind: "post",
+      slug: post.slug,
+      title: post.title,
+      summary: post.excerpt ?? "",
+      date: post.published_at ?? post.created_at,
+      body: post.body,
+      coverImageUrl: post.cover_image_url,
+      photos: parsePhotos(post.photos),
+    },
+    notice: notLiveNotice({
+      status: post.status,
+      publishedAt: post.published_at,
+    }),
   };
 }
 
 async function loadEvent(
   supabase: Supabase,
   id: string,
-): Promise<PackSource | null> {
+): Promise<Loaded | null> {
   const { data: event } = await supabase
     .from("events")
     .select("*")
@@ -49,14 +57,17 @@ async function loadEvent(
     .maybeSingle();
   if (!event) return null;
   return {
-    kind: "event",
-    slug: event.slug,
-    title: event.title,
-    summary: event.summary ?? "",
-    date: event.starts_at,
-    body: event.body,
-    coverImageUrl: event.cover_image_url,
-    photos: parsePhotos(event.photos),
+    source: {
+      kind: "event",
+      slug: event.slug,
+      title: event.title,
+      summary: event.summary ?? "",
+      date: event.starts_at,
+      body: event.body,
+      coverImageUrl: event.cover_image_url,
+      photos: parsePhotos(event.photos),
+    },
+    notice: notLiveNotice({ status: event.status, publishedAt: null }),
   };
 }
 
@@ -67,8 +78,9 @@ export default async function SocialExportPage({ params }: PageProps) {
   if (kind !== "posts" && kind !== "events") notFound();
   const { supabase } = await requireAdmin();
 
-  const source = await loaders[kind](supabase, id);
-  if (!source) notFound();
+  const loaded = await loaders[kind](supabase, id);
+  if (!loaded) notFound();
+  const { source, notice } = loaded;
 
   return (
     <>
@@ -78,7 +90,7 @@ export default async function SocialExportPage({ params }: PageProps) {
         backHref={`/admin/${kind}/${id}`}
         backLabel={kind === "posts" ? "Back to post" : "Back to event"}
       />
-      <Composer source={source} />
+      <Composer source={source} notice={notice} />
     </>
   );
 }
