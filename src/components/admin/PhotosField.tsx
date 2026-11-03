@@ -78,13 +78,21 @@ export default function PhotosField({
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const input = e.currentTarget;
-    const picked = Array.from(input.files ?? []);
+    const chosen = Array.from(input.files ?? []);
     input.value = "";
+    if (chosen.length === 0) return;
+
+    const picked = chosen.slice(0, Math.max(0, MAX_PHOTOS - items.length));
+    const skipped = chosen.length - picked.length;
+    const failures: string[] = skipped
+      ? [
+          `Only ${MAX_PHOTOS} photos can be added; ${skipped} ${skipped === 1 ? "file was" : "files were"} skipped.`,
+        ]
+      : [];
+    setErrors([...failures]);
     if (picked.length === 0) return;
 
-    setErrors([]);
     setBusy(busyKey, true);
-    const failures: string[] = [];
     try {
       for (let i = 0; i < picked.length; i++) {
         setProgress({ current: i + 1, total: picked.length });
@@ -108,7 +116,7 @@ export default function PhotosField({
     } finally {
       setProgress(null);
       setBusy(busyKey, false);
-      setErrors(failures);
+      setErrors([...failures]);
     }
   }
 

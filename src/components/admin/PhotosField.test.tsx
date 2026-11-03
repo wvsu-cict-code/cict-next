@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import { renderToString } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Photo } from "@/lib/photos";
+import { MAX_PHOTOS, type Photo } from "@/lib/photos";
 import AdminForm from "./AdminForm";
 import PhotosField from "./PhotosField";
 
@@ -64,6 +64,23 @@ describe("PhotosField", () => {
     uploadPhoto.mockImplementation(async (_c, file: File) =>
       photo(file.name.replace(".jpg", "")),
     );
+  });
+
+  it("skips files beyond the photo cap instead of uploading them", async () => {
+    renderField(
+      Array.from({ length: MAX_PHOTOS - 2 }, (_, i) => photo(`old${i}`)),
+    );
+    await user.upload(
+      screen.getByLabelText(/add photos/i),
+      files("a", "b", "c", "d", "e"),
+    );
+    await waitFor(() => expect(hidden()).toHaveLength(MAX_PHOTOS));
+    expect(uploadPhoto).toHaveBeenCalledTimes(2);
+    expect(
+      screen.getByText(
+        `Only ${MAX_PHOTOS} photos can be added; 3 files were skipped.`,
+      ),
+    ).toBeTruthy();
   });
 
   it("uploads chosen files one at a time, in order", async () => {
