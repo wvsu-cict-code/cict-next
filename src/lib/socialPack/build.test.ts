@@ -1,6 +1,6 @@
 import { strFromU8, unzipSync } from "fflate";
-import { describe, expect, it } from "vitest";
-import { buildPack, type Renderer } from "./build";
+import { describe, expect, it, vi } from "vitest";
+import { buildPack, loadSiteFonts, type Renderer } from "./build";
 import type { CoverInput, LoadedImage } from "./draw";
 import { captionText, type PackSource } from "./pack";
 
@@ -114,5 +114,21 @@ describe("buildPack", () => {
     await expect(
       buildPack({ source, cover, photos: [image("/a.jpg")] }, render),
     ).rejects.toThrow("boom");
+  });
+});
+
+describe("loadSiteFonts", () => {
+  it("still resolves when the browser cannot load a font face", async () => {
+    // Next's "Fallback" faces point at local Arial, which Linux often lacks
+    Object.defineProperty(document, "fonts", {
+      configurable: true,
+      value: { load: vi.fn().mockRejectedValue(new Error("NetworkError")) },
+    });
+    document.documentElement.style.setProperty("--font-oswald", '"Oswald"');
+
+    await expect(loadSiteFonts()).resolves.toEqual({
+      display: '"Oswald"',
+      body: expect.any(String),
+    });
   });
 });

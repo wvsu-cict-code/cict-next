@@ -42,7 +42,9 @@ export async function loadSiteFonts(): Promise<Fonts> {
     display: family("--font-oswald"),
     body: family("--font-source-sans"),
   };
-  await Promise.all(
+  // allSettled: next/font's "Fallback" faces use local Arial, and a load of
+  // the stack rejects where Arial is missing even though the real font loaded
+  await Promise.allSettled(
     [
       `bold 80px ${fonts.display}`,
       `80px ${fonts.body}`,
