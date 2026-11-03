@@ -72,6 +72,18 @@ describe("robotsTxt", () => {
     expect(robots).toContain("Sitemap: https://cict.wvsu.edu.ph/sitemap.xml");
   });
 
+  it("explicitly lets link-preview crawlers like Facebook's fetch every page", () => {
+    const robots = robotsTxt("https://cict.wvsu.edu.ph", true);
+    const groups = robots.split("\n\n");
+    const previewGroup = groups.find((group) =>
+      group.includes("User-agent: facebookexternalhit"),
+    );
+    expect(previewGroup).toBeDefined();
+    expect(previewGroup).toContain("User-agent: Twitterbot");
+    expect(previewGroup).toContain("Allow: /");
+    expect(previewGroup).not.toContain("Disallow");
+  });
+
   it("keeps the CMS deployment out of search engines", () => {
     expect(robotsTxt("https://cict.wvsu.edu.ph", false)).toBe(
       "User-agent: *\nDisallow: /\n",

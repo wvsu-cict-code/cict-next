@@ -13,12 +13,30 @@ export const SITE_TITLE =
 export const SITE_DESCRIPTION =
   "West Visayas State University's College of ICT in Iloilo City: degree programs in computer science, IT, information systems, library science, and multimedia computing.";
 
-/** The picture shown when a page is shared on social media or in chat apps. */
+export const SITE_KEYWORDS = [
+  "WVSU CICT",
+  "West Visayas State University",
+  "College of Information and Communications Technology",
+  "Iloilo City",
+  "computer science",
+  "information technology",
+  "information systems",
+  "library and information science",
+  "entertainment and multimedia computing",
+];
+
+/**
+ * The picture shown when a page is shared on social media or in chat apps:
+ * the site's default photo (`/home-page_assets/featured-card-image.png`)
+ * cropped to 1200×630 (1.91:1) so Facebook, X and LinkedIn show it as a large
+ * card without cropping. JPEG because not every link-preview crawler reads
+ * WebP.
+ */
 export const SHARE_IMAGE = {
-  url: "/program_assets/cict.webp",
-  width: 968,
-  height: 642,
-  type: "image/webp",
+  url: "/og-image.jpg",
+  width: 1200,
+  height: 630,
+  type: "image/jpeg",
   alt: "The College of Information and Communications Technology building at West Visayas State University",
 };
 

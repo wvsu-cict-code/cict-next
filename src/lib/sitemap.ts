@@ -82,12 +82,32 @@ export function sitemapXml(entries: SitemapEntry[]) {
 }
 
 /**
+ * Crawlers that fetch a page to build its link preview when it's shared.
+ * They're named explicitly so a share is never refused as "blocked by
+ * robots.txt" (Facebook's Sharing Debugger asks for facebookexternalhit).
+ */
+export const LINK_PREVIEW_BOTS = [
+  "facebookexternalhit",
+  "Facebot",
+  "meta-externalagent",
+  "Twitterbot",
+  "LinkedInBot",
+  "WhatsApp",
+  "TelegramBot",
+  "Slackbot",
+  "Discordbot",
+];
+
+/**
  * robots.txt. The school site is indexed (search results aside); the CMS
  * deployment never is.
  */
 export function robotsTxt(siteUrl: string, isSchoolSite: boolean) {
   if (!isSchoolSite) return "User-agent: *\nDisallow: /\n";
   return [
+    ...LINK_PREVIEW_BOTS.map((bot) => `User-agent: ${bot}`),
+    "Allow: /",
+    "",
     "User-agent: *",
     "Allow: /",
     "Disallow: /search/",
