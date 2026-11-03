@@ -4,8 +4,8 @@ export type Crop = { focusX: number; focusY: number; zoom: number };
 
 export const CENTERED: Crop = { focusX: 0.5, focusY: 0.5, zoom: 1 };
 
-const MIN_ZOOM = 1;
-const MAX_ZOOM = 4;
+export const MIN_ZOOM = 1;
+export const MAX_ZOOM = 4;
 
 const clamp = (n: number, min: number, max: number) =>
   Math.min(max, Math.max(min, n));

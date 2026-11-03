@@ -9,22 +9,25 @@ const r = (x: number, y: number, width: number, height: number): Rect => ({
 });
 
 export const LAYOUTS: Record<LayoutId, { label: string; slots: Rect[] }> = {
-  two: { label: "Two photos", slots: [r(0, 0, 940, 940), r(0, 940, 940, 940)] },
+  two: {
+    label: "Two photos",
+    slots: [r(0, 0, 940, 750), r(0, 750, 940, 750)],
+  },
   three: {
     label: "Three photos",
-    slots: [r(0, 0, 940, 800), r(0, 800, 940, 540), r(0, 1340, 940, 540)],
+    slots: [r(0, 0, 940, 640), r(0, 640, 940, 430), r(0, 1070, 940, 430)],
   },
   "one-two": {
     label: "One large, two small",
-    slots: [r(0, 0, 940, 1080), r(0, 1080, 470, 800), r(470, 1080, 470, 800)],
+    slots: [r(0, 0, 940, 860), r(0, 860, 470, 640), r(470, 860, 470, 640)],
   },
   four: {
     label: "Four photos",
     slots: [
-      r(0, 0, 940, 470),
-      r(0, 470, 940, 470),
-      r(0, 940, 940, 470),
-      r(0, 1410, 940, 470),
+      r(0, 0, 940, 375),
+      r(0, 375, 940, 375),
+      r(0, 750, 940, 375),
+      r(0, 1125, 940, 375),
     ],
   },
 };

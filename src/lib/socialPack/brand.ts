@@ -1,4 +1,6 @@
 export const COVER = { width: 940, height: 1880, cutY: 940 } as const;
+/** Height of the photo collage; below it the cover is a white text area. */
+export const COLLAGE_HEIGHT = 1500;
 export const SQUARE = 940;
 export const FOOTER_HEIGHT = 56;
 

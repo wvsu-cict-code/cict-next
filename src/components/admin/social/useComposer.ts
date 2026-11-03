@@ -1,4 +1,5 @@
 import { useReducer } from "react";
+import { DEFAULT_LABEL } from "@/lib/socialPack/brand";
 import { CENTERED, panCrop, zoomCrop, type Crop } from "@/lib/socialPack/crop";
 import {
   DEFAULT_LAYOUT,
@@ -39,8 +40,6 @@ export type ComposerAction =
     }
   | { type: "zoom"; factor: number }
   | { type: "setText"; field: ComposerTextField; value: string };
-
-const DEFAULT_LABEL = "UPFLASH";
 
 const emptySlot = (): ComposerSlot => ({ url: null, crop: CENTERED });
 
