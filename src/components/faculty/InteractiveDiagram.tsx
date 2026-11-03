@@ -40,7 +40,7 @@ export default function InteractiveDiagram({
         {/* Background Logo */}
         <div className="absolute inset-x-0 top-0 bottom-0 z-0 flex justify-center items-center">
           <div className="relative h-full aspect-square">
-            <Image src="/icons/facultiylogo.svg" alt="CICT Logo" fill priority className="object-contain" />
+            <Image src="/icons/facultiylogo.svg" alt="CICT Logo" fill priority className="object-contain dark:invert dark:hue-rotate-180" />
           </div>
         </div>
 
@@ -86,7 +86,7 @@ export default function InteractiveDiagram({
                   onClick={(e) => onClick(e, index)}
                   className={`flex items-center gap-4 ${dept.side === "left" ? "flex-row" : "flex-row-reverse"}`}
                 >
-                  <div className={`px-4 py-2 bg-white border border-rule rounded-full shadow-[0_4px_20px_rgba(16,32,51,0.08)] transition-all duration-300 ${hoveredIndex === index ? 'scale-110 shadow-[0_10px_30px_rgba(0,0,0,0.12)] -translate-y-1' : 'scale-100'}`}>
+                  <div className={`px-4 py-2 bg-surface border border-rule rounded-full shadow-[0_4px_20px_rgba(16,32,51,0.08)] transition-all duration-300 ${hoveredIndex === index ? 'scale-110 shadow-[0_10px_30px_rgba(0,0,0,0.12)] -translate-y-1' : 'scale-100'}`}>
                     <span className={`text-[12px] lg:text-[13px] font-semibold whitespace-nowrap transition-all duration-300 ${hoveredIndex === null || hoveredIndex === index ? "text-ink" : "text-ink-soft opacity-40"}`}>
                       {dept.name}
                     </span>

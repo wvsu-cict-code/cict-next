@@ -19,7 +19,7 @@ const SortFilter: React.FC<SortFilterProps> = ({ value, onChange }) => {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label="Sort articles"
-      className="border-rule text-ink focus:border-theme-red min-h-11 w-full cursor-pointer rounded-full border bg-white px-4 text-sm outline-none sm:w-56"
+      className="border-rule text-ink focus:border-theme-red bg-surface min-h-11 w-full cursor-pointer rounded-full border px-4 text-sm outline-none sm:w-56"
     >
       {options.map((opt) => (
         <option key={opt.value} value={opt.value} disabled={opt.value === ""}>

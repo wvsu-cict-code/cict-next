@@ -31,13 +31,13 @@ export default function FacultyDetail({ dept, faculty }: FacultyDetailProps) {
 
   if (!dept) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 bg-white px-4 text-center">
+      <div className="bg-surface flex min-h-[60vh] flex-col items-center justify-center gap-6 px-4 text-center">
         <h1 className="text-ink text-3xl font-medium md:text-4xl">
           Department not found
         </h1>
         <Link
           href="/faculty-profiles"
-          className="text-theme-red text-sm font-semibold hover:underline"
+          className="text-accent text-sm font-semibold hover:underline"
         >
           Back to the directory
         </Link>
@@ -52,7 +52,7 @@ export default function FacultyDetail({ dept, faculty }: FacultyDetailProps) {
 
       <div className="relative z-10 flex min-h-[calc(100vh-64px)] w-full flex-col items-stretch md:flex-row">
         {/* Left Section: Back Navigation */}
-        <div className="flex w-full shrink-0 flex-col bg-white p-8 md:w-[32%] md:bg-transparent md:p-14 lg:p-20">
+        <div className="bg-surface flex w-full shrink-0 flex-col p-8 md:w-[32%] md:bg-transparent md:p-14 lg:p-20">
           <Link
             href="/faculty-profiles"
             className={`group bg-theme-red hover:bg-accent-deep ease-draw relative flex min-h-11 w-fit cursor-pointer items-center gap-2 rounded-full px-5 text-sm font-semibold text-white shadow-lg transition-all duration-700 hover:-translate-y-0.5 ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-12 opacity-0"}`}
@@ -77,10 +77,10 @@ export default function FacultyDetail({ dept, faculty }: FacultyDetailProps) {
 
         {/* Right Section: Detailed Info Panel (Blurred on Desktop, Solid on Mobile) */}
         <div
-          className={`relative flex flex-1 flex-col bg-white shadow-[-50px_0_120px_rgba(16,32,51,0.06)] transition-all duration-1000 lg:bg-white/70 lg:backdrop-blur-md ${isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
+          className={`bg-surface lg:bg-surface/70 relative flex flex-1 flex-col shadow-[-50px_0_120px_rgba(16,32,51,0.06)] transition-all duration-1000 lg:backdrop-blur-md ${isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}`}
           style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
         >
-          <div className="absolute top-0 bottom-0 left-0 w-px bg-neutral-200/40" />
+          <div className="bg-rule/40 absolute top-0 bottom-0 left-0 w-px" />
 
           <div className="flex-1 overflow-y-auto px-8 py-12 md:px-16 md:py-24 lg:px-24">
             <header className="mb-12 md:mb-16">
@@ -110,7 +110,7 @@ export default function FacultyDetail({ dept, faculty }: FacultyDetailProps) {
                 {faculty.map((member, idx) => (
                   <li key={idx} className="flex w-full flex-col gap-5">
                     {/* Image */}
-                    <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-[#f7f8fa] shadow-[0_12px_40px_rgba(16,32,51,0.08)]">
+                    <div className="bg-surface-2 relative aspect-square w-full overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(16,32,51,0.08)]">
                       <Image
                         src={member.image}
                         alt={member.name}

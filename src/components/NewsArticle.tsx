@@ -33,7 +33,7 @@ export default function NewsArticle() {
 
   if (article.status === "loading") {
     return (
-      <div className="bg-white">
+      <div className="bg-surface">
         <ContentPlaceholder className="h-72 w-full rounded-none" />
         <div className={`${container} grid gap-4 py-16`}>
           <ContentPlaceholder className="h-80 w-full max-w-3xl rounded-2xl" />
@@ -60,7 +60,7 @@ export default function NewsArticle() {
   const preview = previewLabel(post);
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       {preview && (
         <div className="flex items-center justify-center gap-4 bg-[#373737] px-6 py-2 text-sm text-white">
           <span>{preview}</span>

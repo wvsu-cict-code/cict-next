@@ -20,7 +20,7 @@ export function Eyebrow({
 }) {
   return (
     <p
-      className={`flex items-center gap-3 text-xs font-semibold tracking-[0.18em] uppercase ${onDark ? "text-orange-light" : "text-theme-red"}`}
+      className={`flex items-center gap-3 text-xs font-semibold tracking-[0.18em] uppercase ${onDark ? "text-orange-light" : "text-accent"}`}
     >
       <span
         className={`h-px w-8 ${onDark ? "bg-orange-light" : "bg-theme-red"}`}

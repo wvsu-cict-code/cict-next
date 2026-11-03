@@ -32,7 +32,7 @@ export default function EventDetail() {
 
   if (result.status === "loading") {
     return (
-      <div className="bg-white">
+      <div className="bg-surface">
         <ContentPlaceholder className="h-72 w-full rounded-none" />
         <div className={`${container} grid gap-4 py-16`}>
           <ContentPlaceholder className="h-4 w-full max-w-2xl" />
@@ -56,7 +56,7 @@ export default function EventDetail() {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       {event.status === "draft" && (
         <div className="flex items-center justify-center gap-4 bg-[#373737] px-6 py-2 text-sm text-white">
           <span>Preview — this event is a draft</span>
@@ -72,7 +72,7 @@ export default function EventDetail() {
         <div className="max-w-3xl">
           <dl className="border-rule mb-10 grid gap-6 border-b pb-8 sm:grid-cols-2">
             <div>
-              <dt className="text-theme-red text-xs font-semibold tracking-[0.08em] uppercase">
+              <dt className="text-accent text-xs font-semibold tracking-[0.08em] uppercase">
                 When
               </dt>
               <dd className="text-ink mt-2 text-lg leading-snug">
@@ -81,7 +81,7 @@ export default function EventDetail() {
             </div>
             {event.location ? (
               <div>
-                <dt className="text-theme-red text-xs font-semibold tracking-[0.08em] uppercase">
+                <dt className="text-accent text-xs font-semibold tracking-[0.08em] uppercase">
                   Where
                 </dt>
                 <dd className="text-ink mt-2 text-lg leading-snug">

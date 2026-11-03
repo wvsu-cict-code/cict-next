@@ -1,5 +1,5 @@
 const iconFrame =
-  "text-theme-red border-theme-red/30 mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border";
+  "text-accent border-theme-red/30 mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border";
 
 /** The college mission and vision, side by side; used on Home and About. */
 export function MissionVision() {

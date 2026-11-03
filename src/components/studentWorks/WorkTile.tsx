@@ -47,7 +47,7 @@ export function WorkTile({
       ref={buttonRef}
       onClick={onOpen}
       aria-label={`${work.title} by ${work.student}`}
-      className="group focus-visible:outline-theme-red block h-full w-full text-left focus-visible:outline-2 focus-visible:outline-offset-4"
+      className="group focus-visible:outline-accent block h-full w-full text-left focus-visible:outline-2 focus-visible:outline-offset-4"
     >
       <span
         data-media
@@ -77,16 +77,17 @@ export function WorkTile({
             aria-hidden="true"
             className="bg-navy/70 absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-white"
           >
-            <svg viewBox="0 0 24 24" className="ml-0.5 h-5 w-5" fill="currentColor">
+            <svg
+              viewBox="0 0 24 24"
+              className="ml-0.5 h-5 w-5"
+              fill="currentColor"
+            >
               <path d="M8 5v14l11-7z" />
             </svg>
           </span>
         ) : null}
       </span>
-      <span
-        className="block pt-2"
-        style={{ height: CAPTION_HEIGHT }}
-      >
+      <span className="block pt-2" style={{ height: CAPTION_HEIGHT }}>
         <span className="text-ink block truncate text-sm leading-5 font-semibold">
           {work.title}
         </span>

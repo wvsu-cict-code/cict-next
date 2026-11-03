@@ -17,7 +17,7 @@ export default function NewsAnnouncementsPage() {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <NewsPageHeader />
       <div className={`${container} py-16 md:py-20`}>
         {posts.status === "error" ? (

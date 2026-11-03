@@ -52,7 +52,7 @@ export function HomePrograms() {
         <li key={program.id} className="flex min-w-0">
           <Link
             href={`/programs/${program.id}`}
-            className="ease-draw group flex w-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(16,32,51,0.12)]"
+            className="ease-draw group bg-surface flex w-full flex-col overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(16,32,51,0.12)]"
           >
             <div className="aspect-[16/10] shrink-0">
               <PhotoSlot label="Photo coming" src={programPhoto(program)} />
@@ -77,7 +77,7 @@ export function HomePrograms() {
                   </span>
                 )}
               </span>
-              <ArrowCircle className="text-ink-soft group-hover:border-theme-red group-hover:text-theme-red" />
+              <ArrowCircle className="text-ink-soft group-hover:border-theme-red group-hover:text-accent" />
             </span>
           </Link>
         </li>

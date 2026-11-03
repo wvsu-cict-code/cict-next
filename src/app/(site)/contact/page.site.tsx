@@ -60,13 +60,13 @@ const infoCards: { title: string; icon: ReactNode; body: ReactNode }[] = [
       <>
         <p>
           Phone:{" "}
-          <a href={`tel:${PHONE}`} className="text-ink hover:text-theme-red">
+          <a href={`tel:${PHONE}`} className="text-ink hover:text-accent">
             {PHONE}
           </a>
         </p>
         <p className="mt-1">
           Email:{" "}
-          <a href={`mailto:${EMAIL}`} className="text-ink hover:text-theme-red">
+          <a href={`mailto:${EMAIL}`} className="text-ink hover:text-accent">
             {EMAIL}
           </a>
         </p>
@@ -76,7 +76,7 @@ const infoCards: { title: string; icon: ReactNode; body: ReactNode }[] = [
             href="https://www.facebook.com/WVSUCICT"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-ink hover:text-theme-red"
+            className="text-ink hover:text-accent"
           >
             WVSU CICT
           </a>
@@ -109,7 +109,7 @@ export default function Contact() {
   const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <PageHeader
         eyebrow="Contact"
         title="College contact information"
@@ -123,9 +123,9 @@ export default function Contact() {
           {infoCards.map((card) => (
             <li
               key={card.title}
-              className="border-rule rounded-2xl border bg-[#f7f8fa] p-6"
+              className="border-rule bg-surface-2 rounded-2xl border p-6"
             >
-              <span className="text-theme-red border-theme-red/30 inline-flex h-12 w-12 items-center justify-center rounded-full border bg-white">
+              <span className="text-accent border-theme-red/30 bg-surface inline-flex h-12 w-12 items-center justify-center rounded-full border">
                 {card.icon}
               </span>
               <h2 className="text-ink mt-5 text-xl font-medium">
@@ -217,7 +217,7 @@ export default function Contact() {
               WVSU, La Paz, Iloilo City, Philippines
             </p>
           </div>
-          <div className="aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#f7f8fa] shadow-[0_12px_40px_rgba(16,32,51,0.06)]">
+          <div className="bg-surface-2 aspect-[16/10] w-full overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(16,32,51,0.06)]">
             <iframe
               src="https://www.google.com/maps?q=West%20Visayas%20State%20University%20La%20Paz%20Iloilo&output=embed"
               className="h-full w-full border-0"

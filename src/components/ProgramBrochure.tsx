@@ -64,7 +64,7 @@ export function ProgramBrochure({
                       key={subject.code}
                       className="border-rule flex items-baseline gap-4 border-b py-3"
                     >
-                      <span className="text-theme-red w-20 shrink-0 text-xs font-semibold tracking-[0.08em] uppercase">
+                      <span className="text-accent w-20 shrink-0 text-xs font-semibold tracking-[0.08em] uppercase">
                         {subject.code}
                       </span>
                       <span className="text-ink min-w-0 text-base leading-snug">

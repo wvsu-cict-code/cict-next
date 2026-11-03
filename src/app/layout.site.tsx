@@ -76,7 +76,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
+    // ThemeScript sets data-theme on <html> before React hydrates
+    <html
+      lang="en"
+      className={`${display.variable} ${body.variable}`}
+      suppressHydrationWarning
+    >
       <body className="flex min-h-screen flex-col antialiased">{children}</body>
     </html>
   );

@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function ProgramsPage() {
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <PageHeader
         eyebrow="Programs"
         title="Programs and curriculum"
@@ -24,7 +24,7 @@ export default function ProgramsPage() {
         image="/program_assets/cict.webp"
       />
 
-      <section className="bg-[#f7f8fa]">
+      <section className="bg-surface-2">
         <div className={`${container} py-16 md:py-24`}>
           <SectionHeading
             eyebrow="Courses offered"

@@ -35,7 +35,7 @@ export function SearchResults() {
       : [];
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <PageHeader
         eyebrow="Search"
         title="Search the college site"
@@ -122,7 +122,7 @@ function SearchForm({ query }: { query: string }) {
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         placeholder="Search articles, programs, and faculty"
-        className="text-ink focus:ring-orange-light min-h-11 min-w-0 flex-1 rounded-full border border-transparent bg-white px-4 text-base outline-none focus:ring-2"
+        className="text-ink focus:ring-orange-light bg-surface min-h-11 min-w-0 flex-1 rounded-full border border-transparent px-4 text-base outline-none focus:ring-2"
       />
       <button
         type="submit"
@@ -137,10 +137,10 @@ function SearchForm({ query }: { query: string }) {
 function ResultLink({ hit, query }: { hit: SearchHit; query: string }) {
   return (
     <Link href={hit.href} className="group block py-4">
-      <span className="text-theme-red text-[11px] font-semibold tracking-[0.14em] uppercase">
+      <span className="text-accent text-[11px] font-semibold tracking-[0.14em] uppercase">
         {hit.kind}
       </span>
-      <span className="text-ink group-hover:text-theme-red mt-1 block text-lg leading-snug font-medium">
+      <span className="text-ink group-hover:text-accent mt-1 block text-lg leading-snug font-medium">
         {hit.title}
       </span>
       <span className="text-ink-soft mt-1 block text-sm leading-relaxed">

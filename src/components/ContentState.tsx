@@ -3,7 +3,7 @@ export function ContentPlaceholder({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className={`animate-pulse rounded-xl bg-neutral-200 ${className}`}
+      className={`bg-paper-2 animate-pulse rounded-xl ${className}`}
     />
   );
 }
@@ -12,7 +12,7 @@ export function ContentPlaceholder({ className = "" }: { className?: string }) {
 export function ContentError({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 px-6 py-12 text-center">
-      <p className="text-gray-500">We couldn&apos;t load this content.</p>
+      <p className="text-ink-soft">We couldn&apos;t load this content.</p>
       <button
         type="button"
         onClick={onRetry}

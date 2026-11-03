@@ -30,7 +30,7 @@ export default function FacultyDepartmentPage() {
   }
   if (result.status === "loading") {
     return (
-      <div className="bg-white">
+      <div className="bg-surface">
         <ContentPlaceholder className="h-72 w-full rounded-none" />
         <div className={`${container} py-16`}>
           <ContentPlaceholder className="h-[50vh] w-full rounded-2xl" />

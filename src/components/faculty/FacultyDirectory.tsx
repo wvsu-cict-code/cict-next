@@ -63,7 +63,7 @@ export default function FacultyDirectory({
   }, []);
 
   return (
-    <div className="selection:bg-theme-red relative flex min-h-screen w-full flex-col items-center overflow-hidden bg-white selection:text-white">
+    <div className="selection:bg-theme-red bg-surface relative flex min-h-screen w-full flex-col items-center overflow-hidden selection:text-white">
       {/* Page Header */}
       <div
         className={`relative z-30 w-full transition-all duration-700 ${isTransitioning ? "-translate-y-10 opacity-0" : "opacity-100"}`}

@@ -34,7 +34,7 @@ export function CmsPage({
 
   if (result.status === "loading") {
     return (
-      <div className="bg-white">
+      <div className="bg-surface">
         <ContentPlaceholder className="h-72 w-full rounded-none" />
         <div className={`${container} grid gap-4 py-16`}>
           <ContentPlaceholder className="h-8 w-64" />
@@ -48,7 +48,7 @@ export function CmsPage({
   const page = result.data;
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       {page?.status === "draft" && (
         <div className="flex items-center justify-center gap-4 bg-[#373737] px-6 py-2 text-sm text-white">
           <span>Preview — this page is a draft</span>

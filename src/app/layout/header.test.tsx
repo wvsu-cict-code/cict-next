@@ -14,7 +14,7 @@ vi.mock("@/lib/cms/useContent", () => ({
 const highlighted = (name: string) =>
   screen
     .getAllByRole("link", { name })
-    .map((link) => link.className.split(/\s+/).includes("text-theme-red"));
+    .map((link) => link.className.split(/\s+/).includes("text-accent"));
 
 describe("Header", () => {
   afterEach(cleanup);

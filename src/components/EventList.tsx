@@ -31,9 +31,9 @@ function EventRow({ event }: { event: CalendarEvent }) {
       >
         <span
           aria-hidden
-          className="border-theme-red/30 flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border bg-white"
+          className="border-theme-red/30 bg-surface flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-xl border"
         >
-          <span className="text-theme-red text-xs font-semibold tracking-[0.12em] uppercase">
+          <span className="text-accent text-xs font-semibold tracking-[0.12em] uppercase">
             {badge.month}
           </span>
           <span className="text-ink text-2xl leading-none font-medium">
@@ -41,7 +41,7 @@ function EventRow({ event }: { event: CalendarEvent }) {
           </span>
         </span>
         <span className="min-w-0">
-          <span className="text-ink group-hover:text-theme-red block text-lg leading-snug font-medium transition-colors md:text-xl">
+          <span className="text-ink group-hover:text-accent block text-lg leading-snug font-medium transition-colors md:text-xl">
             {event.title}
           </span>
           <span className="text-ink-soft mt-1 block text-sm md:text-base">
@@ -78,7 +78,7 @@ export function EventsPage() {
       : { upcoming: [], past: [] };
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <PageHeader
         eyebrow="Events"
         title="Events and academic calendar"
@@ -103,7 +103,7 @@ export function EventsPage() {
                   No upcoming events have been posted yet. Check the{" "}
                   <Link
                     href="/news-announcements"
-                    className="text-theme-red underline underline-offset-2"
+                    className="text-accent underline underline-offset-2"
                   >
                     news and announcements
                   </Link>{" "}
@@ -149,7 +149,7 @@ export function HomeEvents() {
   if (upcoming.length === 0) return null;
 
   return (
-    <section className="bg-[#f7f8fa]">
+    <section className="bg-surface-2">
       <div className={`${container} py-16 md:py-20`}>
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -160,7 +160,7 @@ export function HomeEvents() {
           </div>
           <Link
             href="/events"
-            className="text-theme-red inline-flex shrink-0 items-center gap-1 text-sm font-semibold whitespace-nowrap"
+            className="text-accent inline-flex shrink-0 items-center gap-1 text-sm font-semibold whitespace-nowrap"
           >
             All events
             <ArrowIcon className="h-4 w-4" />

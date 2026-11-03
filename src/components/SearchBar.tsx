@@ -19,7 +19,7 @@ const SearchBar = () => {
     <form
       role="search"
       onSubmit={onSubmit}
-      className="border-rule focus-within:border-theme-red flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-full border bg-white py-1 pr-1 pl-4"
+      className="border-rule focus-within:border-theme-red bg-surface flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-full border py-1 pr-1 pl-4"
     >
       <label htmlFor="news-search" className="sr-only">
         Search the site

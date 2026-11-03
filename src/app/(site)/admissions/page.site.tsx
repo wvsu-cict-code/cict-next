@@ -37,7 +37,7 @@ export default function Admissions() {
             </Link>
             <Link
               href="/programs"
-              className="text-ink hover:text-theme-red text-base font-semibold underline underline-offset-4"
+              className="text-ink hover:text-accent text-base font-semibold underline underline-offset-4"
             >
               Explore our programs
             </Link>

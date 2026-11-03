@@ -16,7 +16,7 @@ export default function FacultyDirectoryPage() {
     return <FacultyDirectory departments={departments.data} />;
   }
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <FacultyPageHeader />
       <div className={`${container} pb-16`}>
         {departments.status === "error" ? (

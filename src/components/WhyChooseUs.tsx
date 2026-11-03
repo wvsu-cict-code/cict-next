@@ -110,7 +110,7 @@ export function WhyChooseUs() {
   const accreditation = whyChooseItems[0];
 
   return (
-    <section id="why-choose-us" className="scroll-mt-24 bg-white">
+    <section id="why-choose-us" className="bg-surface scroll-mt-24">
       <div className={`${container} py-16 md:py-24`}>
         <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <div>
@@ -131,11 +131,11 @@ export function WhyChooseUs() {
             {cards.map((card) => (
               <li
                 key={card.title}
-                className="border-rule flex flex-col rounded-2xl border bg-[#f7f8fa] p-6"
+                className="border-rule bg-surface-2 flex flex-col rounded-2xl border p-6"
               >
                 <p
                   aria-hidden
-                  className="font-major text-theme-red text-4xl leading-none md:text-5xl"
+                  className="font-major text-accent text-4xl leading-none md:text-5xl"
                 >
                   {card.figure}
                 </p>
@@ -162,7 +162,7 @@ export function WhyChooseUs() {
               >
                 <span
                   aria-hidden
-                  className="font-major text-theme-red text-lg leading-none md:pt-1"
+                  className="font-major text-accent text-lg leading-none md:pt-1"
                 >
                   {String(index + 1).padStart(2, "0")}
                 </span>

@@ -36,7 +36,7 @@ export default function MarkdownRenderer({ content }: { content: string }) {
         a: ({ href, children }) => (
           <a
             href={href}
-            className="text-theme-red hover:text-accent-deep underline underline-offset-2"
+            className="text-accent underline underline-offset-2 hover:decoration-2"
             target={href?.startsWith("http") ? "_blank" : undefined}
             rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
           >

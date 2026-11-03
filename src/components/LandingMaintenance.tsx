@@ -50,7 +50,7 @@ export function LandingMaintenance({ children }: { children: ReactNode }) {
 
 export function MaintenanceNotice({ message }: { message?: string }) {
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <PageHeader
         eyebrow="Maintenance"
         title="We'll be right back."

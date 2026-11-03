@@ -17,11 +17,11 @@ export function ProgramCareers({
         {careers.map((career) => (
           <li
             key={career}
-            className="border-rule text-ink flex min-h-14 items-center gap-3 rounded-lg border bg-white px-4 py-3 text-base leading-snug"
+            className="border-rule text-ink bg-surface flex min-h-14 items-center gap-3 rounded-lg border px-4 py-3 text-base leading-snug"
           >
             <svg
               viewBox="0 0 24 24"
-              className="text-theme-red h-5 w-5 shrink-0"
+              className="text-accent h-5 w-5 shrink-0"
               fill="none"
               stroke="currentColor"
               strokeWidth={1.6}

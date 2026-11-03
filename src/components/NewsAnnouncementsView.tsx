@@ -81,7 +81,7 @@ export default function NewsAnnouncementsView({
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <NewsPageHeader />
 
       {/* [SECTION] Announcements */}
@@ -106,7 +106,7 @@ export default function NewsAnnouncementsView({
       )}
 
       {/* [SECTION] News Articles */}
-      <section className="bg-[#f7f8fa]">
+      <section className="bg-surface-2">
         <div className={`${container} py-16 md:py-20`}>
           <SectionHeading eyebrow="News" title="News articles" />
 
@@ -147,7 +147,7 @@ export default function NewsAnnouncementsView({
               <button
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`${pageButton} border-rule text-ink hover:border-ink bg-white`}
+                className={`${pageButton} border-rule text-ink hover:border-ink bg-surface`}
               >
                 Prev
               </button>
@@ -161,7 +161,7 @@ export default function NewsAnnouncementsView({
                     className={`${pageButton} ${
                       page === currentPage
                         ? "border-theme-red bg-theme-red text-white"
-                        : "border-rule text-ink hover:border-ink bg-white"
+                        : "border-rule text-ink hover:border-ink bg-surface"
                     }`}
                   >
                     {page}
@@ -172,7 +172,7 @@ export default function NewsAnnouncementsView({
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`${pageButton} border-rule text-ink hover:border-ink bg-white`}
+                className={`${pageButton} border-rule text-ink hover:border-ink bg-surface`}
               >
                 Next
               </button>

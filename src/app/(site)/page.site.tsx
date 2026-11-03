@@ -145,7 +145,7 @@ export default function Home() {
 
 function HomeContent() {
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <section className="rise relative">
         <div className="relative isolate overflow-hidden">
           <PhotoSlot
@@ -200,13 +200,13 @@ function HomeContent() {
 
         <div className="relative z-10 mx-auto -mt-12 max-w-[1120px] px-4 pb-4 lg:-mt-20">
           <h2 className="sr-only">College record</h2>
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-7 rounded-2xl bg-white px-5 py-6 shadow-[0_18px_50px_rgba(16,32,51,0.1)] sm:px-8 sm:py-8 lg:grid-cols-4 lg:gap-0">
+          <dl className="bg-surface grid grid-cols-2 gap-x-6 gap-y-7 rounded-2xl px-5 py-6 shadow-[0_18px_50px_rgba(16,32,51,0.1)] sm:px-8 sm:py-8 lg:grid-cols-4 lg:gap-0">
             {record.map((item) => (
               <div
                 key={item.value}
                 className="lg:border-rule flex min-w-0 gap-3 lg:border-l lg:px-6 lg:first:border-l-0 lg:first:pl-0 lg:last:pr-0"
               >
-                <span className="text-theme-red mt-1 shrink-0">
+                <span className="text-accent mt-1 shrink-0">
                   <StatIcon name={item.icon} />
                 </span>
                 <div className="min-w-0">
@@ -298,13 +298,13 @@ function HomeContent() {
         </div>
       </section>
 
-      <section className="bg-white">
+      <section className="bg-surface">
         <div className={`${container} py-16 md:py-20`}>
           <MissionVision />
         </div>
       </section>
 
-      <section id="courses-offered" className="scroll-mt-24 bg-[#f7f8fa]">
+      <section id="courses-offered" className="bg-surface-2 scroll-mt-24">
         <div className={`${container} py-16 md:py-24`}>
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -318,7 +318,7 @@ function HomeContent() {
             </div>
             <Link
               href="/programs"
-              className="text-theme-red inline-flex shrink-0 items-center gap-1 text-sm font-semibold whitespace-nowrap"
+              className="text-accent inline-flex shrink-0 items-center gap-1 text-sm font-semibold whitespace-nowrap"
             >
               View all programs
               <ArrowIcon className="h-4 w-4" />
@@ -332,7 +332,7 @@ function HomeContent() {
 
       <WhyChooseUs />
 
-      <section className="bg-[#f7f8fa]">
+      <section className="bg-surface-2">
         <div className="grid lg:grid-cols-2">
           <div className="relative min-h-[22rem] lg:min-h-[30rem]">
             <PhotoSlot
@@ -343,7 +343,7 @@ function HomeContent() {
             />
             <div
               aria-hidden
-              className="absolute inset-y-0 right-0 hidden w-24 bg-[#f7f8fa] lg:block"
+              className="bg-surface-2 absolute inset-y-0 right-0 hidden w-24 lg:block"
               style={{ clipPath: "polygon(55% 0, 100% 0, 100% 100%, 0 100%)" }}
             />
           </div>
@@ -351,7 +351,7 @@ function HomeContent() {
             <img
               src="/cict-emblem.png"
               alt=""
-              className="pointer-events-none absolute -right-6 -bottom-8 w-56 opacity-[0.06]"
+              className="pointer-events-none absolute -right-6 -bottom-8 w-56 opacity-[0.06] dark:invert"
             />
             <div className="relative max-w-[36rem]">
               <Eyebrow>Admission</Eyebrow>
@@ -369,7 +369,7 @@ function HomeContent() {
                 </Link>
                 <Link
                   href="/contact"
-                  className="text-ink hover:text-theme-red text-base font-semibold underline underline-offset-4"
+                  className="text-ink hover:text-accent text-base font-semibold underline underline-offset-4"
                 >
                   Contact us
                 </Link>

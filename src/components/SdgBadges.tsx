@@ -60,7 +60,7 @@ export function SdgBadges({
         >
           <span
             aria-hidden
-            className={`text-ink inline-flex shrink-0 items-center justify-center rounded-md bg-white/90 leading-none font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${tileSize[size]}`}
+            className={`text-ink bg-surface/90 inline-flex shrink-0 items-center justify-center rounded-md leading-none font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.2)] ${tileSize[size]}`}
           >
             +{hidden.length}
           </span>

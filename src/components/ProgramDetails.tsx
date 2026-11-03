@@ -33,7 +33,7 @@ export default function ProgramDetails() {
 
   if (result.status === "loading") {
     return (
-      <div className="bg-white">
+      <div className="bg-surface">
         <ContentPlaceholder className="h-80 w-full rounded-none" />
         <div className={`${container} grid gap-4 py-16`}>
           <ContentPlaceholder className="h-8 w-64" />
@@ -56,7 +56,7 @@ export default function ProgramDetails() {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-surface">
       <PageHeader
         eyebrow={program.code}
         title={program.name}
@@ -126,7 +126,7 @@ function ProgramFacts({
       <dl className="grid gap-8 sm:grid-cols-2">
         {duration || semesters ? (
           <div>
-            <dt className="text-theme-red text-xs font-semibold tracking-[0.08em] uppercase">
+            <dt className="text-accent text-xs font-semibold tracking-[0.08em] uppercase">
               Program length
             </dt>
             <dd className="text-ink mt-2 text-lg leading-snug">
@@ -136,7 +136,7 @@ function ProgramFacts({
         ) : null}
         {curriculumUrl ? (
           <div>
-            <dt className="text-theme-red text-xs font-semibold tracking-[0.08em] uppercase">
+            <dt className="text-accent text-xs font-semibold tracking-[0.08em] uppercase">
               Curriculum
             </dt>
             <dd className="mt-2">
@@ -144,7 +144,7 @@ function ProgramFacts({
                 href={curriculumUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-ink decoration-theme-red/40 hover:decoration-theme-red text-lg underline underline-offset-4"
+                className="text-ink decoration-accent/40 hover:decoration-accent text-lg underline underline-offset-4"
               >
                 Download the curriculum (PDF)
               </a>

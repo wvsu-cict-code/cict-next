@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, container, primaryButton } from "@/components/PageHeader";
+import { ThemeScript } from "@/components/ThemeScript";
 import Footer from "./layout/footer";
 import Header from "./layout/header";
 
@@ -24,8 +25,9 @@ const LINKS = [
 export default function NotFound() {
   return (
     <>
+      <ThemeScript />
       <Header />
-      <main id="content" className="grow bg-white">
+      <main id="content" className="bg-surface grow">
         <PageHeader
           eyebrow="Error 404"
           title="We couldn't find that page."
@@ -37,7 +39,7 @@ export default function NotFound() {
               <li key={link.href} className="border-rule border-b">
                 <Link
                   href={link.href}
-                  className="text-ink hover:text-theme-red block py-4 text-lg transition-colors"
+                  className="text-ink hover:text-accent block py-4 text-lg transition-colors"
                 >
                   {link.label}
                 </Link>

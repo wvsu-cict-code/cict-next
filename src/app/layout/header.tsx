@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
 import { ArrowIcon } from "@/components/PhotoSlot";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadPrograms } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
 import { searchTerms } from "@/lib/search/search";
@@ -14,11 +15,11 @@ function searchTermsTooShort(query: string) {
 }
 
 const active =
-  "relative whitespace-nowrap text-sm font-semibold text-theme-red after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:bg-theme-red";
+  "relative whitespace-nowrap text-sm font-semibold text-accent after:absolute after:inset-x-0 after:-bottom-1.5 after:h-0.5 after:bg-theme-red";
 const inactive =
-  "whitespace-nowrap text-sm font-medium text-ink transition-colors duration-200 ease-draw hover:text-theme-red";
+  "whitespace-nowrap text-sm font-medium text-ink transition-colors duration-200 ease-draw hover:text-accent";
 const activeMobile =
-  "mx-auto w-5/6 border-b border-rule bg-paper-2 py-4 text-center text-theme-red";
+  "mx-auto w-5/6 border-b border-rule bg-paper-2 py-4 text-center text-accent";
 const inactiveMobile =
   "mx-auto w-5/6 border-b border-rule py-4 text-center text-ink";
 
@@ -96,7 +97,7 @@ export default function Header() {
   }
 
   return (
-    <header className="border-rule/80 relative z-50 border-b bg-white">
+    <header className="border-rule/80 bg-surface relative z-50 border-b">
       <div className="mx-auto grid h-[4.5rem] max-w-[1400px] grid-cols-[1fr_auto] items-center gap-3 px-4 md:px-8 lg:grid-cols-[1fr_auto_1fr]">
         <Link
           href="/"
@@ -107,7 +108,7 @@ export default function Header() {
             width={40}
             height={42}
             alt=""
-            className="h-10 w-10 shrink-0"
+            className="h-10 w-10 shrink-0 dark:invert"
           />
           <span className="font-major text-ink text-xl font-light tracking-wide">
             <b className="font-medium">WVSU</b> CICT
@@ -156,7 +157,7 @@ export default function Header() {
                     id="programs-menu"
                     className="absolute top-full left-1/2 z-50 w-72 -translate-x-1/2 pt-3"
                   >
-                    <div className="border-rule rounded-2xl border bg-white p-2 shadow-[0_18px_50px_rgba(16,32,51,0.12)]">
+                    <div className="border-rule bg-surface rounded-2xl border p-2 shadow-[0_18px_50px_rgba(16,32,51,0.12)]">
                       {programMenu.map((program) => (
                         <Link
                           key={program.href}
@@ -174,7 +175,7 @@ export default function Header() {
                       ))}
                       <Link
                         href="/programs"
-                        className="text-theme-red block rounded-xl px-3 py-2 text-sm font-semibold"
+                        className="text-accent block rounded-xl px-3 py-2 text-sm font-semibold"
                         onClick={() => setProgramsOpen(false)}
                       >
                         View all programs
@@ -197,6 +198,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center justify-end gap-1 lg:gap-2">
+          <ThemeToggle />
           <button
             type="button"
             aria-expanded={searchOpen}
@@ -227,12 +229,22 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
-            className="inline-flex h-11 w-11 items-center justify-center lg:hidden"
+            className="text-ink inline-flex h-11 w-11 items-center justify-center lg:hidden"
             aria-expanded={isOpen}
             aria-controls="site-menu"
             aria-label={isOpen ? "Close menu" : "Open menu"}
           >
-            <Image src="/hamburger.png" width={20} height={20} alt="" />
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden
+            >
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
         </div>
       </div>
@@ -240,7 +252,7 @@ export default function Header() {
       {searchOpen && (
         <div
           id="site-search-panel"
-          className="border-rule absolute top-full left-0 z-50 w-full border-t bg-white shadow-[0_16px_40px_rgba(28,30,34,0.08)]"
+          className="border-rule bg-surface absolute top-full left-0 z-50 w-full border-t shadow-[0_16px_40px_rgba(28,30,34,0.08)]"
         >
           <form
             role="search"
@@ -277,7 +289,7 @@ export default function Header() {
       {isOpen && (
         <nav
           id="site-menu"
-          className="border-rule absolute top-full left-0 z-50 flex w-full flex-col border-t bg-white shadow-[0_16px_40px_rgba(28,30,34,0.08)] lg:hidden"
+          className="border-rule bg-surface absolute top-full left-0 z-50 flex w-full flex-col border-t shadow-[0_16px_40px_rgba(28,30,34,0.08)] lg:hidden"
         >
           {LINKS.map((link) => (
             <Link

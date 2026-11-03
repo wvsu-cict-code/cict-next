@@ -24,7 +24,7 @@ const NewsArticleCard: React.FC<NewsArticleCardProps> = ({
   return (
     <Link
       href={newsHref(slug)}
-      className="ease-draw group flex w-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(16,32,51,0.12)]"
+      className="ease-draw group bg-surface flex w-full flex-col overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(16,32,51,0.06)] transition-[transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_48px_rgba(16,32,51,0.12)]"
     >
       <div className="relative shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element -- matches the home page cards */}
@@ -37,12 +37,12 @@ const NewsArticleCard: React.FC<NewsArticleCardProps> = ({
       </div>
       <span className="flex flex-1 flex-col p-5">
         <span className="flex items-center gap-3">
-          <span className="text-theme-red text-[11px] font-semibold tracking-[0.14em] uppercase">
+          <span className="text-accent text-[11px] font-semibold tracking-[0.14em] uppercase">
             News
           </span>
           <span className="text-ink-soft text-xs">{date}</span>
         </span>
-        <span className="font-major text-ink group-hover:text-theme-red mt-2 block text-xl leading-snug font-medium">
+        <span className="font-major text-ink group-hover:text-accent mt-2 block text-xl leading-snug font-medium">
           {header}
         </span>
         {description ? (
@@ -51,10 +51,8 @@ const NewsArticleCard: React.FC<NewsArticleCardProps> = ({
           </span>
         ) : null}
         <span className="mt-auto flex items-center justify-between gap-3 pt-5">
-          <span className="text-theme-red text-sm font-semibold">
-            Read more
-          </span>
-          <ArrowCircle className="text-ink-soft group-hover:border-theme-red group-hover:text-theme-red" />
+          <span className="text-accent text-sm font-semibold">Read more</span>
+          <ArrowCircle className="text-ink-soft group-hover:border-theme-red group-hover:text-accent" />
         </span>
       </span>
     </Link>

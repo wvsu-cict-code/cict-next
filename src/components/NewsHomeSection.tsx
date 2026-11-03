@@ -38,7 +38,7 @@ export function NewsHomeSection() {
     }));
 
   return (
-    <section className="bg-white">
+    <section className="bg-surface">
       <div className={`${container} py-16 md:py-24`}>
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -53,7 +53,7 @@ export function NewsHomeSection() {
           </div>
           <Link
             href="/news-announcements"
-            className="text-theme-red inline-flex shrink-0 items-center gap-1 text-sm font-semibold whitespace-nowrap"
+            className="text-accent inline-flex shrink-0 items-center gap-1 text-sm font-semibold whitespace-nowrap"
           >
             View all news
             <ArrowIcon className="h-4 w-4" />

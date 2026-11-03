@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function About() {
   return (
-    <article className="bg-white">
+    <article className="bg-surface">
       <PageHeader
         eyebrow="About CICT"
         title="Innovative education for a digital tomorrow."
@@ -47,7 +47,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="bg-[#f7f8fa]">
+      <section className="bg-surface-2">
         <div className={`${container} py-16 md:py-20`}>
           <MissionVision />
         </div>

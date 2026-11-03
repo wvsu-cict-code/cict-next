@@ -13,5 +13,10 @@ export default function AdminRootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className="text-ink min-h-screen bg-[#f7f8fa]">{children}</div>;
+  // The CMS stays light even when a visitor picked dark mode on the site
+  return (
+    <div data-theme="light" className="text-ink min-h-screen bg-[#f7f8fa]">
+      {children}
+    </div>
+  );
 }

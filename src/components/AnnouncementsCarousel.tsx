@@ -108,7 +108,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
           {/* [BUTTON] Left Arrow */}
           <button
             onClick={goPrev}
-            className="text-ink hover:text-theme-red absolute top-1/2 left-1 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-colors duration-200 sm:left-4"
+            className="text-ink hover:text-accent bg-surface absolute top-1/2 left-1 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full shadow-md transition-colors duration-200 sm:left-4"
             aria-label="Previous"
           >
             <ArrowIcon className="h-4 w-4 rotate-180" />
@@ -117,7 +117,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
           {/* [BUTTON] Right Arrow */}
           <button
             onClick={goNext}
-            className="text-ink hover:text-theme-red absolute top-1/2 right-1 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-white shadow-md transition-colors duration-200 sm:right-4"
+            className="text-ink hover:text-accent bg-surface absolute top-1/2 right-1 z-20 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full shadow-md transition-colors duration-200 sm:right-4"
             aria-label="Next"
           >
             <ArrowIcon className="h-4 w-4" />
@@ -144,7 +144,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
                     : "scale-100 opacity-30"
                 }`}
               >
-                <div className="flex flex-col gap-4 overflow-hidden rounded-2xl bg-white p-4 pb-5 shadow-[0_18px_50px_rgba(16,32,51,0.25)] sm:p-5">
+                <div className="bg-surface flex flex-col gap-4 overflow-hidden rounded-2xl p-4 pb-5 shadow-[0_18px_50px_rgba(16,32,51,0.25)] sm:p-5">
                   <p className="text-ink-soft text-xs">{daysAgo} days ago</p>
 
                   <div className="relative">
@@ -176,7 +176,7 @@ export const AnnouncementsCarousel: React.FC<AnnouncementsCarouselProps> = ({
                     className={`ease-draw inline-flex min-h-10 items-center gap-2 self-start rounded-full px-4 text-sm font-semibold transition-colors duration-200 ${
                       isActive
                         ? "bg-theme-red hover:bg-accent-deep text-white"
-                        : "text-ink-soft pointer-events-none bg-neutral-200"
+                        : "text-ink-soft bg-paper-2 pointer-events-none"
                     }`}
                   >
                     Read more
