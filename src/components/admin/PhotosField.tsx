@@ -16,8 +16,8 @@ interface PhotosFieldProps {
   defaultValue?: Photo[];
 }
 
-const smallButton =
-  "border-rule text-ink-soft hover:text-theme-red rounded-md border bg-white px-2 py-1 text-xs disabled:opacity-40";
+const iconButton =
+  "text-ink-soft hover:bg-paper hover:text-ink flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30";
 
 /**
  * A gallery editor: uploads photos straight from the browser, lets the editor
@@ -36,8 +36,8 @@ export default function PhotosField({
   // Ids for uploaded photos; only read in the upload handler
   const nextId = useRef(defaultValue.length);
   const photos = items.map((item) => item.photo);
-  const refocus = useRef<{ id: number; dir: "left" | "right" } | null>(null);
-  const listRef = useRef<HTMLUListElement>(null);
+  const refocus = useRef<{ id: number; dir: "up" | "down" } | null>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   const [progress, setProgress] = useState<{
     current: number;
     total: number;
@@ -66,7 +66,7 @@ export default function PhotosField({
     );
     const pick = (dir: string) =>
       row?.querySelector<HTMLButtonElement>(`[data-move="${dir}"]`);
-    const other = target.dir === "left" ? "right" : "left";
+    const other = target.dir === "up" ? "down" : "up";
     const button = pick(target.dir)?.disabled ? pick(other) : pick(target.dir);
     button?.focus();
   }, [items]);
@@ -130,68 +130,78 @@ export default function PhotosField({
   return (
     <div className="space-y-4">
       {photos.length > 0 && (
-        <ul ref={listRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <ol ref={listRef} className="space-y-2">
           {items.map(({ id, photo }, i) => (
             <li
               key={id}
               data-photo-id={id}
-              className="border-rule space-y-2 rounded-xl border bg-white p-2"
+              className="border-rule flex gap-3 rounded-xl border bg-white p-2"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.url}
-                alt=""
-                className="bg-paper aspect-[4/3] w-full rounded-lg object-cover"
-              />
-              <input
-                type="text"
-                aria-label={`Alt text for photo ${i + 1}`}
-                className={inputClass}
-                placeholder="Describe the photo"
-                value={photo.alt}
-                onChange={(e) => update(i, { alt: e.target.value })}
-              />
-              <div className="flex flex-wrap gap-1">
-                <button
-                  type="button"
-                  className={smallButton}
-                  disabled={i === 0}
-                  aria-label={`Move left (photo ${i + 1})`}
-                  data-move="left"
-                  onClick={() => {
-                    refocus.current = { id, dir: "left" };
-                    setItems((prev) => moveItem(prev, i, i - 1));
-                  }}
-                >
-                  Move left
-                </button>
-                <button
-                  type="button"
-                  className={smallButton}
-                  disabled={i === photos.length - 1}
-                  aria-label={`Move right (photo ${i + 1})`}
-                  data-move="right"
-                  onClick={() => {
-                    refocus.current = { id, dir: "right" };
-                    setItems((prev) => moveItem(prev, i, i + 1));
-                  }}
-                >
-                  Move right
-                </button>
-                <button
-                  type="button"
-                  className={smallButton}
-                  aria-label={`Remove (photo ${i + 1})`}
-                  onClick={() =>
-                    setItems((prev) => prev.filter((_, index) => index !== i))
-                  }
-                >
-                  Remove
-                </button>
+              <div className="relative shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo.url}
+                  alt=""
+                  className="bg-paper h-[4.5rem] w-[4.5rem] rounded-lg object-cover"
+                />
+                <span className="bg-navy/85 absolute top-1 left-1 rounded px-1.5 text-[11px] leading-5 font-semibold text-white tabular-nums">
+                  {i + 1}
+                </span>
+              </div>
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <input
+                  type="text"
+                  aria-label={`Alt text for photo ${i + 1}`}
+                  className={`${inputClass} !min-h-9 !py-1.5`}
+                  placeholder="Describe the photo"
+                  value={photo.alt}
+                  onChange={(e) => update(i, { alt: e.target.value })}
+                />
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    className={iconButton}
+                    disabled={i === 0}
+                    aria-label={`Move photo ${i + 1} up`}
+                    title="Move up"
+                    data-move="up"
+                    onClick={() => {
+                      refocus.current = { id, dir: "up" };
+                      setItems((prev) => moveItem(prev, i, i - 1));
+                    }}
+                  >
+                    <Icon name="chevron" className="h-4 w-4 rotate-180" />
+                  </button>
+                  <button
+                    type="button"
+                    className={iconButton}
+                    disabled={i === photos.length - 1}
+                    aria-label={`Move photo ${i + 1} down`}
+                    title="Move down"
+                    data-move="down"
+                    onClick={() => {
+                      refocus.current = { id, dir: "down" };
+                      setItems((prev) => moveItem(prev, i, i + 1));
+                    }}
+                  >
+                    <Icon name="chevron" className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${iconButton} ml-auto hover:!text-red-700`}
+                    aria-label={`Remove photo ${i + 1}`}
+                    title="Remove"
+                    onClick={() =>
+                      setItems((prev) => prev.filter((_, index) => index !== i))
+                    }
+                  >
+                    <Icon name="trash" className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             </li>
           ))}
-        </ul>
+        </ol>
       )}
 
       <label className="border-rule hover:border-theme-red/60 hover:bg-theme-red/[0.03] flex cursor-pointer items-center gap-3 rounded-xl border border-dashed bg-white px-4 py-3 transition-colors">

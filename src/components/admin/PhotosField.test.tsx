@@ -97,9 +97,9 @@ describe("PhotosField", () => {
     expect(uploadPhoto.mock.calls[0][2]).toBe("posts");
   });
 
-  it("moves a photo left", async () => {
+  it("moves a photo up", async () => {
     renderField([photo("a"), photo("b")]);
-    await user.click(screen.getAllByRole("button", { name: /move left/i })[1]);
+    await user.click(screen.getAllByRole("button", { name: /up$/i })[1]);
     expect(hidden().map((p) => p.url)).toEqual([
       "https://x/b.jpg",
       "https://x/a.jpg",
@@ -108,24 +108,24 @@ describe("PhotosField", () => {
 
   it("keeps focus on the moved photo's move button", async () => {
     renderField([photo("a"), photo("b"), photo("c")]);
-    const button = screen.getAllByRole("button", { name: /move left/i })[2];
+    const button = screen.getAllByRole("button", { name: /up$/i })[2];
     button.focus();
     await user.click(button);
     const active = document.activeElement as HTMLElement;
     expect(active).not.toBe(document.body);
-    expect(active.dataset.move).toBe("left");
+    expect(active.dataset.move).toBe("up");
     expect(
       active.closest("li")?.querySelector("img")?.getAttribute("src"),
     ).toBe("https://x/c.jpg");
   });
 
-  it("falls back to Move right when the moved photo reaches the start", async () => {
+  it("falls back to Move down when the moved photo reaches the start", async () => {
     renderField([photo("a"), photo("b")]);
-    const button = screen.getAllByRole("button", { name: /move left/i })[1];
+    const button = screen.getAllByRole("button", { name: /up$/i })[1];
     button.focus();
     await user.click(button);
     const active = document.activeElement as HTMLElement;
-    expect(active.dataset.move).toBe("right");
+    expect(active.dataset.move).toBe("down");
     expect(
       active.closest("li")?.querySelector("img")?.getAttribute("src"),
     ).toBe("https://x/b.jpg");
