@@ -118,17 +118,43 @@ describe("buildPack", () => {
 });
 
 describe("loadSiteFonts", () => {
-  it("still resolves when the browser cannot load a font face", async () => {
-    // Next's "Fallback" faces point at local Arial, which Linux often lacks
+  const stack = '"Oswald", "Oswald Fallback"';
+  const mockLoad = (load: (font: string) => Promise<unknown[]>) => {
     Object.defineProperty(document, "fonts", {
       configurable: true,
-      value: { load: vi.fn().mockRejectedValue(new Error("NetworkError")) },
+      value: { load: vi.fn(load) },
     });
-    document.documentElement.style.setProperty("--font-oswald", '"Oswald"');
+    document.documentElement.style.setProperty("--font-oswald", stack);
+    document.documentElement.style.setProperty(
+      "--font-source-sans",
+      '"Source Sans 3", "Source Sans 3 Fallback"',
+    );
+  };
 
-    await expect(loadSiteFonts()).resolves.toEqual({
-      display: '"Oswald"',
-      body: expect.any(String),
-    });
+  it("loads only the real families, so a failing fallback face is harmless", async () => {
+    // Next's "Fallback" faces point at local Arial, which Linux often lacks
+    mockLoad((font) =>
+      font.includes("Fallback")
+        ? Promise.reject(new Error("NetworkError"))
+        : Promise.resolve([{}]),
+    );
+
+    await expect(loadSiteFonts()).resolves.toMatchObject({ display: stack });
+  });
+
+  it("rejects when the real font face fails to load", async () => {
+    mockLoad((font) =>
+      font.includes("Oswald")
+        ? Promise.reject(new Error("NetworkError"))
+        : Promise.resolve([{}]),
+    );
+
+    await expect(loadSiteFonts()).rejects.toThrow("NetworkError");
+  });
+
+  it("rejects when no face matches the real font", async () => {
+    mockLoad(() => Promise.resolve([]));
+
+    await expect(loadSiteFonts()).rejects.toThrow("fonts are not available");
   });
 });

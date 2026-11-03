@@ -42,16 +42,24 @@ export async function loadSiteFonts(): Promise<Fonts> {
     display: family("--font-oswald"),
     body: family("--font-source-sans"),
   };
-  // allSettled: next/font's "Fallback" faces use local Arial, and a load of
-  // the stack rejects where Arial is missing even though the real font loaded
-  await Promise.allSettled(
-    [
-      `bold 80px ${fonts.display}`,
-      `80px ${fonts.body}`,
-      `bold 80px ${fonts.body}`,
-      `italic bold 80px ${fonts.body}`,
-    ].map((font) => document.fonts.load(font)),
+  // Load only each stack's first family, the real face. next/font adds a
+  // "Fallback" face that uses local Arial, and loading the whole stack
+  // rejects where Arial is missing even though the real font loaded.
+  const primary = (stack: string) => stack.split(",")[0].trim();
+  const requests = [
+    `bold 80px ${primary(fonts.display)}`,
+    `80px ${primary(fonts.body)}`,
+    `bold 80px ${primary(fonts.body)}`,
+    `italic bold 80px ${primary(fonts.body)}`,
+  ];
+  const loaded = await Promise.all(
+    requests.map((font) => document.fonts.load(font)),
   );
+  // No matching face means the site font isn't there and the pack would be
+  // drawn in a system font
+  if (loaded.some((faces) => faces.length === 0)) {
+    throw new Error("The site fonts are not available.");
+  }
   return fonts;
 }
 
