@@ -65,7 +65,7 @@ function canvasBlob(
   return new Promise((resolve) => canvas.toBlob(resolve, type, WEBP_QUALITY));
 }
 
-async function renderEncoded(
+export async function renderEncoded(
   bitmap: ImageBitmap,
   max: number,
 ): Promise<{ blob: Blob } & Size> {
@@ -90,7 +90,7 @@ async function renderEncoded(
   }
 }
 
-async function uploadBlob(
+export async function uploadBlob(
   client: ContentClient,
   path: string,
   blob: Blob,
