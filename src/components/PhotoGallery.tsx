@@ -102,7 +102,13 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
           }}
           className="m-auto h-dvh max-h-none w-dvw max-w-none bg-black/90 p-0 backdrop:bg-black/90"
         >
-          <div className="flex h-full flex-col items-center justify-center gap-4 p-4">
+          <div
+            onClick={(e) => {
+              // The wrapper fills the dialog, so it is the visible backdrop
+              if (e.target === e.currentTarget) close();
+            }}
+            className="flex h-full flex-col items-center justify-center gap-4 p-4"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element -- the static site can't optimize images */}
             <img
               src={photo.url}

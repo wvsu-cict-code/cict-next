@@ -54,6 +54,25 @@ describe("PhotoGallery", () => {
     expect(document.activeElement).toBe(opener);
   });
 
+  it("closes when the click lands beside the photo, not on it or the buttons", () => {
+    render(<PhotoGallery photos={photos} />);
+    const open = () => {
+      fireEvent.click(screen.getByAltText("First").closest("button")!);
+      return screen.getByRole("dialog");
+    };
+    let dialog = open();
+    fireEvent.click(screen.getAllByAltText("First")[1]);
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.queryByRole("dialog")).toBeTruthy();
+    // The full-size wrapper around the photo is the visible "backdrop"
+    fireEvent.click(dialog.firstElementChild!);
+    expect(screen.queryByRole("dialog")).toBeNull();
+
+    dialog = open();
+    fireEvent.click(dialog);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   it("closes the modal before returning focus to the photo", () => {
     const proto = HTMLDialogElement.prototype;
     const original = { show: proto.showModal, close: proto.close };
