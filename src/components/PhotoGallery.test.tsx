@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import PhotoGallery from "@/components/PhotoGallery";
 import type { Photo } from "@/lib/photos";
 
@@ -52,5 +52,42 @@ describe("PhotoGallery", () => {
     fireEvent.keyDown(dialog, { key: "Escape" });
     expect(screen.queryByRole("dialog")).toBeNull();
     expect(document.activeElement).toBe(opener);
+  });
+
+  it("closes the modal before returning focus to the photo", () => {
+    const proto = HTMLDialogElement.prototype;
+    const original = { show: proto.showModal, close: proto.close };
+    let modal = false;
+    proto.showModal = function () {
+      modal = true;
+      this.setAttribute("open", "");
+    };
+    proto.close = function () {
+      modal = false;
+      this.removeAttribute("open");
+    };
+    try {
+      render(<PhotoGallery photos={photos} />);
+      const opener = screen.getAllByRole("button")[0];
+      // Outside a modal dialog nothing can take focus, like a real browser.
+      const focus = vi.spyOn(opener, "focus").mockImplementation(() => {
+        if (!modal) opener.dispatchEvent(new FocusEvent("focus"));
+        if (!modal)
+          Object.defineProperty(document, "activeElement", {
+            configurable: true,
+            value: opener,
+          });
+      });
+      fireEvent.click(opener);
+      expect(modal).toBe(true);
+      fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+      expect(modal).toBe(false);
+      expect(focus).toHaveBeenCalledTimes(1);
+      expect(document.activeElement).toBe(opener);
+    } finally {
+      delete (document as unknown as Record<string, unknown>).activeElement;
+      proto.showModal = original.show;
+      proto.close = original.close;
+    }
   });
 });

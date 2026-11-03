@@ -40,6 +40,10 @@ export default function PhotoGallery({ photos }: { photos: Photo[] }) {
   }
 
   function close() {
+    // Close the modal first: while it is open everything outside is inert,
+    // so focusing the opener would do nothing.
+    const dialog = dialogRef.current;
+    if (dialog && typeof dialog.close === "function") dialog.close();
     setCurrent(null);
     opener.current?.focus();
   }
