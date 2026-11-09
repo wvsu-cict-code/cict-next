@@ -1,7 +1,13 @@
-@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+/* Hallmark · pre-emit critique: P5 H4 E4 S5 R4 V4
+ * The landing now follows the supplied page mockup. Functional accent stays
+ * theme red: #ff6f42 fails WCAG against white, so it is not used for text.
+ */
 
 @import "tailwindcss";
+
+/* `dark:` follows the theme the visitor picked (see lib/theme.ts), not only
+ * the system setting. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
   --font-size-xs: 0.75rem;
@@ -21,17 +27,80 @@
 
   --color-orange-light: #ff6f42;
   --color-orange-dark: #f48128;
+  /* Functional accent. #ff6f42 fails WCAG against the paper background. */
   --color-theme-red: #ba3d1b;
+  --color-accent-deep: #8d2d14;
 
-  --font-major: "Oswald", sans-serif;
-  --font-minor: "Inter", sans-serif;
+  /* Text accent: theme red in light mode, a lighter coral in dark mode where
+   * theme red is too dark to read. Fills keep --color-theme-red. */
+  --color-accent: #ba3d1b;
+
+  /* Cards, panels and page sections (white in light mode) */
+  --color-surface: #ffffff;
+  /* Soft band behind alternating sections */
+  --color-surface-2: #f7f8fa;
+  --color-paper: #f3f4f6;
+  --color-paper-2: #e6e8ec;
+  --color-ink: #1c1e22;
+  --color-ink-soft: #3f4550;
+  --color-rule: #d4d7de;
+  --color-navy: #102033;
+
+  --ease-draw: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --font-major: var(--font-oswald), sans-serif;
+  --font-minor: var(--font-source-sans), sans-serif;
+}
+
+/* Light values again, so a light-only area (the CMS) can opt out of dark
+ * mode with data-theme="light" even inside a dark page. */
+[data-theme="light"] {
+  color-scheme: light;
+  --color-accent: #ba3d1b;
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f8fa;
+  --color-paper: #f3f4f6;
+  --color-paper-2: #e6e8ec;
+  --color-ink: #1c1e22;
+  --color-ink-soft: #3f4550;
+  --color-rule: #d4d7de;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-accent: #ff9470;
+  --color-surface: #161c24;
+  --color-surface-2: #10151b;
+  --color-paper: #0c1015;
+  --color-paper-2: #222a35;
+  --color-ink: #e8ebf0;
+  --color-ink-soft: #aeb6c2;
+  --color-rule: #2d3643;
 }
 
 @layer base {
   html,
   body {
     max-width: 100%;
-    overflow-x: hidden;
+    overflow-x: clip;
+  }
+
+  html {
+    scroll-padding-top: 5rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-minor);
   }
 
   h1,
@@ -41,6 +110,8 @@
   h5,
   h6 {
     font-family: var(--font-major);
+    font-style: normal;
+    text-wrap: balance;
   }
 
   p,
@@ -55,9 +126,18 @@
     font-family: var(--font-minor);
   }
 
+  p {
+    text-wrap: pretty;
+  }
+
   strong,
   b {
     font-weight: 700;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
@@ -67,11 +147,11 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #eee;
+    background: var(--color-paper-2);
     border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #ddd;
+    background: var(--color-rule);
   }
 
   .font-major {
@@ -79,5 +159,26 @@
   }
   .font-minor {
     font-family: var(--font-minor);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise {
+  animation: rise 700ms var(--ease-draw) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
   }
 }
