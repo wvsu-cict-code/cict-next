@@ -4,10 +4,17 @@ import { useContext, useEffect, useId, useRef, useState } from "react";
 import { AdminFormBusyContext } from "@/components/admin/AdminForm";
 import { Icon } from "@/components/admin/icons";
 import { inputClass } from "@/components/admin/fields";
+import ImageEditor from "@/components/admin/ImageEditor";
+import { aspectRatio } from "@/lib/imageEdit/geometry";
+import { autoEdit } from "@/lib/imageEdit/render";
 import { uploadPhoto } from "@/lib/photoUpload";
 import { MAX_PHOTOS, type Photo } from "@/lib/photos";
 import { getBrowserClient } from "@/lib/supabase/browser";
-import { IMAGE_TYPES } from "@/lib/studentWorks/images";
+import {
+  checkImageFile,
+  DISPLAY_MAX,
+  IMAGE_TYPES,
+} from "@/lib/studentWorks/images";
 import { moveItem } from "@/lib/studentWorks/order";
 
 interface PhotosFieldProps {
@@ -19,10 +26,15 @@ interface PhotosFieldProps {
 const iconButton =
   "text-ink-soft hover:bg-paper hover:text-ink flex h-8 w-8 items-center justify-center rounded-md transition-colors disabled:pointer-events-none disabled:opacity-30";
 
+const errorText = (err: unknown) =>
+  err instanceof Error ? err.message : "The upload failed.";
+
 /**
- * A gallery editor: uploads photos straight from the browser, lets the editor
- * reorder, remove and describe them, and submits the list as JSON in a hidden
- * input. While uploads run the surrounding AdminForm can't be submitted.
+ * A gallery editor: each picked photo opens in the image editor (crop, turn,
+ * adjust) before it's uploaded straight from the browser. Photos can be
+ * reordered, removed, described and edited again, and the list is submitted
+ * as JSON in a hidden input. While uploads run the surrounding AdminForm
+ * can't be submitted.
  */
 export default function PhotosField({
   name,
@@ -39,10 +51,24 @@ export default function PhotosField({
   const refocus = useRef<{ id: number; dir: "up" | "down" } | null>(null);
   const listRef = useRef<HTMLOListElement>(null);
   const [progress, setProgress] = useState<{
-    current: number;
+    done: number;
     total: number;
   } | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
+  // New photos waiting in the editor, one at a time
+  const [batch, setBatch] = useState<{ files: File[]; index: number } | null>(
+    null,
+  );
+  // An already-added photo being edited again
+  const [reediting, setReediting] = useState<{
+    id: number;
+    url: string;
+  } | null>(null);
+  // Uploads run one after another, in the order they were queued
+  const chain = useRef<Promise<void>>(Promise.resolve());
+  const pending = useRef(0);
+  // New photos picked but not in the list yet, so the cap counts them
+  const incoming = useRef(0);
   const { setBusy, markDirty } = useContext(AdminFormBusyContext);
   const busyKey = useId();
   const changed = useRef(false);
@@ -74,51 +100,97 @@ export default function PhotosField({
   // Don't leave the form stuck busy if this field unmounts mid-upload
   useEffect(() => () => setBusy(busyKey, false), [setBusy, busyKey]);
 
-  const uploading = progress !== null;
+  /** Queues an upload; the form stays busy until the queue is empty. */
+  function enqueue(label: string, task: () => Promise<void>) {
+    pending.current++;
+    setBusy(busyKey, true);
+    setProgress((prev) => ({
+      done: prev?.done ?? 0,
+      total: (prev?.total ?? 0) + 1,
+    }));
+    chain.current = chain.current.then(async () => {
+      try {
+        await task();
+      } catch (err) {
+        setErrors((prev) => [...prev, `${label}: ${errorText(err)}`]);
+      } finally {
+        pending.current--;
+        if (pending.current === 0) {
+          setProgress(null);
+          setBusy(busyKey, false);
+        } else {
+          setProgress((prev) => prev && { ...prev, done: prev.done + 1 });
+        }
+      }
+    });
+  }
 
-  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+  /** Uploads a new photo (made by `prepare`) and adds it to the end. */
+  function addPhoto(name: string, prepare: () => Promise<File>) {
+    enqueue(name, async () => {
+      try {
+        const uploaded = await uploadPhoto(
+          getBrowserClient(),
+          await prepare(),
+          folder,
+        );
+        setItems((prev) =>
+          prev.length >= MAX_PHOTOS
+            ? prev
+            : [...prev, { id: nextId.current++, photo: uploaded }],
+        );
+      } finally {
+        incoming.current--;
+      }
+    });
+  }
+
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const input = e.currentTarget;
     const chosen = Array.from(input.files ?? []);
     input.value = "";
     if (chosen.length === 0) return;
 
-    const picked = chosen.slice(0, Math.max(0, MAX_PHOTOS - items.length));
+    const room = Math.max(0, MAX_PHOTOS - items.length - incoming.current);
+    const picked = chosen.slice(0, room);
     const skipped = chosen.length - picked.length;
     const failures: string[] = skipped
       ? [
           `Only ${MAX_PHOTOS} photos can be added; ${skipped} ${skipped === 1 ? "file was" : "files were"} skipped.`,
         ]
       : [];
-    setErrors([...failures]);
-    if (picked.length === 0) return;
+    // Turn away unusable files now rather than in the editor
+    const usable = picked.filter((file) => {
+      const problem = checkImageFile(file);
+      if (problem) failures.push(`${file.name}: ${problem}`);
+      return !problem;
+    });
+    setErrors(failures);
+    if (usable.length === 0) return;
 
-    setBusy(busyKey, true);
-    try {
-      for (let i = 0; i < picked.length; i++) {
-        setProgress({ current: i + 1, total: picked.length });
-        try {
-          const uploaded = await uploadPhoto(
-            getBrowserClient(),
-            picked[i],
-            folder,
-          );
-          setItems((prev) =>
-            prev.length >= MAX_PHOTOS
-              ? prev
-              : [...prev, { id: nextId.current++, photo: uploaded }],
-          );
-        } catch (err) {
-          failures.push(
-            `${picked[i].name}: ${err instanceof Error ? err.message : "The upload failed."}`,
-          );
-        }
-      }
-    } finally {
-      setProgress(null);
-      setBusy(busyKey, false);
-      setErrors([...failures]);
-    }
+    incoming.current += usable.length;
+    setBatch({ files: usable, index: 0 });
   }
+
+  /** Moves the batch on to its next photo, or closes the editor. */
+  function nextInBatch() {
+    setBatch((prev) =>
+      prev && prev.index + 1 < prev.files.length
+        ? { ...prev, index: prev.index + 1 }
+        : null,
+    );
+  }
+
+  /** Leaves out the batch's photos from `from` on. */
+  function dropFromBatch(from: number) {
+    if (!batch) return;
+    const dropped = batch.files.length - from;
+    incoming.current -= dropped;
+    setBatch(null);
+    return dropped;
+  }
+
+  const current = batch?.files[batch.index];
 
   const update = (index: number, patch: Partial<Photo>) =>
     setItems((prev) =>
@@ -158,6 +230,15 @@ export default function PhotosField({
                   onChange={(e) => update(i, { alt: e.target.value })}
                 />
                 <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    className={iconButton}
+                    aria-label={`Edit photo ${i + 1}`}
+                    title="Crop or adjust"
+                    onClick={() => setReediting({ id, url: photo.url })}
+                  >
+                    <Icon name="crop" className="h-4 w-4" />
+                  </button>
                   <button
                     type="button"
                     className={iconButton}
@@ -214,14 +295,14 @@ export default function PhotosField({
           multiple
           accept={IMAGE_TYPES.join(",")}
           className="sr-only"
-          disabled={uploading || photos.length >= MAX_PHOTOS}
+          disabled={batch !== null || photos.length >= MAX_PHOTOS}
           onChange={onPick}
         />
       </label>
 
       <p className="text-ink-soft text-xs" role="status">
         {progress
-          ? `Uploading ${progress.current} of ${progress.total}…`
+          ? `Uploading ${progress.done + 1} of ${progress.total}…`
           : null}
       </p>
       {errors.map((message) => (
@@ -231,6 +312,74 @@ export default function PhotosField({
       ))}
 
       <input type="hidden" name={name} value={JSON.stringify(photos)} />
+
+      {batch && current && (
+        <ImageEditor
+          key={`new-${batch.index}-${current.name}`}
+          source={current}
+          maxSize={DISPLAY_MAX}
+          title="Add photo"
+          step={{ index: batch.index + 1, total: batch.files.length }}
+          applyLabel={
+            batch.index + 1 < batch.files.length ? "Add & next" : "Add photo"
+          }
+          skipLabel="Skip photo"
+          onApply={(file) => {
+            addPhoto(current.name, async () => file);
+            nextInBatch();
+          }}
+          onSkip={() => {
+            incoming.current--;
+            nextInBatch();
+          }}
+          onApplyRest={(aspect) => {
+            const rest = batch.files.slice(batch.index);
+            setBatch(null);
+            for (const file of rest) {
+              addPhoto(file.name, () =>
+                autoEdit(file, aspectRatio(aspect), DISPLAY_MAX),
+              );
+            }
+          }}
+          onCancel={() => {
+            const dropped = dropFromBatch(batch.index);
+            if (dropped) {
+              setErrors((prev) => [
+                ...prev,
+                `Stopped editing; ${dropped} ${dropped === 1 ? "photo wasn't" : "photos weren't"} added.`,
+              ]);
+            }
+          }}
+        />
+      )}
+
+      {reediting && (
+        <ImageEditor
+          key={`edit-${reediting.id}`}
+          source={reediting.url}
+          maxSize={DISPLAY_MAX}
+          applyLabel="Save changes"
+          onApply={(file) => {
+            const { id } = reediting;
+            setReediting(null);
+            enqueue("Edited photo", async () => {
+              const uploaded = await uploadPhoto(
+                getBrowserClient(),
+                file,
+                folder,
+              );
+              setItems((prev) =>
+                prev.map((item) =>
+                  item.id === id
+                    ? { ...item, photo: { ...uploaded, alt: item.photo.alt } }
+                    : item,
+                ),
+              );
+            });
+          }}
+          onCancel={() => setReediting(null)}
+        />
+      )}
     </div>
   );
 }

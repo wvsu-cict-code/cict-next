@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { Icon } from "@/components/admin/icons";
+import ImageEditor from "@/components/admin/ImageEditor";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import type { UploadedWorkImage } from "@/lib/studentWorks/form";
 import {
   checkImageFile,
   IMAGE_TYPES,
   uploadWorkImage,
+  ZOOM_MAX,
 } from "@/lib/studentWorks/images";
 
 interface WorkImageFieldProps {
@@ -19,9 +21,11 @@ interface WorkImageFieldProps {
 }
 
 /**
- * Resizes and uploads an image straight from the browser, then submits the
- * result as JSON in a hidden `image` input ("" when there is no image).
- * While an upload runs, a hidden invalid input stops the form submitting.
+ * Opens a picked image in the image editor, then resizes and uploads it
+ * straight from the browser and submits the result as JSON in a hidden
+ * `image` input ("" when there is no image). The uploaded image can be
+ * edited again, starting from its full-size original. While an upload
+ * runs, a hidden invalid input stops the form submitting.
  */
 export default function WorkImageField({
   name,
@@ -35,20 +39,27 @@ export default function WorkImageField({
   );
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState<File | string | null>(null);
   const inputId = `${name}_file`;
 
-  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+  function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const input = e.currentTarget;
     const file = input.files?.[0];
+    input.value = "";
     if (!file) return;
 
     const problem = checkImageFile(file);
     if (problem) {
       setError(problem);
-      input.value = "";
       return;
     }
 
+    setError(null);
+    setEditing(file);
+  }
+
+  async function upload(file: File) {
+    setEditing(null);
     setError(null);
     setUploading(true);
     try {
@@ -57,7 +68,6 @@ export default function WorkImageField({
       setError(err instanceof Error ? err.message : "The upload failed.");
     } finally {
       setUploading(false);
-      input.value = "";
     }
   }
 
@@ -110,13 +120,23 @@ export default function WorkImageField({
           </label>
 
           {image && !uploading && (
-            <button
-              type="button"
-              className="text-ink-soft hover:text-theme-red text-xs underline"
-              onClick={() => setImage(null)}
-            >
-              Remove image
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                className="border-rule text-ink hover:border-theme-red/60 inline-flex h-9 items-center gap-2 rounded-lg border bg-white px-3 text-sm font-medium transition-colors"
+                onClick={() => setEditing(image.original_url)}
+              >
+                <Icon name="crop" className="h-4 w-4" />
+                Crop or adjust image
+              </button>
+              <button
+                type="button"
+                className="text-ink-soft hover:text-theme-red text-xs underline"
+                onClick={() => setImage(null)}
+              >
+                Remove image
+              </button>
+            </div>
           )}
 
           {error && (
@@ -133,6 +153,22 @@ export default function WorkImageField({
         name={name}
         value={image ? JSON.stringify(image) : ""}
       />
+      {editing && (
+        <ImageEditor
+          source={editing}
+          maxSize={ZOOM_MAX}
+          title={`Edit ${label.toLowerCase()}`}
+          applyLabel={
+            image && typeof editing === "string"
+              ? "Save changes"
+              : "Use edited image"
+          }
+          skipLabel={editing instanceof File ? "Use original" : undefined}
+          onApply={upload}
+          onSkip={() => editing instanceof File && upload(editing)}
+          onCancel={() => setEditing(null)}
+        />
+      )}
       {uploading && (
         <input
           tabIndex={-1}

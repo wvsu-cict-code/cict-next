@@ -68,6 +68,7 @@ export default function MemberForm({
           label="Photo"
           name="image_url"
           defaultValue={member?.image_url}
+          aspect="1:1"
           hint="Square photos look best. A placeholder is shown when empty."
         />
       </FormSection>

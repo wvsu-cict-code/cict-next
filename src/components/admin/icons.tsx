@@ -22,7 +22,15 @@ export type IconName =
   | "eye"
   | "eye-off"
   | "chevron"
-  | "wrench";
+  | "wrench"
+  | "crop"
+  | "rotate-left"
+  | "rotate-right"
+  | "flip-x"
+  | "flip-y"
+  | "sparkle"
+  | "reset"
+  | "close";
 
 const paths: Record<IconName, React.ReactNode> = {
   dashboard: (
@@ -142,6 +150,44 @@ const paths: Record<IconName, React.ReactNode> = {
   wrench: (
     <path d="M14.5 5.5a4 4 0 0 0 4.9 4.9l-9 9a2.1 2.1 0 0 1-3-3l9-9a4 4 0 0 0-1.9-1.9z" />
   ),
+  crop: <path d="M6 2v14a2 2 0 0 0 2 2h14M2 6h14a2 2 0 0 1 2 2v14" />,
+  "rotate-left": (
+    <>
+      <path d="M4 4v5h5" />
+      <path d="M4.6 14a8 8 0 1 0 1.9-8.2L4 9" />
+    </>
+  ),
+  "rotate-right": (
+    <>
+      <path d="M20 4v5h-5" />
+      <path d="M19.4 14a8 8 0 1 1-1.9-8.2L20 9" />
+    </>
+  ),
+  "flip-x": (
+    <>
+      <path d="M12 3v18" />
+      <path d="M8 7L3 17h5zM16 7l5 10h-5z" />
+    </>
+  ),
+  "flip-y": (
+    <>
+      <path d="M3 12h18" />
+      <path d="M7 8L17 3v5zM7 16l10 5v-5z" />
+    </>
+  ),
+  sparkle: (
+    <>
+      <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+      <path d="M19 15l.7 1.8 1.8.7-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7z" />
+    </>
+  ),
+  reset: (
+    <>
+      <path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" />
+      <path d="M3 3v5h5" />
+    </>
+  ),
+  close: <path d="M6 6l12 12M18 6L6 18" />,
 };
 
 export function Icon({
