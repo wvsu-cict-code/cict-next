@@ -46,9 +46,11 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
   }),
 
+  // The CICT emblem from the header, white on the seal's orange. The
+  // multi-size favicon.ico (src/app) covers tabs; these cover larger uses.
   icons: {
-    icon: "/icons/cictlogo.png",
-    apple: "/icons/cictlogo.png",
+    icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: "/icons/apple-touch-icon.png",
   },
 
   robots: {
