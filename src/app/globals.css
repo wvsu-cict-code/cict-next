@@ -4,6 +4,7 @@
  */
 
 @import "tailwindcss";
+@import "tw-animate-css";
 
 /* `dark:` follows the theme the visitor picked (see lib/theme.ts), not only
  * the system setting. */
@@ -50,6 +51,36 @@
 
   --font-major: var(--font-oswald), sans-serif;
   --font-minor: var(--font-source-sans), sans-serif;
+}
+
+/* shadcn/ui names mapped onto the site's tokens, so its components follow
+ * [data-theme] like the rest of the site. Only the names shadcn needs are
+ * mapped: no --color-accent-foreground (components use muted/foreground
+ * instead, and `accent` stays the site's text accent), and no --radius-*
+ * steps (they would change every existing rounded-* class). */
+@theme inline {
+  --color-background: var(--color-paper);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-theme-red);
+  --color-primary-foreground: #fff;
+  --color-secondary: var(--color-paper-2);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-paper-2);
+  --color-muted-foreground: var(--color-ink-soft);
+  --color-destructive: #b42318;
+  --color-border: var(--color-rule);
+  --color-input: var(--color-rule);
+  --color-ring: var(--color-accent);
+}
+
+/* shadcn's base radius. Kept out of @theme on purpose: there it would drive
+ * Tailwind's bare `rounded` class (0.25rem -> 0.75rem) across the site. */
+:root {
+  --radius: 0.75rem;
 }
 
 /* Light values again, so a light-only area (the CMS) can opt out of dark
@@ -138,6 +169,13 @@
   :focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 3px;
+  }
+
+  /* shadcn/ui expects bare `border` classes in the border token. Scoped to
+   * its parts (they all carry data-slot) so the site's own bare borders keep
+   * currentColor; shadcn's global `* { border-color }` rule is left out. */
+  [data-slot] {
+    border-color: var(--color-rule);
   }
 
   .custom-scrollbar::-webkit-scrollbar {
