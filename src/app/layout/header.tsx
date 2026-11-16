@@ -3,11 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import { User } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
+import { AccountMenu } from "@/components/account/AccountMenu";
+import { NotificationsBell } from "@/components/account/NotificationsBell";
 import { ArrowIcon } from "@/components/PhotoSlot";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { loadPrograms } from "@/lib/cms/siteContent";
 import { useContent } from "@/lib/cms/useContent";
+import { signOut } from "@/lib/auth/client";
+import { useSession } from "@/lib/auth/session";
+import { getBrowserClient } from "@/lib/supabase/browser";
 import { searchTerms } from "@/lib/search/search";
 
 function searchTermsTooShort(query: string) {
@@ -23,8 +29,11 @@ const activeMobile =
 const inactiveMobile =
   "mx-auto w-5/6 border-b border-rule py-4 text-center text-ink";
 
+const MUSEUM = "/programs/bsemc/museum";
+
 const LINKS = [
   { href: "/programs", label: "Programs" },
+  { href: "/programs/bsemc/museum", label: "Virtual Museum" },
   { href: "/news-announcements", label: "News" },
   { href: "/events", label: "Events" },
   { href: "/faculty-profiles", label: "Faculty" },
@@ -80,8 +89,13 @@ export default function Header() {
   const [programsOpen, setProgramsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const current = (href: string) =>
-    pathname === href || pathname.startsWith(`${href}/`);
+  const session = useSession();
+  const signInHref = `/account/sign-in/?next=${encodeURIComponent(usePathname())}`;
+  const onMuseum = pathname.startsWith(`${MUSEUM}/`) || pathname === MUSEUM;
+  const current = (href: string) => {
+    if (href === "/programs" && onMuseum) return false;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   useEffect(() => {
     setSearchOpen(false);
@@ -219,6 +233,26 @@ export default function Header() {
               <path d="M16 16l5 5" strokeLinecap="round" />
             </svg>
           </button>
+          {session.status === "loading" && (
+            <span className="hidden h-11 w-24 lg:block" aria-hidden />
+          )}
+          {session.status === "signed-out" && (
+            <Link
+              href={signInHref}
+              className="ease-draw border-rule text-ink hover:bg-paper hidden min-h-11 items-center gap-1.5 rounded-full border px-4 text-sm font-semibold whitespace-nowrap transition-colors duration-200 lg:inline-flex"
+            >
+              <User className="h-4 w-4" aria-hidden />
+              Sign In
+            </Link>
+          )}
+          {session.status === "signed-in" && (
+            <div className="hidden items-center lg:flex">
+              <NotificationsBell />
+              <AccountMenu
+                name={session.displayName ?? session.user?.email ?? "Account"}
+              />
+            </div>
+          )}
           <Link
             href="/admissions"
             className="ease-draw bg-theme-red hover:bg-accent-deep hidden min-h-11 items-center gap-1.5 rounded-full px-4 text-sm font-semibold whitespace-nowrap text-white transition-colors duration-200 active:scale-[0.98] sm:inline-flex"
@@ -302,6 +336,43 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          {session.status === "signed-out" && (
+            <Link
+              href={signInHref}
+              className={inactiveMobile}
+              onClick={() => setIsOpen(false)}
+            >
+              Sign In
+            </Link>
+          )}
+          {session.status === "signed-in" && (
+            <>
+              <Link
+                href="/account/"
+                className={inactiveMobile}
+                onClick={() => setIsOpen(false)}
+              >
+                My submissions
+              </Link>
+              <Link
+                href="/account/submit/"
+                className={inactiveMobile}
+                onClick={() => setIsOpen(false)}
+              >
+                Submit work
+              </Link>
+              <button
+                type="button"
+                className={inactiveMobile}
+                onClick={() => {
+                  setIsOpen(false);
+                  void signOut(getBrowserClient());
+                }}
+              >
+                Sign out
+              </button>
+            </>
+          )}
           <div className="mx-auto grid w-5/6 grid-cols-2 gap-2 py-4">
             {programMenu.map((program) => (
               <Link

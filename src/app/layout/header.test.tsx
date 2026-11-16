@@ -7,6 +7,17 @@ vi.mock("next/navigation", () => ({
   usePathname: () => pathname,
   useRouter: () => ({ push: vi.fn() }),
 }));
+let session: {
+  status: "loading" | "signed-out" | "signed-in";
+  user: object | null;
+  displayName: string | null;
+} = { status: "signed-out", user: null, displayName: null };
+vi.mock("@/lib/auth/session", () => ({ useSession: () => session }));
+vi.mock("@/lib/supabase/browser", () => ({ getBrowserClient: () => ({}) }));
+vi.mock("@/lib/museum/notifications", () => ({
+  fetchNotifications: async () => [],
+  markAllNotificationsRead: async () => {},
+}));
 vi.mock("@/lib/cms/useContent", () => ({
   useContent: () => ({ status: "loading" }),
 }));
@@ -38,6 +49,49 @@ describe("Header", () => {
     expect(
       screen.getByRole("link", { name: "Apply Now" }).getAttribute("href"),
     ).toBe("/admissions");
+  });
+
+  it("shows Virtual Museum in the nav and marks it current on the museum page only", () => {
+    pathname = "/programs/bsemc/museum/";
+    render(<Header />);
+    expect(highlighted("Virtual Museum")).not.toContain(false);
+    expect(highlighted("Programs")).not.toContain(true);
+    cleanup();
+    pathname = "/programs/bsemc";
+    render(<Header />);
+    expect(highlighted("Virtual Museum")).not.toContain(true);
+    expect(highlighted("Programs")).not.toContain(false);
+  });
+
+  it("signed-out header links Sign In with next set to the current page", () => {
+    pathname = "/events/";
+    session = { status: "signed-out", user: null, displayName: null };
+    render(<Header />);
+    // next/link adds the trailing slash itself when trailingSlash is on
+    expect(
+      screen.getAllByRole("link", { name: /Sign In/ })[0].getAttribute("href"),
+    ).toMatch(/^\/account\/sign-in\/?\?next=%2Fevents%2F$/);
+  });
+
+  it("renders neither Sign In nor the account menu while loading", () => {
+    pathname = "/";
+    session = { status: "loading", user: null, displayName: null };
+    render(<Header />);
+    expect(screen.queryByRole("link", { name: /Sign In/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /account/i })).toBeNull();
+  });
+
+  it("signed-in header shows the account menu and the bell", () => {
+    pathname = "/";
+    session = {
+      status: "signed-in",
+      user: { email: "a@wvsu.edu.ph" },
+      displayName: "Ana",
+    };
+    render(<Header />);
+    expect(screen.getByRole("button", { name: /account menu/i })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /notifications/i })).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /Sign In/ })).toBeNull();
   });
 
   it("builds the programs menu from CMS programs with short names", () => {
