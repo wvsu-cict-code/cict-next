@@ -74,6 +74,7 @@ export default async function AdminStudentWorksPage({ searchParams }: PageProps)
         />
       ) : (
         <WorkList
+          key={status}
           works={shown}
           canReorder={status === "approved"}
           onReorder={reorderStudentWorks}

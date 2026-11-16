@@ -113,6 +113,33 @@ describe("WorkList", () => {
     await waitFor(() => expect(onToggleVisible).toHaveBeenCalledWith("a", false));
   });
 
+  it("remounts with new rows when the status key changes", () => {
+    const pending = [work("p1", { status: "pending", title: "Pending one" })];
+    const approved = [work("a1", { status: "approved", title: "Approved one" })];
+    const { rerender } = render(
+      <WorkList
+        key="pending"
+        works={pending}
+        canReorder={false}
+        onReorder={vi.fn()}
+        onToggleVisible={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("Pending one")).toBeTruthy();
+    expect(screen.queryByText("Approved one")).toBeNull();
+    rerender(
+      <WorkList
+        key="approved"
+        works={approved}
+        canReorder
+        onReorder={vi.fn()}
+        onToggleVisible={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("Approved one")).toBeTruthy();
+    expect(screen.queryByText("Pending one")).toBeNull();
+  });
+
   it("shows the pending count and only allows reordering on Approved", async () => {
     const queue = [
       work("a", { submitted_by: "student-1", featured: false }),
