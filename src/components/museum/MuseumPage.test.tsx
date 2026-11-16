@@ -17,6 +17,9 @@ import { MuseumPage } from "./MuseumPage";
 
 const fetchProgram = vi.hoisted(() => vi.fn());
 const fetchExhibit = vi.hoisted(() => vi.fn());
+const fetchFeaturedWorks = vi.hoisted(() => vi.fn());
+const fetchExhibits = vi.hoisted(() => vi.fn());
+const replace = vi.hoisted(() => vi.fn());
 const session = vi.hoisted(() => ({
   status: "signed-out" as "loading" | "signed-out" | "signed-in",
   user: null as { id: string } | null,
@@ -38,7 +41,7 @@ vi.mock("@/lib/museum/queries", async () => {
   const actual = await vi.importActual<typeof import("@/lib/museum/queries")>(
     "@/lib/museum/queries",
   );
-  return { ...actual, fetchExhibit };
+  return { ...actual, fetchExhibit, fetchFeaturedWorks, fetchExhibits };
 });
 
 vi.mock("@/lib/supabase/browser", () => ({
@@ -52,7 +55,7 @@ vi.mock("@/lib/auth/session", () => ({
 vi.mock("next/navigation", () => ({
   usePathname: () => pathname,
   useSearchParams: () => new URLSearchParams(search),
-  useRouter: () => ({ replace: vi.fn() }),
+  useRouter: () => ({ replace }),
 }));
 
 vi.mock("next/link", () => ({
@@ -95,6 +98,15 @@ function makeProgram(id: string, name: string): Program {
   };
 }
 
+class TestObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+}
+
 async function settleLoads() {
   await waitFor(() => expect(fetchProgram).toHaveBeenCalled());
   await act(async () => {
@@ -104,9 +116,11 @@ async function settleLoads() {
       ),
     );
     await Promise.all(
-      fetchExhibit.mock.results.map((result) =>
-        Promise.resolve(result.value).catch(() => undefined),
-      ),
+      [
+        ...fetchExhibit.mock.results,
+        ...fetchFeaturedWorks.mock.results,
+        ...fetchExhibits.mock.results,
+      ].map((result) => Promise.resolve(result.value).catch(() => undefined)),
     );
   });
 }
@@ -119,10 +133,25 @@ beforeEach(() => {
   session.displayName = null;
   fetchProgram.mockReset();
   fetchExhibit.mockReset();
+  fetchFeaturedWorks.mockReset();
+  fetchExhibits.mockReset();
+  replace.mockReset();
   fetchProgram.mockResolvedValue(null);
   fetchExhibit.mockResolvedValue(null);
+  fetchFeaturedWorks.mockResolvedValue([]);
+  fetchExhibits.mockResolvedValue({ works: [], total: 0 });
+  window.location.hash = "";
+  localStorage.clear();
   clearContentCache();
   HTMLElement.prototype.scrollIntoView = vi.fn();
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  })) as unknown as typeof window.matchMedia;
+  vi.stubGlobal("ResizeObserver", TestObserver);
+  vi.stubGlobal("IntersectionObserver", TestObserver);
 });
 
 afterEach(() => {
@@ -273,16 +302,52 @@ describe("MuseumPage", () => {
     ).toBe("/account/submit/");
   });
 
-  it("leaves highlights, the hall and browse empty, in mockup order", async () => {
+  it("hero category link preselects the browse filter", async () => {
+    window.location.hash = "#browse?category=sound_design";
+    render(<MuseumPage />);
+    await settleLoads();
+
+    const chip = screen.getByRole("radio", { name: "Sound Design" });
+    expect(chip.getAttribute("data-state")).toBe("on");
+    expect(chip.className).toContain("bg-theme-red");
+    expect(chip.className).toContain("text-white");
+    expect(
+      screen.getByRole("radio", { name: "All" }).getAttribute("data-state"),
+    ).toBe("off");
+  });
+
+  it("opens exhibit detail from a highlight or a browse card", async () => {
+    const highlightId = "11111111-1111-4111-8111-111111111111";
+    const browseId = "22222222-2222-4222-8222-222222222222";
+    fetchFeaturedWorks.mockResolvedValue([
+      makeWork({ id: highlightId, title: "Sunrise", like_count: 3 }),
+    ]);
+    fetchExhibits.mockResolvedValue({
+      works: [makeWork({ id: browseId, title: "Lantern", like_count: 1 })],
+      total: 1,
+    });
+    render(<MuseumPage />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Sunrise" }));
+    expect(replace).toHaveBeenCalledWith(
+      `/programs/bsemc/museum/?exhibit=${highlightId}`,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Lantern" }));
+    expect(replace).toHaveBeenCalledWith(
+      `/programs/bsemc/museum/?exhibit=${browseId}`,
+    );
+  });
+
+  it("keeps the hall empty between highlights and browse", async () => {
     render(<MuseumPage />);
     await settleLoads();
 
     const ids = ["highlights", "museum-3d", "browse", "share"];
     const nodes = ids.map((id) => document.getElementById(id));
     expect(nodes.every((node) => node instanceof HTMLElement)).toBe(true);
-    for (const id of ["highlights", "museum-3d", "browse"]) {
-      expect(document.getElementById(id)?.childElementCount).toBe(0);
-    }
+    expect(document.getElementById("highlights")?.childElementCount).toBe(0);
+    expect(document.getElementById("museum-3d")?.childElementCount).toBe(0);
+    expect(screen.getByRole("radio", { name: "All" })).toBeTruthy();
     const hero = screen.getByRole("heading", { name: "Virtual Museum" });
     expect(
       hero.compareDocumentPosition(nodes[0]!) &

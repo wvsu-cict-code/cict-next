@@ -6,7 +6,9 @@ import { container } from "@/components/PageHeader";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useContent } from "@/lib/cms/useContent";
 import { fetchExhibit } from "@/lib/museum/queries";
+import { BrowseExhibits } from "./BrowseExhibits";
 import { ExhibitDetail } from "./ExhibitDetail";
+import { Highlights } from "./Highlights";
 import { HowItWorks } from "./HowItWorks";
 import { MuseumHero } from "./MuseumHero";
 import { ProgramStrip } from "./ProgramStrip";
@@ -35,6 +37,12 @@ export function MuseumPage() {
     );
   }
 
+  function openExhibit(workId: string) {
+    const next = new URLSearchParams(params.toString());
+    next.set("exhibit", workId);
+    router.replace(`/programs/bsemc/museum/?${next.toString()}`);
+  }
+
   return (
     <div className="bg-surface">
       {unavailable ? (
@@ -52,10 +60,14 @@ export function MuseumPage() {
 
       <MuseumHero />
       <ProgramStrip />
-      {/* Anchors for highlights, the 3D hall and browse until those sections land. */}
-      <section id="highlights" className="scroll-mt-24" />
+      <section id="highlights" className="scroll-mt-24">
+        <Highlights onVisit={openExhibit} />
+      </section>
+      {/* The 3D hall lands in a later task. */}
       <section id="museum-3d" className="scroll-mt-24" />
-      <section id="browse" className="scroll-mt-24" />
+      <section id="browse" className="scroll-mt-24">
+        <BrowseExhibits onOpen={openExhibit} />
+      </section>
       <section id="share" className="bg-surface scroll-mt-24">
         <div
           className={`${container} grid gap-6 py-16 md:py-20 lg:grid-cols-2 lg:gap-8`}
