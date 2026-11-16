@@ -536,6 +536,7 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean };
       is_wvsu_email: { Args: { email: string }; Returns: boolean };
       restrict_signup_to_wvsu: { Args: { event: Json }; Returns: Json };
+      submissions_storage_bytes: { Args: never; Returns: number };
     };
     Enums: {
       exhibit_category:

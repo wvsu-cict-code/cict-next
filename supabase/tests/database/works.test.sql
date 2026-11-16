@@ -35,7 +35,7 @@ insert into public.student_works
    submitted_by, status, rejection_reason, visible, like_count, featured, sort_order)
 values
   ('dddddddd-0000-4000-8000-000000000005', '2026-01-01 00:00:00+00',
-   'pgtap A approved', 'A', 'd', 'digital_art', 'https://cdn.test/5.webp', 10, 10,
+   'pgtap A approved', 'A', 'd', 'digital_art', 'https://cdn.test/storage/v1/object/public/submissions/aaaaaaaa-0000-4000-8000-000000000001/dddddddd-0000-4000-8000-000000000005/a.webp', 10, 10,
    'aaaaaaaa-0000-4000-8000-000000000001', 'approved', null, true, 7, true, 3);
 
 -- ------------------------------------------------------------
@@ -82,7 +82,7 @@ insert into public.student_works
    submitted_by, status, featured, like_count, visible, rejection_reason, reviewed_at)
 values
   ('eeeeeeee-0000-4000-8000-000000000006', '2000-01-01 00:00:00+00',
-   'pgtap A insert', 'A', 'd', 'digital_art', 'https://cdn.test/6.webp', 10, 10,
+   'pgtap A insert', 'A', 'd', 'digital_art', 'https://cdn.test/storage/v1/object/public/submissions/aaaaaaaa-0000-4000-8000-000000000001/eeeeeeee-0000-4000-8000-000000000006/a.webp', 10, 10,
    'aaaaaaaa-0000-4000-8000-000000000001', 'approved', true, 99, false, 'x', now());
 
 select results_eq(
@@ -146,14 +146,15 @@ select is(count(*)::int, 0, 'student cannot update another student''s work') fro
 
 -- A has two active works; three more reach the quota of five
 insert into public.student_works
-  (title, student, description, category, image_url, image_width, image_height, submitted_by)
-select 'pgtap A quota ' || n, 'A', 'd', 'digital_art', 'https://cdn.test/q.webp', 10, 10,
-       'aaaaaaaa-0000-4000-8000-000000000001'
-from generate_series(1, 3) n;
+  (id, title, student, description, category, image_url, image_width, image_height, submitted_by)
+select id, 'pgtap A quota ' || n, 'A', 'd', 'digital_art',
+       'https://cdn.test/storage/v1/object/public/submissions/aaaaaaaa-0000-4000-8000-000000000001/' || id || '/a.webp',
+       10, 10, 'aaaaaaaa-0000-4000-8000-000000000001'
+from (select n, ('eeeeeeee-0000-4000-8000-00000000010' || n)::uuid as id from generate_series(1, 3) n) q;
 
 select throws_ok(
-  $$insert into public.student_works (title, student, description, category, image_url, image_width, image_height, submitted_by)
-    values ('pgtap A sixth', 'A', 'd', 'digital_art', 'https://cdn.test/8.webp', 10, 10, 'aaaaaaaa-0000-4000-8000-000000000001')$$,
+  $$insert into public.student_works (id, title, student, description, category, image_url, image_width, image_height, submitted_by)
+    values ('eeeeeeee-0000-4000-8000-000000000008', 'pgtap A sixth', 'A', 'd', 'digital_art', 'https://cdn.test/storage/v1/object/public/submissions/aaaaaaaa-0000-4000-8000-000000000001/eeeeeeee-0000-4000-8000-000000000008/a.webp', 10, 10, 'aaaaaaaa-0000-4000-8000-000000000001')$$,
   'P0001',
   'quota_reached',
   'sixth active submission raises quota_reached'
@@ -169,8 +170,8 @@ set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', 'aaaaaaaa-0000-4000-8000-000000000001', 'role', 'authenticated')::text, true);
 
 select lives_ok(
-  $$insert into public.student_works (title, student, description, category, image_url, image_width, image_height, submitted_by)
-    values ('pgtap A after reject', 'A', 'd', 'digital_art', 'https://cdn.test/9.webp', 10, 10, 'aaaaaaaa-0000-4000-8000-000000000001')$$,
+  $$insert into public.student_works (id, title, student, description, category, image_url, image_width, image_height, submitted_by)
+    values ('eeeeeeee-0000-4000-8000-000000000009', 'pgtap A after reject', 'A', 'd', 'digital_art', 'https://cdn.test/storage/v1/object/public/submissions/aaaaaaaa-0000-4000-8000-000000000001/eeeeeeee-0000-4000-8000-000000000009/a.webp', 10, 10, 'aaaaaaaa-0000-4000-8000-000000000001')$$,
   'rejected works do not count toward the quota'
 );
 

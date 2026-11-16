@@ -8,9 +8,11 @@
 //
 // Self-service sign-up only accepts @wvsu.edu.ph addresses (the
 // restrict_signup_to_wvsu auth hook). Admins with any other email address
-// can only be created here: the script marks them with
-// app_metadata.cms_admin, which only the secret key can set and which the
-// hook lets through. Being an admin is still decided by admin_users alone.
+// can only be created here. The admin API does not run the before-user-created
+// hook, so app_metadata.cms_admin is a safeguard rather than what lets the
+// account through; it is also the exemption the email-change guard honours,
+// so these admins can keep a non-WVSU address. Only the secret key can set it.
+// Being an admin is still decided by admin_users alone.
 
 import { createClient } from "@supabase/supabase-js";
 

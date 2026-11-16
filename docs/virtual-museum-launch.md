@@ -20,11 +20,16 @@ Dashboard) before the museum goes live.
     - `https://<school-site>/account/confirm/` (confirmation and
       password-reset links land here);
     - the CMS URL, for example `https://<cms-site>/**`.
+- [ ] **Push the database changes**: `supabase db push` from the repo root,
+      linked to the hosted project. This also applies
+      `20261116021000_museum_email_change_guard.sql`, which stops students
+      from changing their account email (or a pending email change) to a
+      non-`@wvsu.edu.ph` address after sign-up. Admins are exempt.
 - [ ] **Before User Created hook** (Authentication → Hooks → "Before User
       Created"): enable it, type Postgres, schema `public`, function
       `restrict_signup_to_wvsu`. The function and its grants come from
-      `supabase/migrations/20261116020000_museum_accounts.sql`, so push the
-      migrations first.
+      `supabase/migrations/20261116020000_museum_accounts.sql`, so the database
+      changes must be pushed first (previous step).
 - [ ] **Email templates** (Authentication → Emails → Templates):
   - "Confirm signup": subject `Confirm your WVSU CICT account`, body from
     `supabase/templates/confirmation.html`;
@@ -38,11 +43,6 @@ Dashboard) before the museum goes live.
       total storage is 1 GB (the budget the site shows) and the global
       per-file upload limit is at least 20 MB (videos and audio are up to
       20 MB).
-- [ ] **Push the database changes**: `supabase db push` from the repo root,
-      linked to the hosted project. This also applies
-      `20261116021000_museum_email_change_guard.sql`, which stops students
-      from changing their account email (or a pending email change) to a
-      non-`@wvsu.edu.ph` address after sign-up. Admins are exempt.
 - [ ] **Admins with non-WVSU addresses**: create them with
       `npm run cms:create-admin -- <email> <password>`. Signing up through
       the site only works with an `@wvsu.edu.ph` address.
