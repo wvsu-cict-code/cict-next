@@ -97,7 +97,7 @@ export function PlayerRig({
   const onMoveRef = useRef(onPlayerMove);
   const startGlideRef = useRef<(to: Player) => void>(() => {});
   const aimed = useRef<string | null>(null);
-  const homeReady = useRef(false);
+  const homeTickSeen = useRef(homeTick);
 
   function publish(next: Player) {
     player.current = next;
@@ -145,12 +145,11 @@ export function PlayerRig({
   }, [target, targetToken, layout]);
 
   useEffect(() => {
-    // A remounted hall already starts at the entrance. Only a later Exit
-    // glides there, so a stale home tick cannot cancel a visit.
-    if (!homeReady.current) {
-      homeReady.current = true;
-      return;
-    }
+    // A remounted hall already starts at the entrance. Glide home only when
+    // Exit changes the tick. Strict Mode replays this effect on the same
+    // instance, and that replay must not cancel a visit.
+    if (homeTickSeen.current === homeTick) return;
+    homeTickSeen.current = homeTick;
     const spawn = layoutRef.current.spawn;
     startGlideRef.current({
       x: spawn.x,
