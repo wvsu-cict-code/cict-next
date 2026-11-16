@@ -5,7 +5,7 @@ export type Player = { x: number; z: number; yaw: number; pitch: number };
 const RADIUS = 0.35;
 const BASE_SPEED = 3;
 const PITCH_LIMIT = 1.1;
-const STAND_DISTANCE = 2.6;
+export const STAND_DISTANCE = 2.6;
 
 /** Yaw 0 looks toward −z. Positive yaw turns toward −x. */
 function lookVector(yaw: number): { x: number; z: number } {
@@ -93,14 +93,17 @@ export function exhibitInView(
   return bestId;
 }
 
-export function standInFront(slot: HallSlot): {
+export function standInFront(
+  slot: HallSlot,
+  distance = STAND_DISTANCE,
+): {
   x: number;
   z: number;
   yaw: number;
 } {
   const intoHall = slot.side === "left" ? 1 : -1;
   return {
-    x: slot.x + intoHall * STAND_DISTANCE,
+    x: slot.x + intoHall * distance,
     z: slot.z,
     yaw: intoHall === 1 ? Math.PI / 2 : -Math.PI / 2,
   };
