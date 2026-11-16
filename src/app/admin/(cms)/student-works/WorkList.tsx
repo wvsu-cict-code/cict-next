@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/admin/icons";
+import { Switch } from "@/components/ui/switch";
 import type { StudentWork } from "@/lib/cms/content";
 import { CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { tileImage } from "@/lib/studentWorks/layout";
@@ -18,10 +19,15 @@ export default function WorkList({
   works: initial,
   onReorder,
   onToggleVisible,
+  onToggleFeatured,
+  canReorder = true,
 }: {
   works: StudentWork[];
   onReorder(ids: string[]): Result;
   onToggleVisible(id: string, visible: boolean): Result;
+  onToggleFeatured?(id: string, featured: boolean): Result;
+  /** Drag and move controls. The list page turns this on for Approved only. */
+  canReorder?: boolean;
 }) {
   const [works, setWorks] = useState(initial);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +42,23 @@ export default function WorkList({
     const result = await onReorder(next.map((w) => w.id));
     if (result.error) {
       setWorks(previous);
+      setError(result.error);
+    }
+  }
+
+  async function feature(work: StudentWork, featured: boolean) {
+    if (!onToggleFeatured) return;
+    setError(null);
+    setWorks((list) =>
+      list.map((w) => (w.id === work.id ? { ...w, featured } : w)),
+    );
+    const result = await onToggleFeatured(work.id, featured);
+    if (result.error) {
+      setWorks((list) =>
+        list.map((w) =>
+          w.id === work.id ? { ...w, featured: work.featured } : w,
+        ),
+      );
       setError(result.error);
     }
   }
@@ -68,12 +91,15 @@ export default function WorkList({
           return (
             <li
               key={work.id}
-              draggable
+              draggable={canReorder}
               onDragStart={() => {
-                dragFrom.current = index;
+                if (canReorder) dragFrom.current = index;
               }}
-              onDragOver={(e) => e.preventDefault()}
+              onDragOver={(e) => {
+                if (canReorder) e.preventDefault();
+              }}
               onDrop={(e) => {
+                if (!canReorder) return;
                 e.preventDefault();
                 const from = dragFrom.current;
                 dragFrom.current = null;
@@ -81,13 +107,15 @@ export default function WorkList({
               }}
               className="border-line flex items-center gap-3 rounded-xl border bg-white p-2 pr-3"
             >
-              <span
-                aria-hidden="true"
-                className="text-ink-soft/50 cursor-grab px-1 select-none"
-                title="Drag to reorder"
-              >
-                ⋮⋮
-              </span>
+              {canReorder && (
+                <span
+                  aria-hidden="true"
+                  className="text-ink-soft/50 cursor-grab px-1 select-none"
+                  title="Drag to reorder"
+                >
+                  ⋮⋮
+                </span>
+              )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={image.src}
@@ -119,6 +147,9 @@ export default function WorkList({
                 <p className="text-ink-soft truncate text-sm">{work.student}</p>
                 <p className="text-ink-soft/80 mt-0.5 flex items-center gap-2 text-xs">
                   <span>{CATEGORY_SINGULAR[work.category]}</span>
+                  <span className="bg-paper rounded px-1.5 py-0.5 font-medium">
+                    {work.submitted_by ? "Student" : "Admin"}
+                  </span>
                   {!work.visible && (
                     <span className="rounded bg-amber-100 px-1.5 py-0.5 font-medium text-amber-800">
                       Hidden
@@ -127,6 +158,14 @@ export default function WorkList({
                 </p>
               </div>
               <div className="flex shrink-0 items-center">
+                <label className="mr-1 flex items-center gap-2">
+                  <span className="text-ink-soft text-xs font-medium">Featured</span>
+                  <Switch
+                    checked={work.featured}
+                    onCheckedChange={(checked) => void feature(work, checked)}
+                    aria-label={`Featured ${work.title}`}
+                  />
+                </label>
                 <button
                   type="button"
                   className={buttonClass}
@@ -135,24 +174,28 @@ export default function WorkList({
                 >
                   <Icon name={work.visible ? "eye" : "eye-off"} className="h-[18px] w-[18px]" />
                 </button>
-                <button
-                  type="button"
-                  className={buttonClass}
-                  aria-label={`Move ${work.title} up`}
-                  disabled={index === 0}
-                  onClick={() => void reorder(index, index - 1)}
-                >
-                  <Icon name="chevron" className="h-[18px] w-[18px] rotate-180" />
-                </button>
-                <button
-                  type="button"
-                  className={buttonClass}
-                  aria-label={`Move ${work.title} down`}
-                  disabled={index === works.length - 1}
-                  onClick={() => void reorder(index, index + 1)}
-                >
-                  <Icon name="chevron" className="h-[18px] w-[18px]" />
-                </button>
+                {canReorder && (
+                  <>
+                    <button
+                      type="button"
+                      className={buttonClass}
+                      aria-label={`Move ${work.title} up`}
+                      disabled={index === 0}
+                      onClick={() => void reorder(index, index - 1)}
+                    >
+                      <Icon name="chevron" className="h-[18px] w-[18px] rotate-180" />
+                    </button>
+                    <button
+                      type="button"
+                      className={buttonClass}
+                      aria-label={`Move ${work.title} down`}
+                      disabled={index === works.length - 1}
+                      onClick={() => void reorder(index, index + 1)}
+                    >
+                      <Icon name="chevron" className="h-[18px] w-[18px]" />
+                    </button>
+                  </>
+                )}
               </div>
             </li>
           );

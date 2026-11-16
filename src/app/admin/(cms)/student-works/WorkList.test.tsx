@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { StudentWork } from "@/lib/cms/content";
+import StatusTabs from "./StatusTabs";
 import WorkList from "./WorkList";
 
 afterEach(cleanup);
@@ -110,5 +111,60 @@ describe("WorkList", () => {
     render(<WorkList works={works} onReorder={vi.fn()} onToggleVisible={onToggleVisible} />);
     fireEvent.click(screen.getByRole("button", { name: "Hide Work a" }));
     await waitFor(() => expect(onToggleVisible).toHaveBeenCalledWith("a", false));
+  });
+
+  it("shows the pending count and only allows reordering on Approved", async () => {
+    const queue = [
+      work("a", { submitted_by: "student-1", featured: false }),
+      work("b", { submitted_by: null, featured: true, status: "pending" }),
+    ];
+    const onToggleFeatured = vi.fn().mockResolvedValue({});
+
+    const { unmount } = render(
+      <>
+        <StatusTabs status="pending" pendingCount={4} />
+        <WorkList
+          works={queue}
+          canReorder={false}
+          onReorder={vi.fn()}
+          onToggleVisible={vi.fn()}
+          onToggleFeatured={onToggleFeatured}
+        />
+      </>,
+    );
+
+    const pending = screen.getByRole("link", { name: /Pending/ });
+    expect(pending.textContent).toContain("4");
+    expect(pending.getAttribute("href")).toBe("/admin/student-works?status=pending");
+    expect(screen.getByRole("link", { name: "Approved" }).getAttribute("href")).toBe(
+      "/admin/student-works?status=approved",
+    );
+    expect(screen.queryByRole("button", { name: "Move Work a up" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Move Work a down" })).toBeNull();
+    expect(screen.getByText("Student")).toBeTruthy();
+    expect(screen.getByText("Admin")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("switch", { name: "Featured Work a" }));
+    await waitFor(() => expect(onToggleFeatured).toHaveBeenCalledWith("a", true));
+
+    unmount();
+    render(
+      <>
+        <StatusTabs status="approved" pendingCount={4} />
+        <WorkList
+          works={queue}
+          canReorder
+          onReorder={vi.fn()}
+          onToggleVisible={vi.fn()}
+          onToggleFeatured={vi.fn()}
+        />
+      </>,
+    );
+    expect(
+      (screen.getByRole("button", { name: "Move Work a up" }) as HTMLButtonElement).disabled,
+    ).toBe(true);
+    expect(
+      (screen.getByRole("button", { name: "Move Work a down" }) as HTMLButtonElement).disabled,
+    ).toBe(false);
   });
 });

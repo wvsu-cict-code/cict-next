@@ -12,6 +12,7 @@ import {
 import type { FormState } from "@/lib/cms/forms";
 import type { StudentWork } from "@/lib/cms/content";
 import {
+  CATEGORIES,
   CATEGORY_MEDIA,
   CATEGORY_SINGULAR,
   type Category,
@@ -55,6 +56,9 @@ export default function WorkForm({ work, action }: WorkFormProps) {
   const [orientationTouched, setOrientationTouched] = useState(false);
 
   const image = imageOf(work);
+  const keepsUploadedVideo = Boolean(work?.video_url);
+  const categoryOptions =
+    work?.category === "sound_design" ? CATEGORIES : ADMIN_CATEGORIES;
   const youtubeDefault = work?.youtube_id
     ? youtubeWatchUrl(work.youtube_id, work.orientation ?? "landscape")
     : "";
@@ -71,7 +75,7 @@ export default function WorkForm({ work, action }: WorkFormProps) {
             label="Category"
             name="category"
             defaultValue={category}
-            options={ADMIN_CATEGORIES.map((value) => ({
+            options={categoryOptions.map((value) => ({
               value,
               label: CATEGORY_SINGULAR[value],
             }))}
@@ -129,8 +133,13 @@ export default function WorkForm({ work, action }: WorkFormProps) {
               <TextField
                 label="YouTube link"
                 name="youtube_url"
-                required
+                required={!keepsUploadedVideo}
                 defaultValue={youtubeDefault}
+                hint={
+                  keepsUploadedVideo
+                    ? "Leave this blank to keep the uploaded video."
+                    : undefined
+                }
                 onValueChange={(value) => {
                   if (orientationTouched) return;
                   setOrientation(
@@ -153,12 +162,24 @@ export default function WorkForm({ work, action }: WorkFormProps) {
               />
               <WorkImageField
                 name="image"
-                label="Thumbnail (optional)"
+                label={keepsUploadedVideo ? "Poster" : "Thumbnail (optional)"}
                 withZoom={false}
-                hint="Recommended for vertical videos. Without one, the site uses YouTube's thumbnail."
+                hint={
+                  keepsUploadedVideo
+                    ? "Shown before the uploaded video plays."
+                    : "Recommended for vertical videos. Without one, the site uses YouTube's thumbnail."
+                }
                 defaultValue={image}
               />
             </>
+          )}
+          {media === "audio" && (
+            <WorkImageField
+              name="image"
+              label="Cover"
+              withZoom={false}
+              defaultValue={image}
+            />
           )}
           <TextField
             label="Portfolio link (optional)"

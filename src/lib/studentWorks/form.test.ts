@@ -82,6 +82,37 @@ describe("parseStudentWork", () => {
     });
   });
 
+  it("keeps an uploaded webm when the form has no YouTube link", () => {
+    const result = parseStudentWork(
+      form({
+        category: "animation",
+        youtube_url: "",
+        orientation: "vertical",
+        featured: "on",
+      }),
+      { video_url: "https://cdn.test/clip.webm", orientation: "vertical" },
+    );
+    expect(result).toMatchObject({
+      values: {
+        category: "animation",
+        featured: true,
+        youtube_id: null,
+        orientation: "vertical",
+        image_url: image.image_url,
+      },
+    });
+  });
+
+  it("allows saving an existing sound design work", () => {
+    const result = parseStudentWork(form({ category: "sound_design" }), {
+      category: "sound_design",
+      audio_url: "https://cdn.test/track.webm",
+    });
+    expect(result).toMatchObject({
+      values: { category: "sound_design", youtube_id: null, store_url: null },
+    });
+  });
+
   it("parses videos", () => {
     const v = values({
       category: "short_film",
@@ -155,6 +186,12 @@ describe("parseStudentWork", () => {
     const data = form({});
     data.delete("visible");
     expect(parseStudentWork(data)).toMatchObject({ values: { visible: false } });
+  });
+
+  it("stores a blank original as null", () => {
+    expect(
+      values({ image: JSON.stringify({ ...image, original_url: "" }) }).original_url,
+    ).toBeNull();
   });
 
   it("rejects malformed image uploads", () => {

@@ -5,7 +5,13 @@ import PageHeader, { SecondaryLink } from "@/components/admin/PageHeader";
 import SavedNotice from "@/components/admin/SavedNotice";
 import { requireAdmin } from "@/lib/cms/auth";
 import { siteUrl } from "@/lib/site";
-import { deleteStudentWork, updateStudentWork } from "../actions";
+import {
+  approveStudentWork,
+  deleteStudentWork,
+  rejectStudentWork,
+  updateStudentWork,
+} from "../actions";
+import ReviewPanel from "../ReviewPanel";
 import WorkForm from "../WorkForm";
 
 export const metadata: Metadata = {
@@ -55,6 +61,13 @@ export default async function EditStudentWorkPage({
         }
       />
       {saved && <SavedNotice />}
+      {work.submitted_by && work.status === "pending" && (
+        <ReviewPanel
+          work={work}
+          onApprove={approveStudentWork}
+          onReject={rejectStudentWork}
+        />
+      )}
       <WorkForm work={work} action={updateStudentWork.bind(null, work.id)} />
     </>
   );
