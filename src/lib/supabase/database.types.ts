@@ -313,6 +313,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       programs: {
         Row: {
           careers: string[];
@@ -513,6 +534,7 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: never; Returns: boolean };
+      restrict_signup_to_wvsu: { Args: { event: Json }; Returns: Json };
     };
     Enums: {
       exhibit_category:

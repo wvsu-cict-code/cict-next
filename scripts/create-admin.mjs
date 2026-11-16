@@ -5,6 +5,12 @@
 //
 // Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY in .env.local.
 // The secret key bypasses RLS, so keep it out of the browser and out of git.
+//
+// Self-service sign-up only accepts @wvsu.edu.ph addresses (the
+// restrict_signup_to_wvsu auth hook). Admins with any other email address
+// can only be created here: the script marks them with
+// app_metadata.cms_admin, which only the secret key can set and which the
+// hook lets through. Being an admin is still decided by admin_users alone.
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -47,6 +53,7 @@ let user = await findUserByEmail(email);
 if (user) {
   const { error } = await supabase.auth.admin.updateUserById(user.id, {
     password,
+    app_metadata: { cms_admin: true },
   });
   if (error) throw error;
   console.log(`Updated password for existing user ${email}`);
@@ -55,6 +62,7 @@ if (user) {
     email,
     password,
     email_confirm: true,
+    app_metadata: { cms_admin: true },
   });
   if (error) throw error;
   user = data.user;
