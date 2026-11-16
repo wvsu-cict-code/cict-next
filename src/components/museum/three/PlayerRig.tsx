@@ -2,8 +2,15 @@
 
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Raycaster, Vector2, type Object3D } from "three";
-import { HALL } from "@/lib/museum/hall";
+import {
+  Raycaster,
+  Vector2,
+  type Camera,
+  type Object3D,
+  type PerspectiveCamera,
+} from "three";
+import type { HallSlot } from "@/lib/museum/hall";
+import { placeCamera, viewingDistance } from "@/lib/museum/camera";
 import {
   applyLook,
   standInFront,
@@ -36,17 +43,11 @@ function mixAngle(from: number, to: number, t: number): number {
   return from + delta * t;
 }
 
-function placeCamera(
-  camera: {
-    position: { set(x: number, y: number, z: number): void };
-    rotation: { order: string; y: number; x: number };
-  },
-  player: Player,
-) {
-  camera.position.set(player.x, HALL.eyeHeight, player.z);
-  camera.rotation.order = "YXZ";
-  camera.rotation.y = player.yaw;
-  camera.rotation.x = -player.pitch;
+/** Where to stand so the whole frame fits this camera's view. */
+function viewpoint(slot: HallSlot, camera: Camera): Player {
+  const lens = camera as Partial<PerspectiveCamera>;
+  const distance = viewingDistance(slot, lens.fov ?? NaN, lens.aspect ?? NaN);
+  return { ...standInFront(slot, distance), pitch: 0 };
 }
 
 function exhibitIdOf(object: Object3D): string | null {
@@ -136,13 +137,12 @@ export function PlayerRig({
     if (!target) return;
     const slot = layout.slots.find((item) => item.workId === target);
     if (!slot) return;
-    const stand = standInFront(slot);
-    startGlideRef.current({ x: stand.x, z: stand.z, yaw: stand.yaw, pitch: 0 });
+    startGlideRef.current(viewpoint(slot, camera));
     const aim = `${target}:${targetToken}`;
     if (aimed.current === aim) return;
     aimed.current = aim;
     onFocusRef.current(target);
-  }, [target, targetToken, layout]);
+  }, [target, targetToken, layout, camera]);
 
   useEffect(() => {
     // A remounted hall already starts at the entrance. Glide home only when
@@ -247,13 +247,7 @@ export function PlayerRig({
       if (!id) return;
       const slot = layoutRef.current.slots.find((item) => item.workId === id);
       if (!slot) return;
-      const stand = standInFront(slot);
-      startGlideRef.current({
-        x: stand.x,
-        z: stand.z,
-        yaw: stand.yaw,
-        pitch: 0,
-      });
+      startGlideRef.current(viewpoint(slot, camera));
       onFocusRef.current(id);
     }
 
