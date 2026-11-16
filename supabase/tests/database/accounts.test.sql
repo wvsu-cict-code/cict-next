@@ -4,7 +4,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(14);
+select plan(20);
 
 -- Checked before this file adds users: the migration backfilled a profile
 -- for every account that existed before the profiles table.
@@ -128,6 +128,50 @@ select is(
   (select display_name from public.profiles where user_id = 'bbbbbbbb-0000-4000-8000-000000000002'),
   'pgtap-b',
   'a user cannot update another user''s profile'
+);
+
+-- ------------------------------------------------------------
+-- Email changes stay on @wvsu.edu.ph (guard_wvsu_email_change)
+-- ------------------------------------------------------------
+insert into auth.users (instance_id, id, aud, role, email, raw_app_meta_data) values
+  ('00000000-0000-0000-0000-000000000000', 'cccccccc-0000-4000-8000-000000000003', 'authenticated', 'authenticated',
+   'pgtap-admin@example.com', '{}'),
+  ('00000000-0000-0000-0000-000000000000', 'dddddddd-0000-4000-8000-000000000004', 'authenticated', 'authenticated',
+   'pgtap-cms@example.com', '{"cms_admin": true}');
+insert into public.admin_users (user_id) values ('cccccccc-0000-4000-8000-000000000003');
+
+select throws_ok(
+  $$update auth.users set email = 'pgtap-a@gmail.com' where id = 'aaaaaaaa-0000-4000-8000-000000000001'$$,
+  '42501',
+  'Use your WVSU email address (@wvsu.edu.ph).',
+  'a student cannot change their email to gmail'
+);
+
+select throws_ok(
+  $$update auth.users set email_change = 'pgtap-a@gmail.com' where id = 'aaaaaaaa-0000-4000-8000-000000000001'$$,
+  '42501',
+  'Use your WVSU email address (@wvsu.edu.ph).',
+  'a pending email_change to gmail is refused'
+);
+
+select lives_ok(
+  $$update auth.users set email_change = 'pgtap-a2@WVSU.edu.ph', email = 'pgtap-a3@wvsu.edu.ph' where id = 'aaaaaaaa-0000-4000-8000-000000000001'$$,
+  'a student can change to another wvsu address'
+);
+
+select lives_ok(
+  $$update auth.users set email_change = '', last_sign_in_at = now() where id = 'aaaaaaaa-0000-4000-8000-000000000001'$$,
+  'clearing a pending email_change is allowed'
+);
+
+select lives_ok(
+  $$update auth.users set email = 'pgtap-admin2@gmail.com', email_change = 'pgtap-admin3@gmail.com' where id = 'cccccccc-0000-4000-8000-000000000003'$$,
+  'an admin can change to any address'
+);
+
+select lives_ok(
+  $$update auth.users set email = 'pgtap-cms2@gmail.com' where id = 'dddddddd-0000-4000-8000-000000000004'$$,
+  'a cms_admin account can change to any address'
 );
 
 select * from finish();

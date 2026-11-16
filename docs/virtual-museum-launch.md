@@ -39,7 +39,10 @@ Dashboard) before the museum goes live.
       per-file upload limit is at least 20 MB (videos and audio are up to
       20 MB).
 - [ ] **Push the database changes**: `supabase db push` from the repo root,
-      linked to the hosted project.
+      linked to the hosted project. This also applies
+      `20261116021000_museum_email_change_guard.sql`, which stops students
+      from changing their account email (or a pending email change) to a
+      non-`@wvsu.edu.ph` address after sign-up. Admins are exempt.
 - [ ] **Admins with non-WVSU addresses**: create them with
       `npm run cms:create-admin -- <email> <password>`. Signing up through
       the site only works with an `@wvsu.edu.ph` address.
