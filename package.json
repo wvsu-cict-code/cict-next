@@ -13,7 +13,8 @@
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
     "cms:create-admin": "node --env-file=.env.local scripts/create-admin.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:db": "supabase test db"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
