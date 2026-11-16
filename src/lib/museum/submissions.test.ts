@@ -18,7 +18,7 @@ function mockClient(opts: {
   uploadError?: boolean;
 } = {}) {
   const calls: string[] = [];
-  const uploads: { path: string; contentType?: string }[] = [];
+  const uploads: { path: string; contentType?: string; bodyType?: string }[] = [];
   const removed: string[][] = [];
   let row: Record<string, unknown> | null = null;
   const result = () => ({ error: opts.dbError ?? null });
@@ -27,11 +27,11 @@ function mockClient(opts: {
       from: () => ({
         upload: async (
           path: string,
-          _f: File,
+          f: File,
           o: { contentType?: string },
         ) => {
           calls.push("upload");
-          uploads.push({ path, contentType: o.contentType });
+          uploads.push({ path, contentType: o.contentType, bodyType: f.type });
           return { error: opts.uploadError ? new Error("x") : null };
         },
         remove: async (paths: string[]) => {
@@ -159,6 +159,21 @@ describe("createSubmission", () => {
         "You already have 5 works in the museum or waiting for review. Withdraw or delete one to submit another.",
     });
     expect(m.removed).toHaveLength(1);
+  });
+
+  it("sends each body with the declared type, whatever the picked file reports", async () => {
+    const m = mockClient();
+    await createSubmission(m.client, USER, {
+      ...artDraft,
+      category: "sound_design",
+      image: file("a.webp", ""),
+      media: file("s.webm", "video/webm"),
+    });
+    expect(m.uploads.map((u) => [u.contentType, u.bodyType])).toEqual([
+      ["image/webp", "image/webp"],
+      ["audio/webm", "audio/webm"],
+    ]);
+    expect(m.uploads.map((u) => u.path.split(".").pop())).toEqual(["webp", "webm"]);
   });
 
   it("stores video with poster and orientation", async () => {

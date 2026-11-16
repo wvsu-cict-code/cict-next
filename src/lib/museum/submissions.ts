@@ -115,22 +115,19 @@ function messageFor(error: { code?: string; message?: string }): string {
     : GENERIC_ERROR;
 }
 
-function extensionOf(file: File, fallback: string): string {
-  return file.type === "image/webp" ? "webp" : fallback;
-}
-
 async function upload(
   client: Client,
   folder: string,
   file: File,
-  ext: string,
-  contentType: string,
+  contentType: "image/webp" | "video/webm" | "audio/webm",
   uploaded: string[],
 ): Promise<string | null> {
+  const ext = contentType === "image/webp" ? "webp" : "webm";
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;
   const { error } = await client.storage
     .from(SUBMISSIONS_BUCKET)
-    .upload(path, file, { contentType });
+    // storage-js sends a File's own type, not options.contentType, so re-wrap.
+    .upload(path, new Blob([file], { type: contentType }), { contentType });
   if (error) return null;
   uploaded.push(path);
   return client.storage.from(SUBMISSIONS_BUCKET).getPublicUrl(path).data
@@ -183,7 +180,6 @@ async function prepareMedia(
       client,
       folder,
       draft.image,
-      extensionOf(draft.image, "webp"),
       "image/webp",
       uploaded,
     );
@@ -197,7 +193,6 @@ async function prepareMedia(
       client,
       folder,
       draft.media,
-      "webm",
       kind === "video" ? "video/webm" : "audio/webm",
       uploaded,
     );
