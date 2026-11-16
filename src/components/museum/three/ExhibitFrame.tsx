@@ -12,10 +12,15 @@ import {
   type Category,
 } from "@/lib/museum/categories";
 import type { HallSlot } from "@/lib/museum/hall";
-import type { MuseumSettings } from "@/lib/museum/settings";
 import { exhibitImageUrl, useExhibitTexture } from "./useExhibitTexture";
 
 const OSWALD = "/fonts/Oswald.ttf";
+
+/** Height of a frame's centre, and how far it stands off the wall, in metres. */
+const FRAME_Y = 1.7;
+const STAND_OFF = 0.08;
+/** The label's size and the height of its centre, just under eye level. */
+const PLACARD = { width: 0.86, height: 0.46, y: 1.42 } as const;
 
 type Attrs = Record<string, string | number>;
 type IconNode = [string, Attrs][];
@@ -158,46 +163,51 @@ function useCategoryArt(category: Category): CanvasTexture {
   return texture;
 }
 
-function Label({
-  title,
-  student,
-  width,
-}: {
-  title: string;
-  student: string;
-  width: number;
-}) {
+/** Wall label beside the frame, at eye height, like a museum caption. */
+function Placard({ title, student }: { title: string; student: string }) {
   const invalidate = useThree((state) => state.invalidate);
-  const plate = Math.min(width, 1.9);
+  const inner = PLACARD.width - 0.16;
   return (
-    <group position={[0, 0, 0.02]}>
+    <group>
       <mesh>
-        <boxGeometry args={[plate, 0.36, 0.02]} />
-        <meshStandardMaterial color="#1c2128" roughness={0.5} />
+        <boxGeometry args={[PLACARD.width, PLACARD.height, 0.03]} />
+        <meshStandardMaterial color="#1c2128" roughness={0.6} />
+      </mesh>
+      <mesh position={[-PLACARD.width / 2 + 0.012, 0, 0.002]}>
+        <boxGeometry args={[0.024, PLACARD.height, 0.03]} />
+        <meshBasicMaterial color="#e8661f" toneMapped={false} />
       </mesh>
       <Suspense fallback={null}>
         <Text
-          position={[0, 0.06, 0.02]}
+          position={[-PLACARD.width / 2 + 0.1, PLACARD.height / 2 - 0.07, 0.02]}
           font={OSWALD}
-          fontSize={0.07}
-          color="#f4f1ec"
-          maxWidth={plate - 0.12}
-          anchorX="center"
-          anchorY="middle"
-          textAlign="center"
+          fontSize={0.075}
+          color="#f6f3ee"
+          maxWidth={inner}
+          lineHeight={1.15}
+          anchorX="left"
+          anchorY="top"
+          textAlign="left"
+          // Two lines of title. A longer one is cut off, not spilled on the wall.
+          clipRect={[0, -0.19, inner, 0]}
           onSync={() => invalidate()}
         >
           {title}
         </Text>
         <Text
-          position={[0, -0.08, 0.02]}
+          position={[
+            -PLACARD.width / 2 + 0.1,
+            -PLACARD.height / 2 + 0.07,
+            0.02,
+          ]}
           font={OSWALD}
           fontSize={0.05}
-          color="#d5cfc6"
-          maxWidth={plate - 0.12}
-          anchorX="center"
-          anchorY="middle"
-          textAlign="center"
+          color="#c9c3ba"
+          maxWidth={inner}
+          anchorX="left"
+          anchorY="bottom"
+          textAlign="left"
+          clipRect={[0, 0, inner, 0.07]}
           onSync={() => invalidate()}
         >
           {student}
@@ -240,47 +250,96 @@ function WaveformMarker() {
   );
 }
 
+/** Light pools are decoration. A click on one must not pick the exhibit. */
+function noRaycast() {}
+
+function LightPool({
+  position,
+  rotation,
+  size,
+  glow,
+  opacity,
+}: {
+  position: [number, number, number];
+  rotation?: [number, number, number];
+  size: [number, number];
+  glow: Texture;
+  opacity: number;
+}) {
+  return (
+    <mesh position={position} rotation={rotation} raycast={noRaycast}>
+      <planeGeometry args={size} />
+      <meshBasicMaterial
+        map={glow}
+        color="#ffe7c7"
+        transparent
+        opacity={opacity}
+        depthWrite={false}
+        toneMapped={false}
+        polygonOffset
+        polygonOffsetFactor={-2}
+        polygonOffsetUnits={-2}
+      />
+    </mesh>
+  );
+}
+
 export function ExhibitFrame({
   slot,
   work,
-  quality,
+  glow,
 }: {
   slot: HallSlot;
   work: StudentWork;
-  quality: MuseumSettings["quality"];
+  /** Shared soft-falloff texture for the light pools. */
+  glow: Texture;
 }) {
   const loaded = useExhibitTexture(exhibitImageUrl(work));
   const placeholder = useCategoryArt(work.category);
   const photo: Texture | null = loaded && loaded !== "failed" ? loaded : null;
   const map = photo ?? placeholder;
-  const low = quality === "low";
-  const into = slot.side === "left" ? 0.08 : -0.08;
+  const into = slot.side === "left" ? STAND_OFF : -STAND_OFF;
   const media = CATEGORY_MEDIA[work.category];
 
   return (
     <group
-      position={[slot.x + into, 1.7, slot.z]}
+      position={[slot.x + into, FRAME_Y, slot.z]}
       rotation={[0, slot.rotationY, 0]}
       userData={{ exhibitId: work.id }}
     >
-      <mesh position={[0, 0, -0.03]} castShadow>
+      {/* The track lamp's wash on the wall, and its spill on the floor. */}
+      <LightPool
+        position={[0, 0.35, -STAND_OFF + 0.01]}
+        size={[slot.width + 3.4, slot.height + 3.2]}
+        glow={glow}
+        opacity={0.85}
+      />
+      <LightPool
+        position={[0, -FRAME_Y + 0.012, 1.15]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        size={[slot.width + 1.8, 2.9]}
+        glow={glow}
+        opacity={0.4}
+      />
+      <mesh position={[0, 0, -0.03]}>
         <boxGeometry args={[slot.width + 0.16, slot.height + 0.16, 0.04]} />
-        <meshStandardMaterial color="#1c2128" roughness={0.55} />
+        <meshStandardMaterial color="#14181e" roughness={0.55} />
       </mesh>
+      {/* Unlit, so the work shows its own colours whatever the hall lighting. */}
       <mesh position={[0, 0, 0.012]}>
         <planeGeometry args={[slot.width, slot.height]} />
-        <meshStandardMaterial
-          map={map}
-          roughness={0.55}
-          emissive={low ? "#ffffff" : "#000000"}
-          emissiveMap={low ? map : null}
-          emissiveIntensity={low ? 0.85 : 0}
-        />
+        <meshBasicMaterial map={map} toneMapped={false} />
       </mesh>
       {media === "video" ? <PlayMarker /> : null}
       {media === "audio" ? <WaveformMarker /> : null}
-      <group position={[0, -slot.height / 2 - 0.28, 0]}>
-        <Label title={work.title} student={work.student} width={slot.width} />
+      <group
+        position={[
+          slot.width / 2 + 0.2 + PLACARD.width / 2,
+          PLACARD.y - FRAME_Y,
+          -STAND_OFF + 0.02,
+        ]}
+      >
+        <Placard title={work.title} student={work.student} />
       </group>
     </group>
   );

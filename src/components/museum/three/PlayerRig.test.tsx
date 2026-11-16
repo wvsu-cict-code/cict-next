@@ -10,7 +10,7 @@ vi.mock("@react-three/fiber", () => ({
     selector({
       camera: {
         position: { set() {} },
-        rotation: { order: "YXZ", y: 0, x: 0 },
+        rotation: { set() {} },
       },
       gl: { domElement: document.createElement("canvas") },
       scene: { children: [] },
