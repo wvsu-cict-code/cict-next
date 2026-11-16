@@ -7,6 +7,7 @@ import { programPhoto } from "@/components/HomePrograms";
 import { PageHeader, container } from "@/components/PageHeader";
 import { ProgramBrochure, ProgramSection } from "@/components/ProgramBrochure";
 import { ProgramCareers } from "@/components/ProgramCareers";
+import { MuseumBanner } from "@/components/museum/MuseumBanner";
 import { StudentWorksSection } from "@/components/studentWorks/StudentWorksSection";
 import { fetchProgram } from "@/lib/cms/content";
 import { useContent } from "@/lib/cms/useContent";
@@ -95,7 +96,12 @@ export default function ProgramDetails() {
           curriculumUrl={uploadedFileUrl(program.curriculum_pdf_url)}
         />
 
-        {program.id === "bsemc" && <StudentWorksSection />}
+        {program.id === "bsemc" ? (
+          <>
+            <MuseumBanner />
+            <StudentWorksSection />
+          </>
+        ) : null}
       </div>
     </div>
   );
