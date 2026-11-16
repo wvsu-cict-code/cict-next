@@ -8,16 +8,10 @@ import {
   MonitorSmartphone,
   type LucideIcon,
 } from "lucide-react";
+import type { Enums } from "@/lib/supabase/database.types";
 
-/** Must match the `exhibit_category` database enum, value for value and in order. */
-export type Category =
-  | "game"
-  | "interactive_media"
-  | "xr_3d"
-  | "digital_art"
-  | "animation"
-  | "short_film"
-  | "sound_design";
+/** The `exhibit_category` database enum; CATEGORIES lists it in the same order. */
+export type Category = Enums<"exhibit_category">;
 
 export const CATEGORIES: readonly Category[] = [
   "game",

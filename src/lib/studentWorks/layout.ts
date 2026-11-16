@@ -1,13 +1,14 @@
 import type { StudentWork } from "@/lib/cms/content";
+import { CATEGORY_MEDIA } from "@/lib/museum/categories";
 import { youtubeThumbnail } from "@/lib/studentWorks/youtube";
 
 export type Size = { width: number; height: number };
 
 /** Width ÷ height of a work's tile. */
 export function workAspect(
-  work: Pick<StudentWork, "kind" | "orientation" | "image_width" | "image_height">,
+  work: Pick<StudentWork, "category" | "orientation" | "image_width" | "image_height">,
 ): number {
-  if (work.kind === "video") return work.orientation === "vertical" ? 9 / 16 : 16 / 9;
+  if (CATEGORY_MEDIA[work.category] === "video") return work.orientation === "vertical" ? 9 / 16 : 16 / 9;
   if (work.image_width && work.image_height) return work.image_width / work.image_height;
   return 4 / 3;
 }

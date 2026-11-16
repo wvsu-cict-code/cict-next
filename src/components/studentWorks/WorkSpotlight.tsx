@@ -2,16 +2,11 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { StudentWork } from "@/lib/cms/content";
+import { CATEGORY_MEDIA, CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { classifySwipe } from "@/lib/studentWorks/gestures";
 import { isWebUrl, storeLabel } from "@/lib/studentWorks/links";
 import { youtubeEmbedUrl } from "@/lib/studentWorks/youtube";
 import { ZoomableImage } from "./ZoomableImage";
-
-const KIND_LABEL: Record<StudentWork["kind"], string> = {
-  art: "Digital art",
-  video: "Video",
-  game: "Game",
-};
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])';
@@ -196,6 +191,7 @@ export function WorkSpotlight({
   }
 
   const titleId = `spotlight-title-${work.id}`;
+  const media = CATEGORY_MEDIA[work.category];
   const portfolio =
     work.portfolio_url && isWebUrl(work.portfolio_url)
       ? work.portfolio_url
@@ -246,7 +242,7 @@ export function WorkSpotlight({
             start.current = null;
           }}
         >
-          {work.kind === "video" && work.youtube_id ? (
+          {media === "video" && work.youtube_id ? (
             // The width comes from the height cap (the media cell's height
             // less its padding), so the frame keeps its true ratio.
             <div
@@ -265,10 +261,10 @@ export function WorkSpotlight({
                 className="h-full w-full rounded"
               />
             </div>
-          ) : work.kind === "art" ? (
+          ) : media === "image" ? (
             <ZoomableImage work={work} onZoomedChange={setZoomed} />
           ) : (
-            // Game screenshots don't zoom.
+            // Covers and video thumbnails don't zoom.
             // eslint-disable-next-line @next/next/no-img-element -- the static site can't optimize images
             <img
               key={work.id}
@@ -293,7 +289,7 @@ export function WorkSpotlight({
             style={{ touchAction: "pan-y" }}
           >
             <p className="text-orange-light text-sm tracking-widest uppercase">
-              {KIND_LABEL[work.kind]}
+              {CATEGORY_SINGULAR[work.category]}
             </p>
             <h2 id={titleId} className="font-major text-3xl leading-tight">
               {work.title}
@@ -304,7 +300,7 @@ export function WorkSpotlight({
                 {work.description}
               </p>
             ) : null}
-            {work.kind === "game" && store ? (
+            {media === "cover_link" && store ? (
               <a
                 href={store}
                 target="_blank"

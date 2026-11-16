@@ -74,7 +74,7 @@ describe("StudentWorksSection", () => {
   it("shows the heading and one button per work in order", () => {
     const works = [
       makeWork({ id: "a", title: "First", student: "Ana" }),
-      makeWork({ id: "b", title: "Second", student: "Ben", kind: "game" }),
+      makeWork({ id: "b", title: "Second", student: "Ben", category: "game" }),
       makeWork({ id: "c", title: "Third", student: "Cy" }),
     ];
     state({ works, total: 3 });

@@ -346,21 +346,30 @@ export type Database = {
       };
       student_works: {
         Row: {
+          audio_url: string | null;
+          category: Database["public"]["Enums"]["exhibit_category"];
           created_at: string;
           description: string;
+          featured: boolean;
           id: string;
           image_height: number | null;
           image_url: string | null;
           image_width: number | null;
-          kind: Database["public"]["Enums"]["student_work_kind"];
+          like_count: number;
           orientation: Database["public"]["Enums"]["video_orientation"] | null;
           original_url: string | null;
           portfolio_url: string | null;
+          rejection_reason: string | null;
+          reviewed_at: string | null;
           sort_order: number;
+          status: Database["public"]["Enums"]["review_status"];
           store_url: string | null;
           student: string;
+          submitted_at: string | null;
+          submitted_by: string | null;
           title: string;
           updated_at: string;
+          video_url: string | null;
           visible: boolean;
           youtube_id: string | null;
           zoom_height: number | null;
@@ -368,21 +377,30 @@ export type Database = {
           zoom_width: number | null;
         };
         Insert: {
+          audio_url?: string | null;
+          category: Database["public"]["Enums"]["exhibit_category"];
           created_at?: string;
           description: string;
+          featured?: boolean;
           id?: string;
           image_height?: number | null;
           image_url?: string | null;
           image_width?: number | null;
-          kind: Database["public"]["Enums"]["student_work_kind"];
+          like_count?: number;
           orientation?: Database["public"]["Enums"]["video_orientation"] | null;
           original_url?: string | null;
           portfolio_url?: string | null;
+          rejection_reason?: string | null;
+          reviewed_at?: string | null;
           sort_order?: number;
+          status?: Database["public"]["Enums"]["review_status"];
           store_url?: string | null;
           student: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
           title: string;
           updated_at?: string;
+          video_url?: string | null;
           visible?: boolean;
           youtube_id?: string | null;
           zoom_height?: number | null;
@@ -390,21 +408,30 @@ export type Database = {
           zoom_width?: number | null;
         };
         Update: {
+          audio_url?: string | null;
+          category?: Database["public"]["Enums"]["exhibit_category"];
           created_at?: string;
           description?: string;
+          featured?: boolean;
           id?: string;
           image_height?: number | null;
           image_url?: string | null;
           image_width?: number | null;
-          kind?: Database["public"]["Enums"]["student_work_kind"];
+          like_count?: number;
           orientation?: Database["public"]["Enums"]["video_orientation"] | null;
           original_url?: string | null;
           portfolio_url?: string | null;
+          rejection_reason?: string | null;
+          reviewed_at?: string | null;
           sort_order?: number;
+          status?: Database["public"]["Enums"]["review_status"];
           store_url?: string | null;
           student?: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
           title?: string;
           updated_at?: string;
+          video_url?: string | null;
           visible?: boolean;
           youtube_id?: string | null;
           zoom_height?: number | null;
@@ -421,9 +448,17 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean };
     };
     Enums: {
+      exhibit_category:
+        | "game"
+        | "interactive_media"
+        | "xr_3d"
+        | "digital_art"
+        | "animation"
+        | "short_film"
+        | "sound_design";
       post_category: "news" | "announcement";
       post_status: "draft" | "published";
-      student_work_kind: "art" | "video" | "game";
+      review_status: "pending" | "approved" | "rejected";
       video_orientation: "landscape" | "vertical";
     };
     CompositeTypes: {
@@ -558,9 +593,18 @@ export const Constants = {
   },
   public: {
     Enums: {
+      exhibit_category: [
+        "game",
+        "interactive_media",
+        "xr_3d",
+        "digital_art",
+        "animation",
+        "short_film",
+        "sound_design",
+      ],
       post_category: ["news", "announcement"],
       post_status: ["draft", "published"],
-      student_work_kind: ["art", "video", "game"],
+      review_status: ["pending", "approved", "rejected"],
       video_orientation: ["landscape", "vertical"],
     },
   },

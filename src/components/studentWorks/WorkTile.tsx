@@ -2,21 +2,16 @@
 
 import { useState, type Ref } from "react";
 import type { StudentWork } from "@/lib/cms/content";
+import { CATEGORY_MEDIA, CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { tileImage, workAspect } from "@/lib/studentWorks/layout";
 import { isYouTubePlaceholder } from "@/lib/studentWorks/youtube";
-
-const TYPE_LABELS: Record<StudentWork["kind"], string> = {
-  art: "Digital art",
-  video: "Video",
-  game: "Game",
-};
 
 /** Height of the caption under the image; the wall's layout relies on it. */
 export const CAPTION_HEIGHT = 52;
 
 /** Intrinsic size hint so the browser reserves space before the image loads. */
 function imageSize(work: StudentWork) {
-  if (work.kind === "video") {
+  if (CATEGORY_MEDIA[work.category] === "video") {
     return work.orientation === "vertical"
       ? { width: 720, height: 1280 }
       : { width: 1280, height: 720 };
@@ -69,9 +64,9 @@ export function WorkTile({
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
         />
         <span className="bg-navy/80 absolute top-2 left-2 rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.06em] text-white uppercase">
-          {TYPE_LABELS[work.kind]}
+          {CATEGORY_SINGULAR[work.category]}
         </span>
-        {work.kind === "video" ? (
+        {CATEGORY_MEDIA[work.category] === "video" ? (
           <span
             data-play
             aria-hidden="true"
@@ -101,7 +96,7 @@ export function WorkTile({
 
 /** CSS aspect-ratio value; verticals read "9 / 16" exactly. */
 function workAspectRatio(work: StudentWork): string {
-  if (work.kind === "video") {
+  if (CATEGORY_MEDIA[work.category] === "video") {
     return work.orientation === "vertical" ? "9 / 16" : "16 / 9";
   }
   return `${workAspect(work)}`;

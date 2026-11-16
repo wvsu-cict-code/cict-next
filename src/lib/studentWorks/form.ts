@@ -1,3 +1,8 @@
+import {
+  CATEGORIES,
+  CATEGORY_MEDIA,
+  type Category,
+} from "@/lib/museum/categories";
 import type { TablesInsert } from "@/lib/supabase/database.types";
 import { isWebUrl } from "@/lib/studentWorks/links";
 import { parseYouTubeUrl } from "@/lib/studentWorks/youtube";
@@ -17,7 +22,10 @@ export type StudentWorkValues = Omit<
   "id" | "sort_order" | "created_at" | "updated_at"
 >;
 
-const KINDS = ["art", "game", "video"] as const;
+/** Admins add sound design only through student submissions. */
+export const ADMIN_CATEGORIES: readonly Category[] = CATEGORIES.filter(
+  (category) => category !== "sound_design",
+);
 const IMAGE_ERROR = "The image upload didn't finish. Upload it again.";
 
 function text(formData: FormData, name: string): string {
@@ -80,8 +88,11 @@ export function parseStudentWork(
   const description = text(formData, "description");
   if (!description) return { error: "Enter a short description." };
 
-  const kind = KINDS.find((k) => k === text(formData, "kind"));
-  if (!kind) return { error: "Choose a type." };
+  const category = ADMIN_CATEGORIES.find(
+    (c) => c === text(formData, "category"),
+  );
+  if (!category) return { error: "Choose a category." };
+  const media = CATEGORY_MEDIA[category];
 
   const rawImage = text(formData, "image");
   let image: UploadedWorkImage | null = null;
@@ -94,19 +105,19 @@ export function parseStudentWork(
   let orientation: "vertical" | "landscape" | null = null;
   let storeUrl: string | null = null;
 
-  if (kind === "art" && !image) return { error: "Upload the artwork." };
-  if (kind === "game") {
-    if (!image) return { error: "Upload a screenshot of the game." };
+  if (media === "image" && !image) return { error: "Upload the artwork." };
+  if (media === "cover_link") {
+    if (!image) return { error: "Upload a screenshot or cover image." };
     const store = text(formData, "store_url");
     if (!isWebUrl(store)) {
       return {
         error:
-          "Enter the link where the game is published (itch.io, Google Play, App Store…).",
+          "Enter the link where the work is published (itch.io, Google Play, App Store…).",
       };
     }
     storeUrl = store;
   }
-  if (kind === "video") {
+  if (media === "video") {
     const parsed = parseYouTubeUrl(text(formData, "youtube_url"));
     if (!parsed) return { error: "Enter a YouTube link to the video." };
     youtubeId = parsed.id;
@@ -124,11 +135,11 @@ export function parseStudentWork(
     return { error: "The portfolio link must start with http:// or https://." };
   }
 
-  // Only digital art zooms; video thumbnails and game screenshots don't.
-  const keepZoom = kind === "art";
+  // Only digital art zooms; video thumbnails and covers don't.
+  const keepZoom = media === "image";
   return {
     values: {
-      kind,
+      category,
       title,
       student,
       description,
@@ -144,6 +155,7 @@ export function parseStudentWork(
       store_url: storeUrl,
       portfolio_url: portfolio || null,
       visible: formData.get("visible") === "on",
+      featured: formData.get("featured") === "on",
     },
   };
 }

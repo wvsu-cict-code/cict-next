@@ -9,6 +9,7 @@ import {
   GALLERIES,
   galleryOf,
 } from "@/lib/museum/categories";
+import { Constants } from "@/lib/supabase/database.types";
 
 describe("galleries", () => {
   it("every category belongs to exactly one gallery", () => {
@@ -29,6 +30,10 @@ describe("galleries", () => {
 });
 
 describe("categories", () => {
+  it("lists the exhibit_category enum values in database order", () => {
+    expect(CATEGORIES).toEqual(Constants.public.Enums.exhibit_category);
+  });
+
   it("every category has a label, singular label, media rule, icon and tint", () => {
     for (const category of CATEGORIES) {
       expect(CATEGORY_LABELS[category]).toBeTruthy();

@@ -6,7 +6,7 @@ import { WorkTile } from "./WorkTile";
 afterEach(cleanup);
 
 const video = makeWork({
-  kind: "video",
+  category: "short_film",
   title: "Reel",
   image_url: null,
   youtube_id: "abc123",
@@ -28,10 +28,15 @@ describe("WorkTile", () => {
     expect(screen.getByText("Digital art")).toBeTruthy();
     expect(container.querySelector("[data-play]")).toBeNull();
     rerender(<WorkTile work={video} onOpen={() => {}} />);
-    expect(screen.getByText("Video")).toBeTruthy();
+    expect(screen.getByText("Short film")).toBeTruthy();
     expect(
       container.querySelector("[data-play]")?.getAttribute("aria-hidden"),
     ).toBe("true");
+    rerender(
+      <WorkTile work={{ ...video, category: "animation" }} onOpen={() => {}} />,
+    );
+    expect(screen.getByText("Animation")).toBeTruthy();
+    expect(container.querySelector("[data-play]")).not.toBeNull();
   });
 
   it("falls back from maxresdefault to hqdefault", () => {

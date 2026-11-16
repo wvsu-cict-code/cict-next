@@ -10,7 +10,16 @@ import {
 function work(overrides: Partial<StudentWork> = {}): StudentWork {
   return {
     id: "w1",
-    kind: "art",
+    category: "digital_art",
+    status: "approved",
+    featured: false,
+    like_count: 0,
+    submitted_by: null,
+    rejection_reason: null,
+    video_url: null,
+    audio_url: null,
+    submitted_at: null,
+    reviewed_at: null,
     title: "Piece",
     student: "Juan",
     description: "",
@@ -35,8 +44,8 @@ function work(overrides: Partial<StudentWork> = {}): StudentWork {
 
 describe("workAspect", () => {
   it("uses fixed ratios for videos", () => {
-    expect(workAspect(work({ kind: "video", orientation: "vertical" }))).toBe(9 / 16);
-    expect(workAspect(work({ kind: "video", orientation: "landscape" }))).toBe(16 / 9);
+    expect(workAspect(work({ category: "short_film", orientation: "vertical" }))).toBe(9 / 16);
+    expect(workAspect(work({ category: "short_film", orientation: "landscape" }))).toBe(16 / 9);
   });
 
   it("uses image dimensions for art", () => {
@@ -49,7 +58,7 @@ describe("workAspect", () => {
 });
 
 describe("tileImage", () => {
-  const video = { kind: "video" as const, image_url: null, youtube_id: "abc" };
+  const video = { category: "short_film" as const, image_url: null, youtube_id: "abc" };
 
   it("uses maxres with an hq fallback for landscape videos", () => {
     expect(tileImage(work({ ...video, orientation: "landscape" }))).toEqual({

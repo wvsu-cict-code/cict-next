@@ -10,7 +10,16 @@ function work(id: string, over: Partial<StudentWork> = {}): StudentWork {
     id,
     title: `Work ${id}`,
     student: `Student ${id}`,
-    kind: "art",
+    category: "digital_art",
+    status: "approved",
+    featured: false,
+    like_count: 0,
+    submitted_by: null,
+    rejection_reason: null,
+    video_url: null,
+    audio_url: null,
+    submitted_at: null,
+    reviewed_at: null,
     description: "",
     visible: true,
     sort_order: 0,
@@ -33,8 +42,8 @@ function work(id: string, over: Partial<StudentWork> = {}): StudentWork {
 
 const works = [
   work("a"),
-  work("b", { kind: "video", visible: false, image_url: null, youtube_id: "abcdefghijk", orientation: "landscape" }),
-  work("c", { kind: "game" }),
+  work("b", { category: "short_film", visible: false, image_url: null, youtube_id: "abcdefghijk", orientation: "landscape" }),
+  work("c", { category: "game" }),
 ];
 
 function titles() {
@@ -49,7 +58,7 @@ describe("WorkList", () => {
     expect(titles()).toEqual(["Work a", "Work b", "Work c"]);
     expect(screen.getByText("Student a")).toBeTruthy();
     expect(screen.getByText("Digital art")).toBeTruthy();
-    expect(screen.getByText("Video")).toBeTruthy();
+    expect(screen.getByText("Short film")).toBeTruthy();
     expect(screen.getByText("Game")).toBeTruthy();
     expect(screen.getAllByText("Hidden")).toHaveLength(1);
     expect(document.querySelectorAll("img")).toHaveLength(3);

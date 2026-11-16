@@ -4,17 +4,12 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { Icon } from "@/components/admin/icons";
 import type { StudentWork } from "@/lib/cms/content";
+import { CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { tileImage } from "@/lib/studentWorks/layout";
 import { moveItem } from "@/lib/studentWorks/order";
 import { isYouTubePlaceholder } from "@/lib/studentWorks/youtube";
 
 type Result = Promise<{ error?: string }>;
-
-const KIND_LABELS: Record<StudentWork["kind"], string> = {
-  art: "Digital art",
-  video: "Video",
-  game: "Game",
-};
 
 const buttonClass =
   "text-ink-soft hover:bg-paper hover:text-ink flex h-9 w-9 items-center justify-center rounded-lg transition-colors disabled:pointer-events-none disabled:opacity-30";
@@ -123,7 +118,7 @@ export default function WorkList({
                 </Link>
                 <p className="text-ink-soft truncate text-sm">{work.student}</p>
                 <p className="text-ink-soft/80 mt-0.5 flex items-center gap-2 text-xs">
-                  <span>{KIND_LABELS[work.kind]}</span>
+                  <span>{CATEGORY_SINGULAR[work.category]}</span>
                   {!work.visible && (
                     <span className="rounded bg-amber-100 px-1.5 py-0.5 font-medium text-amber-800">
                       Hidden

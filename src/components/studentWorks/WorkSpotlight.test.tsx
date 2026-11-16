@@ -63,7 +63,7 @@ describe("WorkSpotlight", () => {
 
   it("shows a store button for a game", () => {
     const url = "https://x.itch.io/game";
-    setup({ works: [makeWork({ kind: "game", store_url: url })], index: 0, total: 1 });
+    setup({ works: [makeWork({ category: "game", store_url: url })], index: 0, total: 1 });
     const link = screen.getByRole("link", { name: storeLabel(url) });
     expect(link.getAttribute("href")).toBe(url);
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
@@ -75,7 +75,7 @@ describe("WorkSpotlight", () => {
   ])("embeds a %s video", (orientation, ratio) => {
     setup({
       works: [
-        makeWork({ kind: "video", youtube_id: "abcdefghijk", orientation: orientation as "vertical" }),
+        makeWork({ category: "short_film", youtube_id: "abcdefghijk", orientation: orientation as "vertical" }),
       ],
       index: 0,
       total: 1,
@@ -87,7 +87,7 @@ describe("WorkSpotlight", () => {
 
   it("sizes a vertical frame from its height cap so it stays 9:16", () => {
     setup({
-      works: [makeWork({ kind: "video", youtube_id: "abcdefghijk", orientation: "vertical" })],
+      works: [makeWork({ category: "short_film", youtube_id: "abcdefghijk", orientation: "vertical" })],
       index: 0,
       total: 1,
     });
@@ -99,7 +99,7 @@ describe("WorkSpotlight", () => {
 
   it("shows a game screenshot without zoom controls", () => {
     setup({
-      works: [makeWork({ kind: "game", title: "Quest", student: "Dee", store_url: "https://x.itch.io/q", zoom_url: "https://cdn.test/q-zoom.webp" })],
+      works: [makeWork({ category: "game", title: "Quest", student: "Dee", store_url: "https://x.itch.io/q", zoom_url: "https://cdn.test/q-zoom.webp" })],
       index: 0,
       total: 1,
     });
@@ -248,7 +248,7 @@ describe("WorkSpotlight", () => {
 
   it("swipes again after leaving a zoomed artwork for a video", () => {
     const works = [
-      makeWork({ id: "a", kind: "video", youtube_id: "abcdefghijk", image_url: null }),
+      makeWork({ id: "a", category: "short_film", youtube_id: "abcdefghijk", image_url: null }),
       makeWork({ id: "b", title: "Second", student: "Ben" }),
     ];
     const onIndexChange = vi.fn();
