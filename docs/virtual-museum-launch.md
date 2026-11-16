@@ -25,6 +25,11 @@ Dashboard) before the museum goes live.
       `20261116021000_museum_email_change_guard.sql`, which stops students
       from changing their account email (or a pending email change) to a
       non-`@wvsu.edu.ph` address after sign-up. Admins are exempt.
+- [ ] **Storage origin**: in the SQL editor run
+      `update public.museum_config set storage_origin = '<NEXT_PUBLIC_SUPABASE_URL without trailing slash>';`
+      The migration seeds the local value (`http://127.0.0.1:54321`). It must
+      equal the project URL the site uses (`NEXT_PUBLIC_SUPABASE_URL`), or
+      every student submission is refused with `media_not_owned`.
 - [ ] **Before User Created hook** (Authentication → Hooks → "Before User
       Created"): enable it, type Postgres, schema `public`, function
       `restrict_signup_to_wvsu`. The function and its grants come from

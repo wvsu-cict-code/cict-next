@@ -2,7 +2,7 @@
 -- public bucket, one folder per student and work; the database refuses any
 -- work that points at someone else's files.
 
--- MAX_UPLOAD_BYTES in src/lib/museum/limits.ts (20 MB)
+-- SUBMISSION_MEDIA_MAX_BYTES in src/lib/museum/limits.ts (20 MB)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'submissions',
@@ -87,6 +87,74 @@ revoke execute on function public.submissions_storage_bytes() from public, anon;
 grant execute on function public.submissions_storage_bytes() to authenticated;
 
 -- ============================================================
+-- Where this project serves its storage from. Student media URLs must start
+-- with it, so a work cannot point at another host. Set the production value
+-- after pushing (docs/virtual-museum-launch.md).
+-- ============================================================
+create table public.museum_config (
+  id boolean primary key default true check (id),
+  storage_origin text not null check (storage_origin ~ '^https?://[^/?#]+$')
+);
+
+alter table public.museum_config enable row level security;
+
+create policy "Anyone can read the museum config"
+  on public.museum_config for select
+  to anon, authenticated
+  using (true);
+
+revoke all on public.museum_config from anon, authenticated;
+grant select on public.museum_config to anon, authenticated;
+
+insert into public.museum_config (storage_origin) values ('http://127.0.0.1:54321');
+
+-- True when the url is null or points at an existing file in the caller's
+-- folder for this work. Fails closed: no config row or no signed-in user
+-- means false.
+create or replace function public.museum_media_ok(url text, work_id uuid)
+returns boolean
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+declare
+  uid text := (select auth.uid())::text;
+  origin text := (select c.storage_origin from public.museum_config c limit 1);
+  folder text;
+  prefix text;
+  file_name text;
+begin
+  if url is null then
+    return true;
+  end if;
+  if uid is null or origin is null or work_id is null then
+    return false;
+  end if;
+
+  folder := uid || '/' || work_id::text || '/';
+  prefix := origin || '/storage/v1/object/public/submissions/' || folder;
+  if left(url, length(prefix)) is distinct from prefix then
+    return false;
+  end if;
+
+  file_name := substr(url, length(prefix) + 1);
+  if file_name !~ '^[A-Za-z0-9._-]+$' then
+    return false;
+  end if;
+
+  return exists (
+    select 1
+    from storage.objects o
+    where o.bucket_id = 'submissions' and o.name = folder || file_name
+  );
+end;
+$$;
+
+revoke execute on function public.museum_media_ok(text, uuid) from public, anon;
+grant execute on function public.museum_media_ok(text, uuid) to authenticated;
+
+-- ============================================================
 -- Students may only point at their own uploads (extends the works guard)
 -- ============================================================
 create or replace function public.guard_student_work()
@@ -101,8 +169,7 @@ declare
   -- Whether this write puts the work into the student's active count
   needs_slot boolean := tg_op = 'INSERT';
   self_id uuid;
-  -- Students may only point at what they uploaded for this very work
-  own_folder text;
+  work_id uuid;
 begin
   if (select public.is_admin()) or current_user not in ('authenticated', 'anon') then
     return new;
@@ -121,16 +188,17 @@ begin
     -- Resubmitting a rejected work makes it active again
     needs_slot := old.status = 'rejected';
     self_id := old.id;
-    -- The id is immutable; settle it before checking the upload folder
-    new.id := old.id;
   end if;
 
-  own_folder := '/storage/v1/object/public/submissions/'
-    || (select auth.uid())::text || '/' || new.id::text || '/';
+  -- Students may only point at files they uploaded for this very work
+  -- (the id is immutable, so the old one names the folder on update)
+  work_id := case when tg_op = 'INSERT' then new.id else old.id end;
 
-  if (new.image_url is not null and position(own_folder in new.image_url) = 0)
-    or (new.video_url is not null and position(own_folder in new.video_url) = 0)
-    or (new.audio_url is not null and position(own_folder in new.audio_url) = 0)
+  if not (
+    public.museum_media_ok(new.image_url, work_id)
+    and public.museum_media_ok(new.video_url, work_id)
+    and public.museum_media_ok(new.audio_url, work_id)
+  )
     or new.zoom_url is not null
     or new.original_url is not null
     or new.youtube_id is not null

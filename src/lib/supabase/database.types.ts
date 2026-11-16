@@ -191,6 +191,21 @@ export type Database = {
           },
         ];
       };
+      museum_config: {
+        Row: {
+          id: boolean;
+          storage_origin: string;
+        };
+        Insert: {
+          id?: boolean;
+          storage_origin: string;
+        };
+        Update: {
+          id?: boolean;
+          storage_origin?: string;
+        };
+        Relationships: [];
+      };
       notifications: {
         Row: {
           created_at: string;
@@ -535,6 +550,10 @@ export type Database = {
     Functions: {
       is_admin: { Args: never; Returns: boolean };
       is_wvsu_email: { Args: { email: string }; Returns: boolean };
+      museum_media_ok: {
+        Args: { url: string; work_id: string };
+        Returns: boolean;
+      };
       restrict_signup_to_wvsu: { Args: { event: Json }; Returns: Json };
       submissions_storage_bytes: { Args: never; Returns: number };
     };
