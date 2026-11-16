@@ -58,6 +58,10 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ replace }),
 }));
 
+vi.mock("@/lib/museum/webgl", () => ({
+  hasWebGL: () => false,
+}));
+
 vi.mock("next/link", () => ({
   default: ({
     href,
@@ -181,7 +185,7 @@ describe("MuseumPage", () => {
     expect(opacity).toBeLessThanOrEqual(0.2);
     expect(hero?.querySelector("[style*='clip-path']")).toBeTruthy();
     expect(
-      screen
+      within(hero as HTMLElement)
         .getByRole("link", { name: "Browse Exhibits" })
         .getAttribute("href"),
     ).toBe("#browse");
@@ -338,15 +342,21 @@ describe("MuseumPage", () => {
     );
   });
 
-  it("keeps the hall empty between highlights and browse", async () => {
+  it("places the 3D section between highlights and browse", async () => {
     render(<MuseumPage />);
     await settleLoads();
+
+    const hall = document.getElementById("museum-3d");
+    expect(hall?.getAttribute("data-theme")).toBe("dark");
+    expect(hall?.textContent).toMatch(/can't display the 3D museum/i);
+    expect(hall?.querySelector("a[href='#browse']")?.textContent).toMatch(
+      /Browse Exhibits/,
+    );
 
     const ids = ["highlights", "museum-3d", "browse", "share"];
     const nodes = ids.map((id) => document.getElementById(id));
     expect(nodes.every((node) => node instanceof HTMLElement)).toBe(true);
     expect(document.getElementById("highlights")?.childElementCount).toBe(0);
-    expect(document.getElementById("museum-3d")?.childElementCount).toBe(0);
     expect(screen.getByRole("radio", { name: "All" })).toBeTruthy();
     const hero = screen.getByRole("heading", { name: "Virtual Museum" });
     expect(

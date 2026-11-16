@@ -9,6 +9,7 @@ import { fetchExhibit } from "@/lib/museum/queries";
 import { BrowseExhibits } from "./BrowseExhibits";
 import { ExhibitDetail } from "./ExhibitDetail";
 import { Highlights } from "./Highlights";
+import { MuseumSection } from "./MuseumSection";
 import { HowItWorks } from "./HowItWorks";
 import { MuseumHero } from "./MuseumHero";
 import { ProgramStrip } from "./ProgramStrip";
@@ -58,13 +59,16 @@ export function MuseumPage() {
         </div>
       ) : null}
 
-      <MuseumHero />
-      <ProgramStrip />
-      <section id="highlights" className="scroll-mt-24">
-        <Highlights onVisit={openExhibit} />
-      </section>
-      {/* The 3D hall lands in a later task. */}
-      <section id="museum-3d" className="scroll-mt-24" />
+      <MuseumSection
+        initialExhibitId={exhibitId ?? undefined}
+        onOpenDetail={openExhibit}
+      >
+        <MuseumHero />
+        <ProgramStrip />
+        <section id="highlights" className="scroll-mt-24">
+          <Highlights onVisit={openExhibit} />
+        </section>
+      </MuseumSection>
       <section id="browse" className="scroll-mt-24">
         <BrowseExhibits onOpen={openExhibit} />
       </section>

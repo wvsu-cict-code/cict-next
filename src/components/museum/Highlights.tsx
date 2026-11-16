@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent } from "react";
+import { useContext, type MouseEvent } from "react";
 import { ContentError } from "@/components/ContentState";
 import { container, Eyebrow } from "@/components/PageHeader";
 import {
@@ -13,6 +13,7 @@ import {
 import { useContent } from "@/lib/cms/useContent";
 import { fetchFeaturedWorks } from "@/lib/museum/queries";
 import { ExhibitCard } from "./ExhibitCard";
+import { MuseumContext } from "./MuseumSection";
 
 function viewAll(event: MouseEvent<HTMLAnchorElement>) {
   event.preventDefault();
@@ -26,9 +27,15 @@ function viewAll(event: MouseEvent<HTMLAnchorElement>) {
 
 /** Featured exhibits. Hidden when none are flagged. */
 export function Highlights({ onVisit }: { onVisit(workId: string): void }) {
+  const museum = useContext(MuseumContext);
   const result = useContent("featured-works", (client) =>
     fetchFeaturedWorks(client),
   );
+
+  function visit(workId: string) {
+    if (museum) museum.visitExhibit(workId);
+    else onVisit(workId);
+  }
 
   if (result.status === "loading") return null;
   if (result.status === "error") {
@@ -68,7 +75,7 @@ export function Highlights({ onVisit }: { onVisit(workId: string): void }) {
               key={work.id}
               className="basis-[83.333%] md:basis-[220px]"
             >
-              <ExhibitCard work={work} onOpen={() => onVisit(work.id)} />
+              <ExhibitCard work={work} onOpen={() => visit(work.id)} />
             </CarouselItem>
           ))}
         </CarouselContent>
