@@ -229,6 +229,92 @@ try {
     },
   );
 
+  await check("/programs/bsemc/ still opens the program page", async () => {
+    await page.goto(`${BASE}/programs/bsemc/`, { waitUntil: "networkidle0" });
+    await page
+      .waitForFunction(
+        () =>
+          [...document.querySelectorAll("h1")].some((heading) =>
+            /Entertainment and (?:Multi)?media Computing/i.test(
+              heading.textContent || "",
+            ),
+          ),
+        { timeout: 15000 },
+      )
+      .catch(() => {
+        throw new Error(
+          `heading never mentioned Entertainment and Media or Multimedia Computing on ${page.url()}`,
+        );
+      });
+  });
+
+  await check("/programs/bsemc/museum/ opens the museum", async () => {
+    await page.goto(`${BASE}/programs/bsemc/museum/`, {
+      waitUntil: "networkidle0",
+    });
+    await page
+      .waitForFunction(
+        () =>
+          [...document.querySelectorAll("h1")].some(
+            (heading) => heading.textContent.trim() === "Virtual Museum",
+          ),
+        { timeout: 15000 },
+      )
+      .catch(() => {
+        throw new Error(`h1 "Virtual Museum" never appeared on ${page.url()}`);
+      });
+  });
+
+  await check(
+    "following a link from the BSEMC page to the museum works",
+    async () => {
+      await page.goto(`${BASE}/programs/bsemc/`, { waitUntil: "networkidle0" });
+      await page.waitForFunction(
+        () =>
+          [...document.querySelectorAll("a")].some((link) =>
+            /enter the museum/i.test(link.textContent || ""),
+          ),
+        { timeout: 15000 },
+      );
+      await page.evaluate(() => {
+        const link = [...document.querySelectorAll("a")].find((item) =>
+          /enter the museum/i.test(item.textContent || ""),
+        );
+        if (!link) throw new Error("no Enter the museum link");
+        window.__beforeClick = true;
+        link.scrollIntoView();
+        link.click();
+      });
+      await page
+        .waitForFunction(
+          () =>
+            [...document.querySelectorAll("h1")].some(
+              (heading) => heading.textContent.trim() === "Virtual Museum",
+            ),
+          { timeout: 15000 },
+        )
+        .catch(() => {
+          throw new Error(`museum h1 never appeared on ${page.url()}`);
+        });
+      expect(
+        new URL(page.url()).pathname.replace(/\/$/, "") ===
+          "/programs/bsemc/museum",
+        `URL is ${page.url()}`,
+      );
+      expect(
+        await page.evaluate(() => window.__beforeClick === true),
+        "the page fully reloaded",
+      );
+    },
+  );
+
+  await check("another program URL still uses the template", async () => {
+    const bscs = await firstRow("programs", "select=name&id=eq.bscs");
+    await page.goto(`${BASE}/programs/bscs/`, { waitUntil: "networkidle0" });
+    await pageText(page, bscs.name);
+    expect(!page.url().includes("/museum"), `URL is ${page.url()}`);
+  });
+
   await check("the events and admissions pages open", async () => {
     await page.goto(`${BASE}/events/`, { waitUntil: "networkidle0" });
     await pageText(page, "Upcoming");

@@ -1,3 +1,8 @@
+import {
+  CATEGORIES,
+  CATEGORY_MEDIA,
+  type Category,
+} from "@/lib/museum/categories";
 import type { TablesInsert } from "@/lib/supabase/database.types";
 import { isWebUrl } from "@/lib/studentWorks/links";
 import { parseYouTubeUrl } from "@/lib/studentWorks/youtube";
@@ -17,7 +22,18 @@ export type StudentWorkValues = Omit<
   "id" | "sort_order" | "created_at" | "updated_at"
 >;
 
-const KINDS = ["art", "game", "video"] as const;
+/** Admins add sound design only through student submissions. */
+export const ADMIN_CATEGORIES: readonly Category[] = CATEGORIES.filter(
+  (category) => category !== "sound_design",
+);
+
+/** A row already in the database, so its uploaded media can be kept. */
+export type ExistingStudentWork = {
+  category?: Category;
+  video_url?: string | null;
+  audio_url?: string | null;
+  orientation?: "vertical" | "landscape" | null;
+};
 const IMAGE_ERROR = "The image upload didn't finish. Upload it again.";
 
 function text(formData: FormData, name: string): string {
@@ -72,6 +88,7 @@ function parseImage(raw: string): UploadedWorkImage | null {
 
 export function parseStudentWork(
   formData: FormData,
+  existing?: ExistingStudentWork | null,
 ): { values: StudentWorkValues } | { error: string } {
   const title = text(formData, "title");
   if (!title) return { error: "Enter a title." };
@@ -80,8 +97,15 @@ export function parseStudentWork(
   const description = text(formData, "description");
   if (!description) return { error: "Enter a short description." };
 
-  const kind = KINDS.find((k) => k === text(formData, "kind"));
-  if (!kind) return { error: "Choose a type." };
+  const rawCategory = text(formData, "category");
+  // New admin entries can't be sound design; an existing submission can stay one.
+  const category =
+    ADMIN_CATEGORIES.find((c) => c === rawCategory) ??
+    (existing?.category === "sound_design" && rawCategory === "sound_design"
+      ? "sound_design"
+      : undefined);
+  if (!category) return { error: "Choose a category." };
+  const media = CATEGORY_MEDIA[category];
 
   const rawImage = text(formData, "image");
   let image: UploadedWorkImage | null = null;
@@ -94,41 +118,55 @@ export function parseStudentWork(
   let orientation: "vertical" | "landscape" | null = null;
   let storeUrl: string | null = null;
 
-  if (kind === "art" && !image) return { error: "Upload the artwork." };
-  if (kind === "game") {
-    if (!image) return { error: "Upload a screenshot of the game." };
+  if (media === "image" && !image) return { error: "Upload the artwork." };
+  if (media === "cover_link") {
+    if (!image) return { error: "Upload a screenshot or cover image." };
     const store = text(formData, "store_url");
     if (!isWebUrl(store)) {
       return {
         error:
-          "Enter the link where the game is published (itch.io, Google Play, App Store…).",
+          "Enter the link where the work is published (itch.io, Google Play, App Store…).",
       };
     }
     storeUrl = store;
   }
-  if (kind === "video") {
-    const parsed = parseYouTubeUrl(text(formData, "youtube_url"));
-    if (!parsed) return { error: "Enter a YouTube link to the video." };
-    youtubeId = parsed.id;
+  if (media === "video") {
+    const youtubeText = text(formData, "youtube_url");
     const chosen = text(formData, "orientation");
-    orientation =
-      chosen === "vertical" || chosen === "landscape"
-        ? chosen
-        : parsed.isShort
-          ? "vertical"
-          : "landscape";
+    const chosenOrientation =
+      chosen === "vertical" || chosen === "landscape" ? chosen : null;
+    if (youtubeText) {
+      const parsed = parseYouTubeUrl(youtubeText);
+      if (!parsed) return { error: "Enter a YouTube link to the video." };
+      youtubeId = parsed.id;
+      orientation =
+        chosenOrientation ?? (parsed.isShort ? "vertical" : "landscape");
+    } else if (existing?.video_url) {
+      // Student films upload a webm; the YouTube field can stay empty.
+      orientation =
+        chosenOrientation ??
+        (existing.orientation === "vertical" ||
+        existing.orientation === "landscape"
+          ? existing.orientation
+          : null);
+      if (!orientation) return { error: "Choose an orientation." };
+      if (!image) return { error: "Upload a poster image." };
+    } else {
+      return { error: "Enter a YouTube link to the video." };
+    }
   }
+  if (media === "audio" && !image) return { error: "Upload a cover image." };
 
   const portfolio = text(formData, "portfolio_url");
   if (portfolio && !isWebUrl(portfolio)) {
     return { error: "The portfolio link must start with http:// or https://." };
   }
 
-  // Only digital art zooms; video thumbnails and game screenshots don't.
-  const keepZoom = kind === "art";
+  // Only digital art zooms; video thumbnails and covers don't.
+  const keepZoom = media === "image";
   return {
     values: {
-      kind,
+      category,
       title,
       student,
       description,
@@ -138,12 +176,13 @@ export function parseStudentWork(
       zoom_url: keepZoom ? (image?.zoom_url ?? null) : null,
       zoom_width: keepZoom ? (image?.zoom_width ?? null) : null,
       zoom_height: keepZoom ? (image?.zoom_height ?? null) : null,
-      original_url: image?.original_url ?? null,
+      original_url: image?.original_url || null,
       youtube_id: youtubeId,
       orientation,
       store_url: storeUrl,
       portfolio_url: portfolio || null,
       visible: formData.get("visible") === "on",
+      featured: formData.get("featured") === "on",
     },
   };
 }

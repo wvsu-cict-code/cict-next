@@ -12,11 +12,14 @@ export function contentSecurityPolicy(
   const connectSrc = ["'self'", supabaseOrigin, isDev && "ws:"]
     .filter(Boolean)
     .join(" ");
+  // Admins preview uploaded webm in the review queue.
+  const mediaSrc = ["'self'", "blob:", supabaseOrigin].filter(Boolean).join(" ");
   return `
     default-src 'self';
     script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""};
     style-src 'self' ${isDev ? "'unsafe-inline'" : `'nonce-${nonce}'`} https://fonts.googleapis.com;
     img-src 'self' blob: data: ${supabaseOrigin} https://i.ytimg.com;
+    media-src ${mediaSrc};
     font-src 'self' https://fonts.gstatic.com;
     connect-src ${connectSrc};
     object-src 'none';

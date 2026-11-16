@@ -5,6 +5,10 @@ import { youtubeEmbedUrl } from "@/lib/studentWorks/youtube";
 import { makeWork } from "./fixtures";
 import { WorkSpotlight } from "./WorkSpotlight";
 
+vi.mock("@/lib/auth/session", () => ({
+  useSession: () => ({ status: "signed-out", user: null, displayName: null }),
+}));
+
 afterEach(cleanup);
 
 type Props = Partial<Parameters<typeof WorkSpotlight>[0]>;
@@ -48,6 +52,9 @@ describe("WorkSpotlight", () => {
     expect(screen.getByText("Ana Cruz")).toBeTruthy();
     expect(screen.getByText("Morning light")).toBeTruthy();
     expect(screen.getByText("1 of 20")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Like, 0" }).getAttribute("aria-pressed")).toBe(
+      "false",
+    );
   });
 
   it("shows the portfolio link only when set", () => {
@@ -63,7 +70,7 @@ describe("WorkSpotlight", () => {
 
   it("shows a store button for a game", () => {
     const url = "https://x.itch.io/game";
-    setup({ works: [makeWork({ kind: "game", store_url: url })], index: 0, total: 1 });
+    setup({ works: [makeWork({ category: "game", store_url: url })], index: 0, total: 1 });
     const link = screen.getByRole("link", { name: storeLabel(url) });
     expect(link.getAttribute("href")).toBe(url);
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
@@ -75,7 +82,7 @@ describe("WorkSpotlight", () => {
   ])("embeds a %s video", (orientation, ratio) => {
     setup({
       works: [
-        makeWork({ kind: "video", youtube_id: "abcdefghijk", orientation: orientation as "vertical" }),
+        makeWork({ category: "short_film", youtube_id: "abcdefghijk", orientation: orientation as "vertical" }),
       ],
       index: 0,
       total: 1,
@@ -87,7 +94,7 @@ describe("WorkSpotlight", () => {
 
   it("sizes a vertical frame from its height cap so it stays 9:16", () => {
     setup({
-      works: [makeWork({ kind: "video", youtube_id: "abcdefghijk", orientation: "vertical" })],
+      works: [makeWork({ category: "short_film", youtube_id: "abcdefghijk", orientation: "vertical" })],
       index: 0,
       total: 1,
     });
@@ -99,13 +106,105 @@ describe("WorkSpotlight", () => {
 
   it("shows a game screenshot without zoom controls", () => {
     setup({
-      works: [makeWork({ kind: "game", title: "Quest", student: "Dee", store_url: "https://x.itch.io/q", zoom_url: "https://cdn.test/q-zoom.webp" })],
+      works: [makeWork({ category: "game", title: "Quest", student: "Dee", store_url: "https://x.itch.io/q", zoom_url: "https://cdn.test/q-zoom.webp" })],
       index: 0,
       total: 1,
     });
     expect(screen.getByAltText("Quest by Dee")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Zoom in" })).toBeNull();
     expect(screen.queryByTestId("zoom-viewport")).toBeNull();
+  });
+
+  it("does not change or close the exhibit while scrubbing video or audio", () => {
+    const { onIndexChange, onClose } = setup({
+      works: [
+        makeWork({ id: "a" }),
+        makeWork({
+          id: "b",
+          category: "short_film",
+          title: "Reel",
+          student: "Ana",
+          video_url: "https://cdn.test/reel.webm",
+          image_url: "https://cdn.test/poster.jpg",
+        }),
+        makeWork({ id: "c" }),
+      ],
+      index: 1,
+    });
+    const video = document.querySelector("video")!;
+    const scrubber = document.createElement("span");
+    video.appendChild(scrubber);
+    drag(video, -80, 0);
+    drag(scrubber, 0, 120);
+    expect(onIndexChange).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    cleanup();
+
+    const audioRun = setup({
+      works: [
+        makeWork({ id: "a" }),
+        makeWork({
+          id: "b",
+          category: "sound_design",
+          title: "Score",
+          student: "Ben",
+          audio_url: "https://cdn.test/score.mp3",
+          image_url: "https://cdn.test/cover.jpg",
+        }),
+      ],
+      index: 1,
+      total: 2,
+    });
+    const audio = document.querySelector("audio")!;
+    drag(audio, -80, 0);
+    drag(audio, 0, 120);
+    expect(audioRun.onIndexChange).not.toHaveBeenCalled();
+    expect(audioRun.onClose).not.toHaveBeenCalled();
+  });
+
+  it("plays a webm video and an audio work", () => {
+    setup({
+      works: [
+        makeWork({
+          category: "short_film",
+          title: "Reel",
+          student: "Ana",
+          video_url: "https://cdn.test/reel.webm",
+          image_url: "https://cdn.test/poster.jpg",
+        }),
+      ],
+      index: 0,
+      total: 1,
+    });
+    const video = document.querySelector("video");
+    expect(video).toBeTruthy();
+    expect(video!.getAttribute("src")).toBe("https://cdn.test/reel.webm");
+    expect(video!.hasAttribute("controls")).toBe(true);
+    expect(video!.hasAttribute("playsinline") || video!.playsInline).toBeTruthy();
+    expect(video!.getAttribute("poster")).toBe("https://cdn.test/poster.jpg");
+    expect(document.querySelector("iframe")).toBeNull();
+    cleanup();
+
+    setup({
+      works: [
+        makeWork({
+          category: "sound_design",
+          title: "Score",
+          student: "Ben",
+          audio_url: "https://cdn.test/score.mp3",
+          image_url: "https://cdn.test/cover.jpg",
+        }),
+      ],
+      index: 0,
+      total: 1,
+    });
+    expect(screen.getByAltText("Score by Ben").getAttribute("src")).toBe(
+      "https://cdn.test/cover.jpg",
+    );
+    const audio = document.querySelector("audio");
+    expect(audio).toBeTruthy();
+    expect(audio!.getAttribute("src")).toBe("https://cdn.test/score.mp3");
+    expect(audio!.hasAttribute("controls")).toBe(true);
   });
 
   it("renders no iframe for art", () => {
@@ -248,7 +347,7 @@ describe("WorkSpotlight", () => {
 
   it("swipes again after leaving a zoomed artwork for a video", () => {
     const works = [
-      makeWork({ id: "a", kind: "video", youtube_id: "abcdefghijk", image_url: null }),
+      makeWork({ id: "a", category: "short_film", youtube_id: "abcdefghijk", image_url: null }),
       makeWork({ id: "b", title: "Second", student: "Ben" }),
     ];
     const onIndexChange = vi.fn();

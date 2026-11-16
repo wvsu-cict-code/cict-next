@@ -232,6 +232,7 @@ describe("fetchStudentWorks", () => {
     expect(calls).toContainEqual(["from", "student_works"]);
     expect(calls).toContainEqual(["select", "*", { count: "exact" }]);
     expect(calls).toContainEqual(["eq", "visible", true]);
+    expect(calls).toContainEqual(["eq", "status", "approved"]);
     expect(calls).toContainEqual(["order", "sort_order"]);
     expect(calls).toContainEqual(["order", "created_at"]);
     expect(calls).toContainEqual(["range", 12, 23]);

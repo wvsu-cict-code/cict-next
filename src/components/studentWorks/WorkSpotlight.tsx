@@ -2,22 +2,23 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { StudentWork } from "@/lib/cms/content";
+import { LikeButton } from "@/components/museum/LikeButton";
+import { CATEGORY_MEDIA, CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { classifySwipe } from "@/lib/studentWorks/gestures";
 import { isWebUrl, storeLabel } from "@/lib/studentWorks/links";
 import { youtubeEmbedUrl } from "@/lib/studentWorks/youtube";
 import { ZoomableImage } from "./ZoomableImage";
-
-const KIND_LABEL: Record<StudentWork["kind"], string> = {
-  art: "Digital art",
-  video: "Video",
-  game: "Game",
-};
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])';
 
 const navButton =
   "inline-flex h-11 min-w-11 items-center justify-center rounded border border-white/40 px-3 text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent";
+
+/** A scrub on the player is not a swipe to the next exhibit. */
+function isPlaybackTarget(target: EventTarget | null) {
+  return target instanceof Element && target.closest("video, audio") !== null;
+}
 
 /** Full-screen view of one featured work, with next/previous and swipe. */
 export function WorkSpotlight({
@@ -144,11 +145,15 @@ export function WorkSpotlight({
   if (!work) return null;
 
   function onPointerDown(event: PointerEvent) {
-    if (!event.isPrimary) return;
+    if (!event.isPrimary || isPlaybackTarget(event.target)) return;
     start.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
   }
 
   function onPointerUp(event: PointerEvent) {
+    if (isPlaybackTarget(event.target)) {
+      start.current = null;
+      return;
+    }
     const origin = start.current;
     start.current = null;
     if (!origin || origin.id !== event.pointerId) return;
@@ -196,6 +201,7 @@ export function WorkSpotlight({
   }
 
   const titleId = `spotlight-title-${work.id}`;
+  const media = CATEGORY_MEDIA[work.category];
   const portfolio =
     work.portfolio_url && isWebUrl(work.portfolio_url)
       ? work.portfolio_url
@@ -246,7 +252,17 @@ export function WorkSpotlight({
             start.current = null;
           }}
         >
-          {work.kind === "video" && work.youtube_id ? (
+          {media === "video" && work.video_url ? (
+            <video
+              key={work.id}
+              controls
+              playsInline
+              poster={work.image_url ?? undefined}
+              src={work.video_url}
+              aria-label={`${work.title} by ${work.student}`}
+              className="max-h-[calc(55dvh-8.25rem)] max-w-full rounded lg:max-h-[calc(80vh-3.25rem)]"
+            />
+          ) : media === "video" && work.youtube_id ? (
             // The width comes from the height cap (the media cell's height
             // less its padding), so the frame keeps its true ratio.
             <div
@@ -265,10 +281,30 @@ export function WorkSpotlight({
                 className="h-full w-full rounded"
               />
             </div>
-          ) : work.kind === "art" ? (
+          ) : media === "audio" ? (
+            <div key={work.id} className="flex w-full max-w-md flex-col items-center gap-4">
+              {work.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- the static site can't optimize images
+                <img
+                  src={work.image_url}
+                  alt={`${work.title} by ${work.student}`}
+                  draggable={false}
+                  className="max-h-[calc(55dvh-8.25rem)] max-w-full rounded object-contain select-none lg:max-h-[calc(80vh-3.25rem)]"
+                />
+              ) : null}
+              {work.audio_url ? (
+                <audio
+                  controls
+                  src={work.audio_url}
+                  aria-label={`${work.title} by ${work.student}`}
+                  className="w-full"
+                />
+              ) : null}
+            </div>
+          ) : media === "image" ? (
             <ZoomableImage work={work} onZoomedChange={setZoomed} />
           ) : (
-            // Game screenshots don't zoom.
+            // Covers and video thumbnails don't zoom.
             // eslint-disable-next-line @next/next/no-img-element -- the static site can't optimize images
             <img
               key={work.id}
@@ -293,7 +329,7 @@ export function WorkSpotlight({
             style={{ touchAction: "pan-y" }}
           >
             <p className="text-orange-light text-sm tracking-widest uppercase">
-              {KIND_LABEL[work.kind]}
+              {CATEGORY_SINGULAR[work.category]}
             </p>
             <h2 id={titleId} className="font-major text-3xl leading-tight">
               {work.title}
@@ -304,7 +340,8 @@ export function WorkSpotlight({
                 {work.description}
               </p>
             ) : null}
-            {work.kind === "game" && store ? (
+            <LikeButton work={work} />
+            {media === "cover_link" && store ? (
               <a
                 href={store}
                 target="_blank"

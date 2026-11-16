@@ -60,6 +60,16 @@ describe("contentSecurityPolicy", () => {
     expect(directive(policy, "connect-src")).toBe("connect-src 'self'");
   });
 
+  it("allows media from Supabase", () => {
+    const policy = contentSecurityPolicy("abc", {
+      isDev: false,
+      supabaseOrigin: "https://x.supabase.co",
+    });
+    expect(directive(policy, "media-src")).toBe(
+      "media-src 'self' blob: https://x.supabase.co",
+    );
+  });
+
   it("allows the websocket Next's dev tools use, in development only", () => {
     const policy = contentSecurityPolicy("abc", {
       isDev: true,

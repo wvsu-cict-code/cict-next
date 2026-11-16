@@ -7,6 +7,9 @@ const hook = vi.hoisted(() => ({ value: {} as Record<string, unknown> }));
 vi.mock("@/lib/studentWorks/useStudentWorks", () => ({
   useStudentWorks: () => hook.value,
 }));
+vi.mock("@/lib/auth/session", () => ({
+  useSession: () => ({ status: "signed-out", user: null, displayName: null }),
+}));
 
 let resizeCallbacks: ResizeObserverCallback[] = [];
 let intersectCallbacks: IntersectionObserverCallback[] = [];
@@ -74,7 +77,7 @@ describe("StudentWorksSection", () => {
   it("shows the heading and one button per work in order", () => {
     const works = [
       makeWork({ id: "a", title: "First", student: "Ana" }),
-      makeWork({ id: "b", title: "Second", student: "Ben", kind: "game" }),
+      makeWork({ id: "b", title: "Second", student: "Ben", category: "game" }),
       makeWork({ id: "c", title: "Third", student: "Cy" }),
     ];
     state({ works, total: 3 });

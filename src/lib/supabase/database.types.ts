@@ -191,6 +191,62 @@ export type Database = {
           },
         ];
       };
+      museum_config: {
+        Row: {
+          id: boolean;
+          storage_origin: string;
+        };
+        Insert: {
+          id?: boolean;
+          storage_origin: string;
+        };
+        Update: {
+          id?: boolean;
+          storage_origin?: string;
+        };
+        Relationships: [];
+      };
+      notifications: {
+        Row: {
+          created_at: string;
+          id: string;
+          kind: Database["public"]["Enums"]["notification_kind"];
+          read_at: string | null;
+          reason: string | null;
+          user_id: string;
+          work_id: string | null;
+          work_title: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          kind: Database["public"]["Enums"]["notification_kind"];
+          read_at?: string | null;
+          reason?: string | null;
+          user_id: string;
+          work_id?: string | null;
+          work_title: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          kind?: Database["public"]["Enums"]["notification_kind"];
+          read_at?: string | null;
+          reason?: string | null;
+          user_id?: string;
+          work_id?: string | null;
+          work_title?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_work_id_fkey";
+            columns: ["work_id"];
+            isOneToOne: false;
+            referencedRelation: "student_works";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       pages: {
         Row: {
           body: string;
@@ -272,6 +328,27 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       programs: {
         Row: {
           careers: string[];
@@ -346,21 +423,30 @@ export type Database = {
       };
       student_works: {
         Row: {
+          audio_url: string | null;
+          category: Database["public"]["Enums"]["exhibit_category"];
           created_at: string;
           description: string;
+          featured: boolean;
           id: string;
           image_height: number | null;
           image_url: string | null;
           image_width: number | null;
-          kind: Database["public"]["Enums"]["student_work_kind"];
+          like_count: number;
           orientation: Database["public"]["Enums"]["video_orientation"] | null;
           original_url: string | null;
           portfolio_url: string | null;
+          rejection_reason: string | null;
+          reviewed_at: string | null;
           sort_order: number;
+          status: Database["public"]["Enums"]["review_status"];
           store_url: string | null;
           student: string;
+          submitted_at: string | null;
+          submitted_by: string | null;
           title: string;
           updated_at: string;
+          video_url: string | null;
           visible: boolean;
           youtube_id: string | null;
           zoom_height: number | null;
@@ -368,21 +454,30 @@ export type Database = {
           zoom_width: number | null;
         };
         Insert: {
+          audio_url?: string | null;
+          category: Database["public"]["Enums"]["exhibit_category"];
           created_at?: string;
           description: string;
+          featured?: boolean;
           id?: string;
           image_height?: number | null;
           image_url?: string | null;
           image_width?: number | null;
-          kind: Database["public"]["Enums"]["student_work_kind"];
+          like_count?: number;
           orientation?: Database["public"]["Enums"]["video_orientation"] | null;
           original_url?: string | null;
           portfolio_url?: string | null;
+          rejection_reason?: string | null;
+          reviewed_at?: string | null;
           sort_order?: number;
+          status?: Database["public"]["Enums"]["review_status"];
           store_url?: string | null;
           student: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
           title: string;
           updated_at?: string;
+          video_url?: string | null;
           visible?: boolean;
           youtube_id?: string | null;
           zoom_height?: number | null;
@@ -390,21 +485,30 @@ export type Database = {
           zoom_width?: number | null;
         };
         Update: {
+          audio_url?: string | null;
+          category?: Database["public"]["Enums"]["exhibit_category"];
           created_at?: string;
           description?: string;
+          featured?: boolean;
           id?: string;
           image_height?: number | null;
           image_url?: string | null;
           image_width?: number | null;
-          kind?: Database["public"]["Enums"]["student_work_kind"];
+          like_count?: number;
           orientation?: Database["public"]["Enums"]["video_orientation"] | null;
           original_url?: string | null;
           portfolio_url?: string | null;
+          rejection_reason?: string | null;
+          reviewed_at?: string | null;
           sort_order?: number;
+          status?: Database["public"]["Enums"]["review_status"];
           store_url?: string | null;
           student?: string;
+          submitted_at?: string | null;
+          submitted_by?: string | null;
           title?: string;
           updated_at?: string;
+          video_url?: string | null;
           visible?: boolean;
           youtube_id?: string | null;
           zoom_height?: number | null;
@@ -413,17 +517,59 @@ export type Database = {
         };
         Relationships: [];
       };
+      work_likes: {
+        Row: {
+          created_at: string;
+          user_id: string;
+          work_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          user_id?: string;
+          work_id: string;
+        };
+        Update: {
+          created_at?: string;
+          user_id?: string;
+          work_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "work_likes_work_id_fkey";
+            columns: ["work_id"];
+            isOneToOne: false;
+            referencedRelation: "student_works";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
       is_admin: { Args: never; Returns: boolean };
+      is_wvsu_email: { Args: { email: string }; Returns: boolean };
+      museum_media_ok: {
+        Args: { url: string; work_id: string };
+        Returns: boolean;
+      };
+      restrict_signup_to_wvsu: { Args: { event: Json }; Returns: Json };
+      submissions_storage_bytes: { Args: never; Returns: number };
     };
     Enums: {
+      exhibit_category:
+        | "game"
+        | "interactive_media"
+        | "xr_3d"
+        | "digital_art"
+        | "animation"
+        | "short_film"
+        | "sound_design";
+      notification_kind: "approved" | "rejected";
       post_category: "news" | "announcement";
       post_status: "draft" | "published";
-      student_work_kind: "art" | "video" | "game";
+      review_status: "pending" | "approved" | "rejected";
       video_orientation: "landscape" | "vertical";
     };
     CompositeTypes: {
@@ -558,9 +704,19 @@ export const Constants = {
   },
   public: {
     Enums: {
+      exhibit_category: [
+        "game",
+        "interactive_media",
+        "xr_3d",
+        "digital_art",
+        "animation",
+        "short_film",
+        "sound_design",
+      ],
+      notification_kind: ["approved", "rejected"],
       post_category: ["news", "announcement"],
       post_status: ["draft", "published"],
-      student_work_kind: ["art", "video", "game"],
+      review_status: ["pending", "approved", "rejected"],
       video_orientation: ["landscape", "vertical"],
     },
   },

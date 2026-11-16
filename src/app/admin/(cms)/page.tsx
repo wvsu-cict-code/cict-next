@@ -3,7 +3,8 @@ import { Icon, type IconName } from "@/components/admin/icons";
 import PageHeader, { Card, buttonClass } from "@/components/admin/PageHeader";
 import { requireAdmin } from "@/lib/cms/auth";
 import { fetchSiteSettings } from "@/lib/cms/content";
-import { formatDate } from "@/lib/format";
+import { formatBytes, formatDate } from "@/lib/format";
+import { STORAGE_BUDGET_BYTES } from "@/lib/museum/limits";
 
 export default async function DashboardPage() {
   const { supabase } = await requireAdmin();
@@ -24,21 +25,47 @@ export default async function DashboardPage() {
     return count ?? 0;
   };
 
-  const [published, drafts, programs, departments, faculty, recent, settings] =
-    await Promise.all([
-      countPosts("published"),
-      countPosts("draft"),
-      count("programs"),
-      count("departments"),
-      count("faculty_members"),
-      supabase
-        .from("posts")
-        .select("id, title, status, updated_at")
-        .order("updated_at", { ascending: false })
-        .limit(5)
-        .then(({ data }) => data ?? []),
-      fetchSiteSettings(supabase).catch(() => null),
-    ]);
+  const [
+    published,
+    drafts,
+    programs,
+    departments,
+    faculty,
+    recent,
+    settings,
+    pending,
+    storageBytes,
+  ] = await Promise.all([
+    countPosts("published"),
+    countPosts("draft"),
+    count("programs"),
+    count("departments"),
+    count("faculty_members"),
+    supabase
+      .from("posts")
+      .select("id, title, status, updated_at")
+      .order("updated_at", { ascending: false })
+      .limit(5)
+      .then(({ data }) => data ?? []),
+    fetchSiteSettings(supabase).catch(() => null),
+    supabase
+      .from("student_works")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "pending")
+      .then(({ count: value }) => value ?? 0),
+    supabase
+      .rpc("submissions_storage_bytes")
+      .then(({ data, error }) => {
+        if (error) throw new Error(error.message);
+        return data ?? 0;
+      }),
+  ]);
+
+  const storagePct = Math.min(
+    100,
+    Math.round((storageBytes / STORAGE_BUDGET_BYTES) * 100),
+  );
+  const storageWarn = storagePct >= 80;
 
   const tiles: {
     href: string;
@@ -114,6 +141,61 @@ export default async function DashboardPage() {
             </Card>
           </Link>
         ))}
+      </div>
+
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <Link
+          href="/admin/student-works?status=pending"
+          className="group"
+        >
+          <Card className="group-hover:border-theme-red/40 h-full transition-colors">
+            <div className="flex items-start justify-between gap-4">
+              <p className="text-ink-soft text-sm font-medium">
+                Submissions waiting for review
+              </p>
+              <span className="bg-theme-red/10 text-theme-red flex h-9 w-9 items-center justify-center rounded-full">
+                <Icon name="works" className="h-[18px] w-[18px]" />
+              </span>
+            </div>
+            <p className="font-major text-ink mt-2 text-5xl leading-none">
+              {pending}
+            </p>
+            <p className="text-ink-soft mt-2 text-xs">
+              Open the pending queue
+            </p>
+          </Card>
+        </Link>
+
+        <Card>
+          <p className="text-ink-soft text-sm font-medium">
+            Submission storage
+          </p>
+          <p className="font-major text-ink mt-2 text-3xl leading-none">
+            {formatBytes(storageBytes)} of 1 GB
+          </p>
+          <div
+            className="bg-paper mt-4 h-2 overflow-hidden rounded-full"
+            role="progressbar"
+            aria-valuenow={storagePct}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Submission storage used"
+          >
+            <div
+              className={`h-full rounded-full ${
+                storageWarn ? "bg-amber-500" : "bg-theme-red"
+              }`}
+              style={{ width: `${storagePct}%` }}
+            />
+          </div>
+          <p
+            className={`mt-2 text-xs ${
+              storageWarn ? "font-medium text-amber-800" : "text-ink-soft"
+            }`}
+          >
+            {storagePct}% of the free-plan budget
+          </p>
+        </Card>
       </div>
 
       <div className="mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">

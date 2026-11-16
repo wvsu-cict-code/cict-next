@@ -11,7 +11,16 @@ import {
 } from "@/components/admin/fields";
 import type { FormState } from "@/lib/cms/forms";
 import type { StudentWork } from "@/lib/cms/content";
-import type { UploadedWorkImage } from "@/lib/studentWorks/form";
+import {
+  CATEGORIES,
+  CATEGORY_MEDIA,
+  CATEGORY_SINGULAR,
+  type Category,
+} from "@/lib/museum/categories";
+import {
+  ADMIN_CATEGORIES,
+  type UploadedWorkImage,
+} from "@/lib/studentWorks/form";
 import { parseYouTubeUrl, youtubeWatchUrl } from "@/lib/studentWorks/youtube";
 import WorkImageField from "./WorkImageField";
 
@@ -20,7 +29,6 @@ interface WorkFormProps {
   action: (state: FormState, formData: FormData) => Promise<FormState>;
 }
 
-type Kind = StudentWork["kind"];
 type Orientation = "landscape" | "vertical";
 
 function imageOf(work?: StudentWork): UploadedWorkImage | null {
@@ -37,7 +45,10 @@ function imageOf(work?: StudentWork): UploadedWorkImage | null {
 }
 
 export default function WorkForm({ work, action }: WorkFormProps) {
-  const [kind, setKind] = useState<Kind>(work?.kind ?? "art");
+  const [category, setCategory] = useState<Category>(
+    work?.category ?? "digital_art",
+  );
+  const media = CATEGORY_MEDIA[category];
   const [orientation, setOrientation] = useState<Orientation>(
     work?.orientation ?? "landscape",
   );
@@ -45,6 +56,9 @@ export default function WorkForm({ work, action }: WorkFormProps) {
   const [orientationTouched, setOrientationTouched] = useState(false);
 
   const image = imageOf(work);
+  const keepsUploadedVideo = Boolean(work?.video_url);
+  const categoryOptions =
+    work?.category === "sound_design" ? CATEGORIES : ADMIN_CATEGORIES;
   const youtubeDefault = work?.youtube_id
     ? youtubeWatchUrl(work.youtube_id, work.orientation ?? "landscape")
     : "";
@@ -58,15 +72,14 @@ export default function WorkForm({ work, action }: WorkFormProps) {
       <div className="max-w-3xl space-y-6">
         <FormSection title="The work">
           <SelectField
-            label="Type"
-            name="kind"
-            defaultValue={kind}
-            options={[
-              { value: "art", label: "Digital art" },
-              { value: "video", label: "Video" },
-              { value: "game", label: "Game" },
-            ]}
-            onValueChange={(value) => setKind(value as Kind)}
+            label="Category"
+            name="category"
+            defaultValue={category}
+            options={categoryOptions.map((value) => ({
+              value,
+              label: CATEGORY_SINGULAR[value],
+            }))}
+            onValueChange={(value) => setCategory(value as Category)}
           />
           <TextField
             label="Title"
@@ -91,7 +104,7 @@ export default function WorkForm({ work, action }: WorkFormProps) {
         </FormSection>
 
         <FormSection title="Media">
-          {kind === "art" && (
+          {media === "image" && (
             <WorkImageField
               name="image"
               label="Artwork"
@@ -99,11 +112,11 @@ export default function WorkForm({ work, action }: WorkFormProps) {
               defaultValue={image}
             />
           )}
-          {kind === "game" && (
+          {media === "cover_link" && (
             <>
               <WorkImageField
                 name="image"
-                label="Screenshot"
+                label="Screenshot or cover"
                 withZoom={false}
                 defaultValue={image}
               />
@@ -115,13 +128,18 @@ export default function WorkForm({ work, action }: WorkFormProps) {
               />
             </>
           )}
-          {kind === "video" && (
+          {media === "video" && (
             <>
               <TextField
                 label="YouTube link"
                 name="youtube_url"
-                required
+                required={!keepsUploadedVideo}
                 defaultValue={youtubeDefault}
+                hint={
+                  keepsUploadedVideo
+                    ? "Leave this blank to keep the uploaded video."
+                    : undefined
+                }
                 onValueChange={(value) => {
                   if (orientationTouched) return;
                   setOrientation(
@@ -144,12 +162,24 @@ export default function WorkForm({ work, action }: WorkFormProps) {
               />
               <WorkImageField
                 name="image"
-                label="Thumbnail (optional)"
+                label={keepsUploadedVideo ? "Poster" : "Thumbnail (optional)"}
                 withZoom={false}
-                hint="Recommended for vertical videos. Without one, the site uses YouTube's thumbnail."
+                hint={
+                  keepsUploadedVideo
+                    ? "Shown before the uploaded video plays."
+                    : "Recommended for vertical videos. Without one, the site uses YouTube's thumbnail."
+                }
                 defaultValue={image}
               />
             </>
+          )}
+          {media === "audio" && (
+            <WorkImageField
+              name="image"
+              label="Cover"
+              withZoom={false}
+              defaultValue={image}
+            />
           )}
           <TextField
             label="Portfolio link (optional)"
@@ -163,6 +193,11 @@ export default function WorkForm({ work, action }: WorkFormProps) {
             label="Show on the BSEMC page"
             name="visible"
             defaultChecked={work?.visible ?? true}
+          />
+          <CheckboxField
+            label="Featured in Student Highlights"
+            name="featured"
+            defaultChecked={work?.featured ?? false}
           />
         </FormSection>
       </div>

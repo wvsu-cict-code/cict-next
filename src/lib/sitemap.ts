@@ -43,6 +43,8 @@ export function sitemapEntries(
 
   return [
     ...SITEMAP_PAGES.map((path) => ({ url: url(path) })),
+    // A real exported page. /programs/bsemc/ itself stays a program template URL.
+    { url: url("/programs/bsemc/museum") },
     ...content.programs.map((p) =>
       item(`${PROGRAMS_PREFIX}/${p.id}`, p.updated_at),
     ),

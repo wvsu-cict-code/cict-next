@@ -124,7 +124,7 @@ export default function WorkImageField({
               <button
                 type="button"
                 className="border-rule text-ink hover:border-theme-red/60 inline-flex h-9 items-center gap-2 rounded-lg border bg-white px-3 text-sm font-medium transition-colors"
-                onClick={() => setEditing(image.original_url)}
+                onClick={() => setEditing(image.original_url || image.image_url)}
               >
                 <Icon name="crop" className="h-4 w-4" />
                 Crop or adjust image

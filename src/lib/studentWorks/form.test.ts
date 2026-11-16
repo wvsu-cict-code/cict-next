@@ -14,7 +14,7 @@ const image = {
 function form(fields: Record<string, string>) {
   const data = new FormData();
   const base: Record<string, string> = {
-    kind: "art",
+    category: "digital_art",
     title: "  Sunrise ",
     student: " Ana ",
     description: " A painting ",
@@ -37,7 +37,7 @@ const err = (fields: Record<string, string>) =>
 describe("parseStudentWork", () => {
   it("parses a valid art work", () => {
     expect(values({})).toMatchObject({
-      kind: "art",
+      category: "digital_art",
       title: "Sunrise",
       student: "Ana",
       description: "A painting",
@@ -47,55 +47,101 @@ describe("parseStudentWork", () => {
       store_url: null,
       portfolio_url: null,
       visible: true,
+      featured: false,
     });
+  });
+
+  it("reads the featured checkbox", () => {
+    expect(values({ featured: "on" }).featured).toBe(true);
   });
 
   it("validates the basic fields", () => {
     expect(err({ title: " " })).toBe("Enter a title.");
     expect(err({ student: "" })).toBe("Enter the student's or team's name.");
     expect(err({ description: "" })).toBe("Enter a short description.");
-    expect(err({ kind: "music" })).toBe("Choose a type.");
+    expect(err({ category: "music" })).toBe("Choose a category.");
+    // Sound design comes only from student submissions
+    expect(err({ category: "sound_design" })).toBe("Choose a category.");
   });
 
   it("requires images and store links", () => {
     expect(err({ image: "" })).toBe("Upload the artwork.");
-    expect(err({ kind: "game", image: "", store_url: "https://a.test" })).toBe(
-      "Upload a screenshot of the game.",
+    expect(err({ category: "game", image: "", store_url: "https://a.test" })).toBe(
+      "Upload a screenshot or cover image.",
     );
-    const link = "Enter the link where the game is published (itch.io, Google Play, App Store…).";
-    expect(err({ kind: "game" })).toBe(link);
-    expect(err({ kind: "game", store_url: "ftp://a.test" })).toBe(link);
-    expect(values({ kind: "game", store_url: "https://a.itch.io/g" }).store_url).toBe(
+    const link = "Enter the link where the work is published (itch.io, Google Play, App Store…).";
+    expect(err({ category: "game" })).toBe(link);
+    expect(err({ category: "game", store_url: "ftp://a.test" })).toBe(link);
+    expect(values({ category: "game", store_url: "https://a.itch.io/g" }).store_url).toBe(
       "https://a.itch.io/g",
     );
+    expect(err({ category: "xr_3d", store_url: "" })).toBe(link);
+    expect(values({ category: "interactive_media", store_url: "https://a.test/p" })).toMatchObject({
+      category: "interactive_media",
+      store_url: "https://a.test/p",
+    });
+  });
+
+  it("keeps an uploaded webm when the form has no YouTube link", () => {
+    const result = parseStudentWork(
+      form({
+        category: "animation",
+        youtube_url: "",
+        orientation: "vertical",
+        featured: "on",
+      }),
+      { video_url: "https://cdn.test/clip.webm", orientation: "vertical" },
+    );
+    expect(result).toMatchObject({
+      values: {
+        category: "animation",
+        featured: true,
+        youtube_id: null,
+        orientation: "vertical",
+        image_url: image.image_url,
+      },
+    });
+  });
+
+  it("allows saving an existing sound design work", () => {
+    const result = parseStudentWork(form({ category: "sound_design" }), {
+      category: "sound_design",
+      audio_url: "https://cdn.test/track.webm",
+    });
+    expect(result).toMatchObject({
+      values: { category: "sound_design", youtube_id: null, store_url: null },
+    });
   });
 
   it("parses videos", () => {
     const v = values({
-      kind: "video",
+      category: "short_film",
       image: "",
       youtube_url: "https://youtube.com/shorts/dQw4w9WgXcQ",
     });
     expect(v).toMatchObject({ youtube_id: "dQw4w9WgXcQ", orientation: "vertical", image_url: null });
     expect(
-      values({ kind: "video", image: "", youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" })
+      values({ category: "short_film", image: "", youtube_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" })
         .orientation,
     ).toBe("landscape");
     expect(
       values({
-        kind: "video",
+        category: "short_film",
         image: "",
         youtube_url: "https://youtube.com/shorts/dQw4w9WgXcQ",
         orientation: "landscape",
       }).orientation,
     ).toBe("landscape");
-    expect(err({ kind: "video", image: "", youtube_url: "nope" })).toBe(
+    expect(
+      values({ category: "animation", image: "", youtube_url: "https://youtu.be/dQw4w9WgXcQ" }),
+    ).toMatchObject({ category: "animation", youtube_id: "dQw4w9WgXcQ" });
+    expect(err({ category: "short_film", image: "", youtube_url: "nope" })).toBe(
       "Enter a YouTube link to the video.",
     );
   });
 
   it("keeps a video thumbnail without zoom", () => {
-    const v = values({ kind: "video", youtube_url: "https://youtu.be/dQw4w9WgXcQ" });
+    const v = values({ category: "short_film", youtube_url: "https://youtu.be/dQw4w9WgXcQ" });
     expect(v).toMatchObject({
       image_url: image.image_url,
       image_width: 800,
@@ -107,7 +153,7 @@ describe("parseStudentWork", () => {
   });
 
   it("keeps a game screenshot without zoom", () => {
-    const v = values({ kind: "game", store_url: "https://a.itch.io/g" });
+    const v = values({ category: "game", store_url: "https://a.itch.io/g" });
     expect(v).toMatchObject({
       image_url: image.image_url,
       image_width: 800,
@@ -120,7 +166,7 @@ describe("parseStudentWork", () => {
 
   it("drops fields that don't belong to the chosen type", () => {
     const v = values({
-      kind: "video",
+      category: "short_film",
       store_url: "https://a.test",
       youtube_url: "https://youtu.be/dQw4w9WgXcQ",
     });
@@ -140,6 +186,12 @@ describe("parseStudentWork", () => {
     const data = form({});
     data.delete("visible");
     expect(parseStudentWork(data)).toMatchObject({ values: { visible: false } });
+  });
+
+  it("stores a blank original as null", () => {
+    expect(
+      values({ image: JSON.stringify({ ...image, original_url: "" }) }).original_url,
+    ).toBeNull();
   });
 
   it("rejects malformed image uploads", () => {

@@ -43,6 +43,10 @@ describe("sitemapEntries", () => {
   it("leaves out search results", () => {
     expect(urls.some((url) => url.includes("/search"))).toBe(false);
   });
+
+  it("lists the virtual museum", () => {
+    expect(urls).toContain("https://cict.wvsu.edu.ph/programs/bsemc/museum/");
+  });
 });
 
 describe("sitemapXml", () => {

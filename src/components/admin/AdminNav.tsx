@@ -15,7 +15,11 @@ const links: { href: string; label: string; icon: IconName }[] = [
   { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
 
-export default function AdminNav() {
+export default function AdminNav({
+  badges,
+}: {
+  badges?: Partial<Record<string, number>>;
+}) {
   const pathname = usePathname();
 
   return (
@@ -28,6 +32,7 @@ export default function AdminNav() {
           link.href === "/admin"
             ? pathname === "/admin"
             : pathname.startsWith(link.href);
+        const badge = badges?.[link.href] ?? 0;
         return (
           <Link
             key={link.href}
@@ -40,7 +45,20 @@ export default function AdminNav() {
             }`}
           >
             <Icon name={link.icon} className="h-[18px] w-[18px] shrink-0" />
-            {link.label}
+            <span className="flex min-w-0 flex-1 items-center gap-2">
+              {link.label}
+              {badge > 0 ? (
+                <span
+                  className={`ml-auto inline-flex min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold ${
+                    isActive
+                      ? "bg-white text-theme-red"
+                      : "bg-theme-red text-white"
+                  }`}
+                >
+                  {badge}
+                </span>
+              ) : null}
+            </span>
           </Link>
         );
       })}

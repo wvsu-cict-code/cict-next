@@ -15,6 +15,13 @@ export default async function CmsLayout({
   const { user, supabase } = await requireAdmin();
   const settings = await fetchSiteSettings(supabase).catch(() => null);
   const email = user.email ?? "";
+  const { count: pendingCount } = await supabase
+    .from("student_works")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+  const badges = {
+    "/admin/student-works": pendingCount ?? 0,
+  };
 
   return (
     <div className="flex min-h-screen flex-col md:flex-row">
@@ -44,7 +51,7 @@ export default async function CmsLayout({
           </form>
         </div>
 
-        <AdminNav />
+        <AdminNav badges={badges} />
 
         <div className="mt-auto hidden space-y-3 border-t border-white/10 pt-4 md:block">
           <div className="flex items-center gap-3 px-1">

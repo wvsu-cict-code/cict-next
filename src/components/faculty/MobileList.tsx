@@ -31,7 +31,7 @@ export default function MobileList({
                 {dept.name}
               </span>
               {isActive && (
-                <div className="flex items-center gap-1.5 animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex items-center gap-1.5 duration-500">
                   <span className="text-accent text-xs font-semibold">See more</span>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-accent" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M5 12h14M12 5l7 7-7 7" />

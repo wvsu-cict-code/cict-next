@@ -10,7 +10,16 @@ import {
 function work(overrides: Partial<StudentWork> = {}): StudentWork {
   return {
     id: "w1",
-    kind: "art",
+    category: "digital_art",
+    status: "approved",
+    featured: false,
+    like_count: 0,
+    submitted_by: null,
+    rejection_reason: null,
+    video_url: null,
+    audio_url: null,
+    submitted_at: null,
+    reviewed_at: null,
     title: "Piece",
     student: "Juan",
     description: "",
@@ -35,8 +44,8 @@ function work(overrides: Partial<StudentWork> = {}): StudentWork {
 
 describe("workAspect", () => {
   it("uses fixed ratios for videos", () => {
-    expect(workAspect(work({ kind: "video", orientation: "vertical" }))).toBe(9 / 16);
-    expect(workAspect(work({ kind: "video", orientation: "landscape" }))).toBe(16 / 9);
+    expect(workAspect(work({ category: "short_film", orientation: "vertical" }))).toBe(9 / 16);
+    expect(workAspect(work({ category: "short_film", orientation: "landscape" }))).toBe(16 / 9);
   });
 
   it("uses image dimensions for art", () => {
@@ -46,10 +55,35 @@ describe("workAspect", () => {
   it("falls back to 4:3 without dimensions", () => {
     expect(workAspect(work({ image_width: null, image_height: null }))).toBe(4 / 3);
   });
+
+  it("uses image dimensions for webm video and 4:3 when they are missing", () => {
+    expect(
+      workAspect(
+        work({
+          category: "short_film",
+          video_url: "https://cdn.test/reel.webm",
+          image_width: 1920,
+          image_height: 1080,
+          orientation: "vertical",
+        }),
+      ),
+    ).toBe(1920 / 1080);
+    expect(
+      workAspect(
+        work({
+          category: "animation",
+          video_url: "https://cdn.test/clip.webm",
+          image_width: null,
+          image_height: null,
+          orientation: "vertical",
+        }),
+      ),
+    ).toBe(4 / 3);
+  });
 });
 
 describe("tileImage", () => {
-  const video = { kind: "video" as const, image_url: null, youtube_id: "abc" };
+  const video = { category: "short_film" as const, image_url: null, youtube_id: "abc" };
 
   it("uses maxres with an hq fallback for landscape videos", () => {
     expect(tileImage(work({ ...video, orientation: "landscape" }))).toEqual({
