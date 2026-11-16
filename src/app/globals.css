@@ -71,7 +71,7 @@
   --color-secondary-foreground: var(--color-ink);
   --color-muted: var(--color-paper-2);
   --color-muted-foreground: var(--color-ink-soft);
-  --color-destructive: #b42318;
+  --color-destructive: var(--destructive);
   --color-border: var(--color-rule);
   --color-input: var(--color-rule);
   --color-ring: var(--color-accent);
@@ -81,6 +81,7 @@
  * Tailwind's bare `rounded` class (0.25rem -> 0.75rem) across the site. */
 :root {
   --radius: 0.75rem;
+  --destructive: #b42318;
 }
 
 /* Light values again, so a light-only area (the CMS) can opt out of dark
@@ -88,6 +89,7 @@
 [data-theme="light"] {
   color-scheme: light;
   --color-accent: #ba3d1b;
+  --destructive: #b42318;
   --color-surface: #ffffff;
   --color-surface-2: #f7f8fa;
   --color-paper: #f3f4f6;
@@ -100,6 +102,7 @@
 [data-theme="dark"] {
   color-scheme: dark;
   --color-accent: #ff9470;
+  --destructive: #ff8a7a;
   --color-surface: #161c24;
   --color-surface-2: #10151b;
   --color-paper: #0c1015;
