@@ -130,7 +130,13 @@ begin
     return new;
   end if;
 
-  if tg_op = 'UPDATE' then
+  if tg_op = 'INSERT' then
+    -- Refused here, before the quota count, so the error never depends on
+    -- someone else's works
+    if new.submitted_by is distinct from (select auth.uid()) then
+      raise exception 'not_owner' using errcode = '42501';
+    end if;
+  else
     if new.submitted_by is distinct from old.submitted_by then
       raise exception 'submitted_by cannot be changed' using errcode = '42501';
     end if;
@@ -155,6 +161,9 @@ begin
   end if;
 
   if tg_op = 'INSERT' then
+    -- The client may pick the id (it names the upload folder), not the date:
+    -- galleries order by created_at
+    new.created_at := now();
     new.featured := false;
     new.like_count := 0;
     new.visible := true;
@@ -164,6 +173,8 @@ begin
       select coalesce(max(w.sort_order), -1) + 1 from public.student_works w
     );
   else
+    new.id := old.id;
+    new.created_at := old.created_at;
     new.featured := old.featured;
     new.like_count := old.like_count;
     new.visible := old.visible;

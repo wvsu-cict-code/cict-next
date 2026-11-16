@@ -4,7 +4,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(17);
+select plan(20);
 
 -- ------------------------------------------------------------
 -- Setup: student A, student B and an admin
@@ -28,8 +28,14 @@ values
   ('pgtap hidden', 'B', 'd', 'digital_art', 'https://cdn.test/3.webp', 10, 10,
    'bbbbbbbb-0000-4000-8000-000000000002', 'approved', null, false, 0, false, 0),
   ('pgtap visible', 'B', 'd', 'digital_art', 'https://cdn.test/4.webp', 10, 10,
-   'bbbbbbbb-0000-4000-8000-000000000002', 'approved', null, true, 0, false, 0),
-  ('pgtap A approved', 'A', 'd', 'digital_art', 'https://cdn.test/5.webp', 10, 10,
+   'bbbbbbbb-0000-4000-8000-000000000002', 'approved', null, true, 0, false, 0);
+
+insert into public.student_works
+  (id, created_at, title, student, description, category, image_url, image_width, image_height,
+   submitted_by, status, rejection_reason, visible, like_count, featured, sort_order)
+values
+  ('dddddddd-0000-4000-8000-000000000005', '2026-01-01 00:00:00+00',
+   'pgtap A approved', 'A', 'd', 'digital_art', 'https://cdn.test/5.webp', 10, 10,
    'aaaaaaaa-0000-4000-8000-000000000001', 'approved', null, true, 7, true, 3);
 
 -- ------------------------------------------------------------
@@ -72,10 +78,11 @@ set local role authenticated;
 select set_config('request.jwt.claims', json_build_object('sub', 'aaaaaaaa-0000-4000-8000-000000000001', 'role', 'authenticated')::text, true);
 
 insert into public.student_works
-  (title, student, description, category, image_url, image_width, image_height,
+  (id, created_at, title, student, description, category, image_url, image_width, image_height,
    submitted_by, status, featured, like_count, visible, rejection_reason, reviewed_at)
 values
-  ('pgtap A insert', 'A', 'd', 'digital_art', 'https://cdn.test/6.webp', 10, 10,
+  ('eeeeeeee-0000-4000-8000-000000000006', '2000-01-01 00:00:00+00',
+   'pgtap A insert', 'A', 'd', 'digital_art', 'https://cdn.test/6.webp', 10, 10,
    'aaaaaaaa-0000-4000-8000-000000000001', 'approved', true, 99, false, 'x', now());
 
 select results_eq(
@@ -83,6 +90,13 @@ select results_eq(
     from public.student_works where title = 'pgtap A insert'$$,
   $$values ('pending', false, 0, true, null::text, true, true)$$,
   'student insert is forced to pending and not featured'
+);
+
+-- The client may choose the id (it names the upload folder), not the date
+select results_eq(
+  $$select id, created_at = now() from public.student_works where title = 'pgtap A insert'$$,
+  $$values ('eeeeeeee-0000-4000-8000-000000000006'::uuid, true)$$,
+  'student insert forces created_at to now'
 );
 
 select throws_ok(
@@ -111,6 +125,16 @@ select throws_ok(
   '42501',
   'submitted_by cannot be changed',
   'student cannot change submitted_by'
+);
+
+update public.student_works
+  set id = 'ffffffff-0000-4000-8000-000000000007', created_at = '2099-01-01 00:00:00+00'
+  where title = 'pgtap A edited';
+
+select results_eq(
+  $$select id, created_at from public.student_works where title = 'pgtap A edited'$$,
+  $$values ('dddddddd-0000-4000-8000-000000000005'::uuid, '2026-01-01 00:00:00+00'::timestamptz)$$,
+  'student cannot change created_at or id'
 );
 
 with changed as (
@@ -155,6 +179,20 @@ select throws_ok(
   'P0001',
   'quota_reached',
   'resubmitting a rejected work over the quota raises quota_reached'
+);
+
+-- The guard refuses this itself, before it counts anyone's works (A is at
+-- the quota here)
+reset role;
+set local role authenticated;
+select set_config('request.jwt.claims', json_build_object('sub', 'bbbbbbbb-0000-4000-8000-000000000002', 'role', 'authenticated')::text, true);
+
+select throws_ok(
+  $$insert into public.student_works (title, student, description, category, image_url, image_width, image_height, submitted_by)
+    values ('pgtap B as A', 'B', 'd', 'digital_art', 'https://cdn.test/12.webp', 10, 10, 'aaaaaaaa-0000-4000-8000-000000000001')$$,
+  '42501',
+  'not_owner',
+  'inserting for another user raises not_owner before any quota check'
 );
 
 -- ------------------------------------------------------------
