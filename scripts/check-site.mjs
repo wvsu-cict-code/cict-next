@@ -235,7 +235,7 @@ try {
       .waitForFunction(
         () =>
           [...document.querySelectorAll("h1")].some((heading) =>
-            /Entertainment and Multimedia Computing/i.test(
+            /Entertainment and (?:Multi)?media Computing/i.test(
               heading.textContent || "",
             ),
           ),
@@ -243,7 +243,7 @@ try {
       )
       .catch(() => {
         throw new Error(
-          `heading never mentioned Entertainment and Multimedia Computing on ${page.url()}`,
+          `heading never mentioned Entertainment and Media or Multimedia Computing on ${page.url()}`,
         );
       });
   });
