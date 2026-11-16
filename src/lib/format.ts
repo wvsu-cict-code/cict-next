@@ -35,3 +35,16 @@ export function timeAgo(
   if (days < 30) return `${days} days ago`;
   return formatDate(value);
 }
+
+const MB = 1024 ** 2;
+const GB = 1024 ** 3;
+
+/** Formats a byte count for the CMS storage card (binary units). */
+export function formatBytes(bytes: number): string {
+  if (bytes >= GB) {
+    const value = bytes / GB;
+    const text = Number.isInteger(value) ? String(value) : value.toFixed(1);
+    return `${text} GB`;
+  }
+  return `${Math.round(bytes / MB)} MB`;
+}
