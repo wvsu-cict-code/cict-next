@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { StudentWork } from "@/lib/cms/content";
+import { LikeButton } from "@/components/museum/LikeButton";
 import { CATEGORY_MEDIA, CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { classifySwipe } from "@/lib/studentWorks/gestures";
 import { isWebUrl, storeLabel } from "@/lib/studentWorks/links";
@@ -242,7 +243,17 @@ export function WorkSpotlight({
             start.current = null;
           }}
         >
-          {media === "video" && work.youtube_id ? (
+          {media === "video" && work.video_url ? (
+            <video
+              key={work.id}
+              controls
+              playsInline
+              poster={work.image_url ?? undefined}
+              src={work.video_url}
+              aria-label={`${work.title} by ${work.student}`}
+              className="max-h-[calc(55dvh-8.25rem)] max-w-full rounded lg:max-h-[calc(80vh-3.25rem)]"
+            />
+          ) : media === "video" && work.youtube_id ? (
             // The width comes from the height cap (the media cell's height
             // less its padding), so the frame keeps its true ratio.
             <div
@@ -260,6 +271,26 @@ export function WorkSpotlight({
                 allowFullScreen
                 className="h-full w-full rounded"
               />
+            </div>
+          ) : media === "audio" ? (
+            <div key={work.id} className="flex w-full max-w-md flex-col items-center gap-4">
+              {work.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- the static site can't optimize images
+                <img
+                  src={work.image_url}
+                  alt={`${work.title} by ${work.student}`}
+                  draggable={false}
+                  className="max-h-[calc(55dvh-8.25rem)] max-w-full rounded object-contain select-none lg:max-h-[calc(80vh-3.25rem)]"
+                />
+              ) : null}
+              {work.audio_url ? (
+                <audio
+                  controls
+                  src={work.audio_url}
+                  aria-label={`${work.title} by ${work.student}`}
+                  className="w-full"
+                />
+              ) : null}
             </div>
           ) : media === "image" ? (
             <ZoomableImage work={work} onZoomedChange={setZoomed} />
@@ -300,6 +331,7 @@ export function WorkSpotlight({
                 {work.description}
               </p>
             ) : null}
+            <LikeButton work={work} />
             {media === "cover_link" && store ? (
               <a
                 href={store}

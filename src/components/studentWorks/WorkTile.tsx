@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type Ref } from "react";
+import { AudioWaveform } from "lucide-react";
 import type { StudentWork } from "@/lib/cms/content";
 import { CATEGORY_MEDIA, CATEGORY_SINGULAR } from "@/lib/museum/categories";
 import { tileImage, workAspect } from "@/lib/studentWorks/layout";
@@ -11,7 +12,7 @@ export const CAPTION_HEIGHT = 52;
 
 /** Intrinsic size hint so the browser reserves space before the image loads. */
 function imageSize(work: StudentWork) {
-  if (CATEGORY_MEDIA[work.category] === "video") {
+  if (CATEGORY_MEDIA[work.category] === "video" && !work.video_url) {
     return work.orientation === "vertical"
       ? { width: 720, height: 1280 }
       : { width: 1280, height: 720 };
@@ -81,6 +82,15 @@ export function WorkTile({
             </svg>
           </span>
         ) : null}
+        {CATEGORY_MEDIA[work.category] === "audio" ? (
+          <span
+            data-audio
+            aria-hidden="true"
+            className="bg-navy/70 absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-white"
+          >
+            <AudioWaveform className="size-5" />
+          </span>
+        ) : null}
       </span>
       <span className="block pt-2" style={{ height: CAPTION_HEIGHT }}>
         <span className="text-ink block truncate text-sm leading-5 font-semibold">
@@ -96,7 +106,7 @@ export function WorkTile({
 
 /** CSS aspect-ratio value; verticals read "9 / 16" exactly. */
 function workAspectRatio(work: StudentWork): string {
-  if (CATEGORY_MEDIA[work.category] === "video") {
+  if (CATEGORY_MEDIA[work.category] === "video" && !work.video_url) {
     return work.orientation === "vertical" ? "9 / 16" : "16 / 9";
   }
   return `${workAspect(work)}`;

@@ -5,6 +5,10 @@ import { youtubeEmbedUrl } from "@/lib/studentWorks/youtube";
 import { makeWork } from "./fixtures";
 import { WorkSpotlight } from "./WorkSpotlight";
 
+vi.mock("@/lib/auth/session", () => ({
+  useSession: () => ({ status: "signed-out", user: null, displayName: null }),
+}));
+
 afterEach(cleanup);
 
 type Props = Partial<Parameters<typeof WorkSpotlight>[0]>;
@@ -48,6 +52,9 @@ describe("WorkSpotlight", () => {
     expect(screen.getByText("Ana Cruz")).toBeTruthy();
     expect(screen.getByText("Morning light")).toBeTruthy();
     expect(screen.getByText("1 of 20")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Like, 0" }).getAttribute("aria-pressed")).toBe(
+      "false",
+    );
   });
 
   it("shows the portfolio link only when set", () => {
@@ -106,6 +113,51 @@ describe("WorkSpotlight", () => {
     expect(screen.getByAltText("Quest by Dee")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Zoom in" })).toBeNull();
     expect(screen.queryByTestId("zoom-viewport")).toBeNull();
+  });
+
+  it("plays a webm video and an audio work", () => {
+    setup({
+      works: [
+        makeWork({
+          category: "short_film",
+          title: "Reel",
+          student: "Ana",
+          video_url: "https://cdn.test/reel.webm",
+          image_url: "https://cdn.test/poster.jpg",
+        }),
+      ],
+      index: 0,
+      total: 1,
+    });
+    const video = document.querySelector("video");
+    expect(video).toBeTruthy();
+    expect(video!.getAttribute("src")).toBe("https://cdn.test/reel.webm");
+    expect(video!.hasAttribute("controls")).toBe(true);
+    expect(video!.hasAttribute("playsinline") || video!.playsInline).toBeTruthy();
+    expect(video!.getAttribute("poster")).toBe("https://cdn.test/poster.jpg");
+    expect(document.querySelector("iframe")).toBeNull();
+    cleanup();
+
+    setup({
+      works: [
+        makeWork({
+          category: "sound_design",
+          title: "Score",
+          student: "Ben",
+          audio_url: "https://cdn.test/score.mp3",
+          image_url: "https://cdn.test/cover.jpg",
+        }),
+      ],
+      index: 0,
+      total: 1,
+    });
+    expect(screen.getByAltText("Score by Ben").getAttribute("src")).toBe(
+      "https://cdn.test/cover.jpg",
+    );
+    const audio = document.querySelector("audio");
+    expect(audio).toBeTruthy();
+    expect(audio!.getAttribute("src")).toBe("https://cdn.test/score.mp3");
+    expect(audio!.hasAttribute("controls")).toBe(true);
   });
 
   it("renders no iframe for art", () => {

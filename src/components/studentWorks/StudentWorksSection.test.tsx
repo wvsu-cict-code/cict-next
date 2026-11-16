@@ -7,6 +7,9 @@ const hook = vi.hoisted(() => ({ value: {} as Record<string, unknown> }));
 vi.mock("@/lib/studentWorks/useStudentWorks", () => ({
   useStudentWorks: () => hook.value,
 }));
+vi.mock("@/lib/auth/session", () => ({
+  useSession: () => ({ status: "signed-out", user: null, displayName: null }),
+}));
 
 let resizeCallbacks: ResizeObserverCallback[] = [];
 let intersectCallbacks: IntersectionObserverCallback[] = [];

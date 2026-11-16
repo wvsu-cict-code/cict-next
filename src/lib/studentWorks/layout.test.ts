@@ -55,6 +55,31 @@ describe("workAspect", () => {
   it("falls back to 4:3 without dimensions", () => {
     expect(workAspect(work({ image_width: null, image_height: null }))).toBe(4 / 3);
   });
+
+  it("uses image dimensions for webm video and 4:3 when they are missing", () => {
+    expect(
+      workAspect(
+        work({
+          category: "short_film",
+          video_url: "https://cdn.test/reel.webm",
+          image_width: 1920,
+          image_height: 1080,
+          orientation: "vertical",
+        }),
+      ),
+    ).toBe(1920 / 1080);
+    expect(
+      workAspect(
+        work({
+          category: "animation",
+          video_url: "https://cdn.test/clip.webm",
+          image_width: null,
+          image_height: null,
+          orientation: "vertical",
+        }),
+      ),
+    ).toBe(4 / 3);
+  });
 });
 
 describe("tileImage", () => {

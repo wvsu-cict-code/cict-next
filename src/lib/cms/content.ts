@@ -262,6 +262,8 @@ export function previewLabel(post: Post, now = new Date()) {
 /**
  * One page of the student works visitors can see, in display order, plus how
  * many there are in all so the caller knows when to stop asking for more.
+ * Pending and rejected rows stay off the wall even for the student who
+ * submitted them (their own-row policy would otherwise include them).
  */
 export async function fetchStudentWorks(
   client: ContentClient,
@@ -271,6 +273,7 @@ export async function fetchStudentWorks(
     .from("student_works")
     .select("*", { count: "exact" })
     .eq("visible", true)
+    .eq("status", "approved")
     .order("sort_order")
     .order("created_at")
     .range(page.offset, page.offset + page.limit - 1);

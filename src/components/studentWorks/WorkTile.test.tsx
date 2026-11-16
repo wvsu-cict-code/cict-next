@@ -73,6 +73,51 @@ describe("WorkTile", () => {
     expect(box.style.aspectRatio).toBe("9 / 16");
   });
 
+  it("labels a short film and shows the play marker", () => {
+    const { container } = render(
+      <WorkTile
+        work={makeWork({
+          category: "short_film",
+          title: "Reel",
+          student: "Ana Cruz",
+          image_url: "https://cdn.test/poster.jpg",
+          video_url: "https://cdn.test/reel.webm",
+          image_width: 1920,
+          image_height: 1080,
+          orientation: "vertical",
+        })}
+        onOpen={() => {}}
+      />,
+    );
+    expect(screen.getByText("Short film")).toBeTruthy();
+    const img = container.querySelector("img")!;
+    expect(img.getAttribute("src")).toBe("https://cdn.test/poster.jpg");
+    expect(
+      container.querySelector("[data-play]")?.getAttribute("aria-hidden"),
+    ).toBe("true");
+    const box = container.querySelector("[data-media]") as HTMLElement;
+    const [width, height = "1"] = box.style.aspectRatio.split("/");
+    expect(Number(width) / Number(height)).toBeCloseTo(1920 / 1080);
+  });
+
+  it("shows a sound cover with an audio marker", () => {
+    const { container } = render(
+      <WorkTile
+        work={makeWork({
+          category: "sound_design",
+          image_url: "https://cdn.test/cover.jpg",
+        })}
+        onOpen={() => {}}
+      />,
+    );
+    expect(screen.getByText("Sound design")).toBeTruthy();
+    expect(container.querySelector("img")?.getAttribute("src")).toBe(
+      "https://cdn.test/cover.jpg",
+    );
+    expect(container.querySelector("[data-audio]")).toBeTruthy();
+    expect(container.querySelector("[data-play]")).toBeNull();
+  });
+
   it("lazy-loads images with explicit dimensions", () => {
     const { container } = render(<WorkTile work={makeWork()} onOpen={() => {}} />);
     const img = container.querySelector("img")!;
