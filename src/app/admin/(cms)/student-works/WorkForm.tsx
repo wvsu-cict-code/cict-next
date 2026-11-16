@@ -1,0 +1,206 @@
+"use client";
+
+import { useState } from "react";
+import AdminForm from "@/components/admin/AdminForm";
+import { FormSection } from "@/components/admin/PageHeader";
+import {
+  CheckboxField,
+  SelectField,
+  TextAreaField,
+  TextField,
+} from "@/components/admin/fields";
+import type { FormState } from "@/lib/cms/forms";
+import type { StudentWork } from "@/lib/cms/content";
+import {
+  CATEGORIES,
+  CATEGORY_MEDIA,
+  CATEGORY_SINGULAR,
+  type Category,
+} from "@/lib/museum/categories";
+import {
+  ADMIN_CATEGORIES,
+  type UploadedWorkImage,
+} from "@/lib/studentWorks/form";
+import { parseYouTubeUrl, youtubeWatchUrl } from "@/lib/studentWorks/youtube";
+import WorkImageField from "./WorkImageField";
+
+interface WorkFormProps {
+  work?: StudentWork;
+  action: (state: FormState, formData: FormData) => Promise<FormState>;
+}
+
+type Orientation = "landscape" | "vertical";
+
+function imageOf(work?: StudentWork): UploadedWorkImage | null {
+  if (!work?.image_url || !work.image_width || !work.image_height) return null;
+  return {
+    image_url: work.image_url,
+    image_width: work.image_width,
+    image_height: work.image_height,
+    zoom_url: work.zoom_url,
+    zoom_width: work.zoom_width,
+    zoom_height: work.zoom_height,
+    original_url: work.original_url ?? "",
+  };
+}
+
+export default function WorkForm({ work, action }: WorkFormProps) {
+  const [category, setCategory] = useState<Category>(
+    work?.category ?? "digital_art",
+  );
+  const media = CATEGORY_MEDIA[category];
+  const [orientation, setOrientation] = useState<Orientation>(
+    work?.orientation ?? "landscape",
+  );
+  // Until the admin picks an orientation, follow the link (Shorts = vertical)
+  const [orientationTouched, setOrientationTouched] = useState(false);
+
+  const image = imageOf(work);
+  const keepsUploadedVideo = Boolean(work?.video_url);
+  const categoryOptions =
+    work?.category === "sound_design" ? CATEGORIES : ADMIN_CATEGORIES;
+  const youtubeDefault = work?.youtube_id
+    ? youtubeWatchUrl(work.youtube_id, work.orientation ?? "landscape")
+    : "";
+
+  return (
+    <AdminForm
+      key={work?.updated_at}
+      action={action}
+      submitLabel={work ? "Save changes" : "Create student work"}
+    >
+      <div className="max-w-3xl space-y-6">
+        <FormSection title="The work">
+          <SelectField
+            label="Category"
+            name="category"
+            defaultValue={category}
+            options={categoryOptions.map((value) => ({
+              value,
+              label: CATEGORY_SINGULAR[value],
+            }))}
+            onValueChange={(value) => setCategory(value as Category)}
+          />
+          <TextField
+            label="Title"
+            name="title"
+            required
+            defaultValue={work?.title}
+          />
+          <TextField
+            label="Student or team"
+            name="student"
+            required
+            defaultValue={work?.student}
+            hint="For a team, enter the team name or the members' names."
+          />
+          <TextAreaField
+            label="Description"
+            name="description"
+            required
+            rows={4}
+            defaultValue={work?.description}
+          />
+        </FormSection>
+
+        <FormSection title="Media">
+          {media === "image" && (
+            <WorkImageField
+              name="image"
+              label="Artwork"
+              withZoom
+              defaultValue={image}
+            />
+          )}
+          {media === "cover_link" && (
+            <>
+              <WorkImageField
+                name="image"
+                label="Screenshot or cover"
+                withZoom={false}
+                defaultValue={image}
+              />
+              <TextField
+                label="Store link"
+                name="store_url"
+                required
+                defaultValue={work?.store_url}
+              />
+            </>
+          )}
+          {media === "video" && (
+            <>
+              <TextField
+                label="YouTube link"
+                name="youtube_url"
+                required={!keepsUploadedVideo}
+                defaultValue={youtubeDefault}
+                hint={
+                  keepsUploadedVideo
+                    ? "Leave this blank to keep the uploaded video."
+                    : undefined
+                }
+                onValueChange={(value) => {
+                  if (orientationTouched) return;
+                  setOrientation(
+                    parseYouTubeUrl(value)?.isShort ? "vertical" : "landscape",
+                  );
+                }}
+              />
+              <SelectField
+                label="Orientation"
+                name="orientation"
+                value={orientation}
+                options={[
+                  { value: "landscape", label: "Landscape" },
+                  { value: "vertical", label: "Vertical" },
+                ]}
+                onValueChange={(value) => {
+                  setOrientationTouched(true);
+                  setOrientation(value as Orientation);
+                }}
+              />
+              <WorkImageField
+                name="image"
+                label={keepsUploadedVideo ? "Poster" : "Thumbnail (optional)"}
+                withZoom={false}
+                hint={
+                  keepsUploadedVideo
+                    ? "Shown before the uploaded video plays."
+                    : "Recommended for vertical videos. Without one, the site uses YouTube's thumbnail."
+                }
+                defaultValue={image}
+              />
+            </>
+          )}
+          {media === "audio" && (
+            <WorkImageField
+              name="image"
+              label="Cover"
+              withZoom={false}
+              defaultValue={image}
+            />
+          )}
+          <TextField
+            label="Portfolio link (optional)"
+            name="portfolio_url"
+            defaultValue={work?.portfolio_url}
+          />
+        </FormSection>
+
+        <FormSection title="Visibility">
+          <CheckboxField
+            label="Show on the BSEMC page"
+            name="visible"
+            defaultChecked={work?.visible ?? true}
+          />
+          <CheckboxField
+            label="Featured in Student Highlights"
+            name="featured"
+            defaultChecked={work?.featured ?? false}
+          />
+        </FormSection>
+      </div>
+    </AdminForm>
+  );
+}

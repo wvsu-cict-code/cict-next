@@ -1,0 +1,18 @@
+# Public site for cict.wvsu.edu.ph. Generated pages load content from Supabase
+# in the browser; news posts, events, programs and departments are served by one
+# template page each (the "_" folder), so new content needs no re-upload.
+#
+# programs/bsemc/ now exists as a folder because the virtual museum is exported
+# at programs/bsemc/museum/. The program URL itself still has no index.html, so
+# it must keep using the template. Real directories (the museum) are left alone.
+RewriteEngine On
+ErrorDocument 404 /404.html
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}/index.html !-f
+RewriteRule ^(news-announcements/news|events|programs|faculty-profiles)/[^/]+/?$ $1/_/index.html [L]
+
+# Next.js router data files for the same pages (used when following links)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(news-announcements/news|events|programs|faculty-profiles)/[^/]+/(.+)$ $1/_/$2 [L]

@@ -22,17 +22,17 @@ export default function FacultyInfoList({ faculty, memberIndex, onSelect }: Facu
           >
             {/* Box Indicator: Rectangle when active, Square when inactive */}
             <div 
-              className={`mt-1.5 shrink-0 transition-all duration-700 rounded-[2px] 
+              className={`shrink-0 transition-all duration-700 rounded-full 
                 ${isActive 
-                  ? 'bg-[#f48128] w-12 h-6 shadow-[0_0_15px_rgba(244,129,40,0.4)]' 
-                  : 'bg-[#a3a3a3] w-6 h-6 opacity-60'
+                  ? 'bg-theme-red w-10 h-1.5 mt-3' 
+                  : 'bg-rule w-5 h-1.5 mt-3'
                 }`} 
             />
 
             <div className="flex flex-col gap-1.5">
               {/* Name: Bold black when active, muted gray when inactive */}
-              <h2 className={`font-minor text-[19px] font-bold tracking-tight transition-all duration-300 uppercase
-                ${isActive ? 'text-black' : 'text-[#737373]'}
+              <h2 className={`text-lg font-semibold transition-all duration-300 uppercase
+                ${isActive ? 'text-ink' : 'text-ink-soft'}
               `}>
                 {member.name}
               </h2>
@@ -42,8 +42,8 @@ export default function FacultyInfoList({ faculty, memberIndex, onSelect }: Facu
                 {member.title.split("/").map((segment, sIdx) => (
                   <span 
                     key={sIdx} 
-                    className={`font-minor text-[15px] font-bold tracking-tight leading-tight
-                      ${isActive ? 'text-black' : 'text-[#737373]'}
+                    className={`text-[15px] font-medium leading-tight
+                      ${isActive ? 'text-ink' : 'text-ink-soft'}
                     `}
                   >
                     {segment.trim()}
@@ -51,8 +51,8 @@ export default function FacultyInfoList({ faculty, memberIndex, onSelect }: Facu
                 ))}
                 
                 {/* Description: Always muted gray as in Figma */}
-                <span className={`font-minor text-[14px] font-medium mt-1 leading-tight
-                  ${isActive ? 'text-[#333333]' : 'text-[#a3a3a3]'}
+                <span className={`text-sm mt-1 leading-snug
+                  ${isActive ? 'text-ink-soft' : 'text-ink-soft/70'}
                 `}>
                   {member.description}
                 </span>

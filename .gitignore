@@ -42,3 +42,9 @@ next-env.d.ts
 
 # Bun
 bun.lock
+
+# allow the env template
+!.env.example
+
+# Brainstorming mockups
+.superpowers/

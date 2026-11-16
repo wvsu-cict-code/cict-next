@@ -1,0 +1,20 @@
+<h2>Reset your WVSU CICT account password</h2>
+
+<p>Hi,</p>
+
+<p>
+  Someone asked to reset the password for the WVSU CICT account
+  {{ .Email }}. Use this link to choose a new password:
+</p>
+
+<p>
+  <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">Reset my password</a>
+</p>
+
+<p>
+  The link works in any browser and can be used once. If you didn't ask
+  for a password reset, you can ignore this email; your password stays the
+  same.
+</p>
+
+<p>— WVSU College of Information and Communications Technology</p>
