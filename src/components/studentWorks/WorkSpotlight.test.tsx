@@ -115,6 +115,53 @@ describe("WorkSpotlight", () => {
     expect(screen.queryByTestId("zoom-viewport")).toBeNull();
   });
 
+  it("does not change or close the exhibit while scrubbing video or audio", () => {
+    const { onIndexChange, onClose } = setup({
+      works: [
+        makeWork({ id: "a" }),
+        makeWork({
+          id: "b",
+          category: "short_film",
+          title: "Reel",
+          student: "Ana",
+          video_url: "https://cdn.test/reel.webm",
+          image_url: "https://cdn.test/poster.jpg",
+        }),
+        makeWork({ id: "c" }),
+      ],
+      index: 1,
+    });
+    const video = document.querySelector("video")!;
+    const scrubber = document.createElement("span");
+    video.appendChild(scrubber);
+    drag(video, -80, 0);
+    drag(scrubber, 0, 120);
+    expect(onIndexChange).not.toHaveBeenCalled();
+    expect(onClose).not.toHaveBeenCalled();
+    cleanup();
+
+    const audioRun = setup({
+      works: [
+        makeWork({ id: "a" }),
+        makeWork({
+          id: "b",
+          category: "sound_design",
+          title: "Score",
+          student: "Ben",
+          audio_url: "https://cdn.test/score.mp3",
+          image_url: "https://cdn.test/cover.jpg",
+        }),
+      ],
+      index: 1,
+      total: 2,
+    });
+    const audio = document.querySelector("audio")!;
+    drag(audio, -80, 0);
+    drag(audio, 0, 120);
+    expect(audioRun.onIndexChange).not.toHaveBeenCalled();
+    expect(audioRun.onClose).not.toHaveBeenCalled();
+  });
+
   it("plays a webm video and an audio work", () => {
     setup({
       works: [

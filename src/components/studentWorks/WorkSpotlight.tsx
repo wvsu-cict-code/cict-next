@@ -15,6 +15,11 @@ const FOCUSABLE =
 const navButton =
   "inline-flex h-11 min-w-11 items-center justify-center rounded border border-white/40 px-3 text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent";
 
+/** A scrub on the player is not a swipe to the next exhibit. */
+function isPlaybackTarget(target: EventTarget | null) {
+  return target instanceof Element && target.closest("video, audio") !== null;
+}
+
 /** Full-screen view of one featured work, with next/previous and swipe. */
 export function WorkSpotlight({
   works,
@@ -140,11 +145,15 @@ export function WorkSpotlight({
   if (!work) return null;
 
   function onPointerDown(event: PointerEvent) {
-    if (!event.isPrimary) return;
+    if (!event.isPrimary || isPlaybackTarget(event.target)) return;
     start.current = { x: event.clientX, y: event.clientY, id: event.pointerId };
   }
 
   function onPointerUp(event: PointerEvent) {
+    if (isPlaybackTarget(event.target)) {
+      start.current = null;
+      return;
+    }
     const origin = start.current;
     start.current = null;
     if (!origin || origin.id !== event.pointerId) return;

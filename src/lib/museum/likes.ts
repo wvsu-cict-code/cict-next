@@ -14,10 +14,13 @@ type LikeSnapshot = { liked: boolean; count: number | null };
 const overrides = new Map<string, LikeSnapshot>();
 const version = new Map<string, number>();
 const known = new Set<string>();
+const attempts = new Map<string, number>();
 const listeners = new Set<() => void>();
 let queued: string[] = [];
 let flushing = false;
 let generation = 0;
+/** undefined until a session has been seen; null is a signed-out visitor. */
+let cacheUserId: string | null | undefined;
 
 function emit() {
   listeners.forEach((listener) => listener());
@@ -28,14 +31,32 @@ function subscribe(listener: () => void) {
   return () => listeners.delete(listener);
 }
 
-/** Drops the in-memory like cache. Tests use this between cases. */
-export function clearLikeCache() {
+function resetLikeCache() {
   generation += 1;
   overrides.clear();
   version.clear();
   known.clear();
+  attempts.clear();
   queued = [];
   flushing = false;
+}
+
+/** Drops the in-memory like cache. Tests use this between cases. */
+export function clearLikeCache() {
+  resetLikeCache();
+  cacheUserId = undefined;
+  emit();
+}
+
+/** Hearts belong to one user. A sign-out or account switch must not keep them. */
+function adoptUser(userId: string | null) {
+  if (cacheUserId === undefined) {
+    cacheUserId = userId;
+    return;
+  }
+  if (cacheUserId === userId) return;
+  cacheUserId = userId;
+  resetLikeCache();
   emit();
 }
 
@@ -84,12 +105,22 @@ async function flush(gen: number) {
     try {
       likes = await fetchMyLikes(getBrowserClient(), ids);
     } catch {
+      if (gen !== generation) return;
+      // The ids were already taken out of the queue. Put a failed load back
+      // once so it is tried again, and never record it as known.
+      for (const id of ids) {
+        if ((version.get(id) ?? 0) !== started.get(id)) continue;
+        const n = (attempts.get(id) ?? 0) + 1;
+        attempts.set(id, n);
+        if (n === 1 && !queued.includes(id)) queued.push(id);
+      }
       return;
     }
     if (gen !== generation) return;
     let changed = false;
     for (const id of ids) {
       if ((version.get(id) ?? 0) !== started.get(id)) continue;
+      attempts.delete(id);
       known.add(id);
       if (overrides.has(id)) continue;
       if (likes.has(id)) {
@@ -141,11 +172,13 @@ export function useLike(work: Pick<StudentWork, "id" | "like_count">) {
     () => null,
   );
   const [promptSignIn, setPromptSignIn] = useState(false);
+  const userId = session.status === "signed-in" ? (session.user?.id ?? null) : null;
 
   useEffect(() => {
-    if (session.status !== "signed-in") return;
+    adoptUser(userId);
+    if (!userId) return;
     queueHydrate(work.id);
-  }, [session.status, work.id]);
+  }, [userId, work.id]);
 
   const toggle = useCallback(() => {
     if (session.status === "signed-out") {

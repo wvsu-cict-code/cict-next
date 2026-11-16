@@ -1,4 +1,4 @@
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { clearLikeCache, useLike } from "./likes";
 
@@ -77,6 +77,42 @@ describe("useLike", () => {
     expect(api.insert).not.toHaveBeenCalled();
     act(() => result.current.dismissPrompt());
     expect(result.current.promptSignIn).toBe(false);
+  });
+
+  it("clears hearts when the visitor signs out or switches accounts", async () => {
+    api.inFilter.mockResolvedValue({ data: [{ work_id: "w-who" }], error: null });
+    const { result, rerender } = renderHook(() =>
+      useLike({ id: "w-who", like_count: 5 }),
+    );
+    await waitFor(() => expect(result.current.liked).toBe(true));
+
+    session.current = { status: "signed-out", user: null, displayName: null };
+    rerender();
+    expect(result.current.liked).toBe(false);
+
+    api.inFilter.mockClear();
+    api.inFilter.mockResolvedValue({ data: [], error: null });
+    session.current = {
+      status: "signed-in",
+      user: { id: "u2" },
+      displayName: "Ben",
+    };
+    rerender();
+    await waitFor(() => expect(api.inFilter).toHaveBeenCalled());
+    expect(result.current.liked).toBe(false);
+  });
+
+  it("retries a failed like load and does not remember the miss", async () => {
+    api.inFilter.mockRejectedValueOnce(new Error("down"));
+    api.inFilter.mockResolvedValueOnce({
+      data: [{ work_id: "w-retry" }],
+      error: null,
+    });
+    const { result } = renderHook(() =>
+      useLike({ id: "w-retry", like_count: 2 }),
+    );
+    await waitFor(() => expect(result.current.liked).toBe(true));
+    expect(api.inFilter).toHaveBeenCalledTimes(2);
   });
 
   it("keeps two callers on the same like", async () => {
