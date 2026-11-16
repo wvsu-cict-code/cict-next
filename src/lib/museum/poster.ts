@@ -27,28 +27,43 @@ function loadVideo(file: File): Promise<{
   video: HTMLVideoElement;
   release: () => void;
 }> {
-  return withTimeout(
-    new Promise((resolve, reject) => {
-      const url = URL.createObjectURL(file);
-      const video = document.createElement("video");
-      const release = () => {
-        video.removeAttribute("src");
-        video.load();
-        URL.revokeObjectURL(url);
-      };
-      video.preload = "auto";
-      video.muted = true;
-      video.playsInline = true;
-      video.onloadeddata = () => resolve({ video, release });
-      video.onerror = () => {
-        release();
-        reject(new Error("Your browser couldn't read that video."));
-      };
-      video.src = url;
-    }),
-    VIDEO_TIMEOUT_MS,
-    "That video took too long to load. Try a shorter clip.",
-  );
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    let settled = false;
+    const release = () => {
+      video.onloadeddata = null;
+      video.onerror = null;
+      video.removeAttribute("src");
+      video.load();
+      URL.revokeObjectURL(url);
+    };
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      release();
+      reject(
+        new Error("That video took too long to load. Try a shorter clip."),
+      );
+    }, VIDEO_TIMEOUT_MS);
+    video.preload = "auto";
+    video.muted = true;
+    video.playsInline = true;
+    video.onloadeddata = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve({ video, release });
+    };
+    video.onerror = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      release();
+      reject(new Error("Your browser couldn't read that video."));
+    };
+    video.src = url;
+  });
 }
 
 function seek(video: HTMLVideoElement, time: number): Promise<void> {
