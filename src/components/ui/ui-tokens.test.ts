@@ -10,7 +10,7 @@ describe("shadcn/ui tokens", () => {
     const files = readdirSync(uiDir).filter(
       (name) => name.endsWith(".tsx") || name.endsWith(".ts"),
     );
-    const components = files.filter((name) => !name.endsWith(".test.ts"));
+    const components = files.filter((name) => !/\.test\.tsx?$/.test(name));
     expect(components.length).toBeGreaterThan(0);
 
     for (const name of components) {
