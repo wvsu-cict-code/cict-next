@@ -1,4 +1,5 @@
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -68,6 +69,15 @@ function VisitSunrise() {
   return (
     <button type="button" onClick={() => museum?.visitExhibit("sunrise")}>
       Visit sunrise
+    </button>
+  );
+}
+
+function VisitDusk() {
+  const museum = useContext(MuseumContext);
+  return (
+    <button type="button" onClick={() => museum?.visitExhibit("dusk")}>
+      Visit dusk
     </button>
   );
 }
@@ -150,6 +160,56 @@ describe("MuseumSection", () => {
     );
     expect(loadMuseumCanvas).toHaveBeenCalledOnce();
     expect(onOpenDetail).not.toHaveBeenCalled();
+  });
+
+  it("a second visit in the same gallery keeps the canvas mounted", async () => {
+    const dusk = makeWork({
+      id: "dusk",
+      title: "Dusk",
+      category: "game",
+      image_url: "https://cdn.test/dusk.webp",
+    });
+    fetchGalleryCounts.mockResolvedValue({ a: 2, b: 0, c: 0 });
+    fetchGalleryWorks.mockImplementation(async (_client: unknown, id: GalleryId) =>
+      id === "a" ? [sunrise, dusk] : [],
+    );
+    fetchExhibit.mockImplementation(async (_client: unknown, id: string) =>
+      id === "dusk" ? dusk : sunrise,
+    );
+
+    render(
+      <MuseumSection>
+        <VisitSunrise />
+        <VisitDusk />
+      </MuseumSection>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Visit sunrise" }));
+    const canvas = await screen.findByTestId("museum-canvas");
+    expect(canvas.textContent).toBe("a:Sunrise,Dusk");
+
+    let release: (work: typeof dusk) => void = () => {};
+    fetchExhibit.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          release = resolve;
+        }),
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Visit dusk" }));
+
+    expect(screen.getByTestId("museum-canvas")).toBe(canvas);
+    expect(
+      screen.queryByRole("status", { name: /loading the gallery/i }),
+    ).toBeNull();
+
+    await act(async () => {
+      release(dusk);
+      await Promise.resolve();
+    });
+
+    expect(screen.getByTestId("museum-canvas")).toBe(canvas);
+    expect(canvas.textContent).toBe("a:Sunrise,Dusk");
   });
 
   it("without WebGL the section shows the fallback with a link to Browse Exhibits", () => {

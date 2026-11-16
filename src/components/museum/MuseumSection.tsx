@@ -152,17 +152,20 @@ export function MuseumSection({
       setPreferenceReady(true);
       return;
     }
-    setPreferenceReady(false);
+    // Keep the hall that is already up. Swap only after this lookup
+    // resolves to a different gallery. key={galleryId} remounts then.
     fetchExhibit(getBrowserClient(), target)
       .then((work) => {
         if (cancel) return;
         const gallery = work ? galleryOf(work.category) : null;
-        setPreferred(gallery && countsData[gallery] > 0 ? gallery : null);
+        const next = gallery && countsData[gallery] > 0 ? gallery : null;
+        if (next) {
+          setPreferred((current) => (current === next ? current : next));
+        }
         setPreferenceReady(true);
       })
       .catch(() => {
         if (cancel) return;
-        setPreferred(null);
         setPreferenceReady(true);
       });
     return () => {
