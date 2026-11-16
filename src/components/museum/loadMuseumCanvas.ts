@@ -4,13 +4,17 @@ import type { GalleryId } from "@/lib/museum/categories";
 import type { HallLayout } from "@/lib/museum/hall";
 import type { Player } from "@/lib/museum/movement";
 import type { MuseumSettings } from "@/lib/museum/settings";
+import type { MoveInput } from "@/components/museum/useMuseumKeys";
 
 export type MuseumCanvasProps = {
   gallery: GalleryId;
   works: StudentWork[];
   layout: HallLayout;
   target: string | null;
+  targetToken: number;
+  homeTick: number;
   settings: MuseumSettings;
+  move: MoveInput;
   onFocusExhibit(id: string | null): void;
   onPlayerMove(p: Player): void;
 };

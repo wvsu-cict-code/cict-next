@@ -261,6 +261,7 @@ export function ExhibitFrame({
     <group
       position={[slot.x + into, 1.7, slot.z]}
       rotation={[0, slot.rotationY, 0]}
+      userData={{ exhibitId: work.id }}
     >
       <mesh position={[0, 0, -0.03]} castShadow>
         <boxGeometry args={[slot.width + 0.16, slot.height + 0.16, 0.04]} />

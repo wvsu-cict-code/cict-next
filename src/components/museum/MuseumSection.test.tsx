@@ -6,7 +6,7 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { makeWork } from "@/components/studentWorks/fixtures";
 import { clearContentCache } from "@/lib/cms/useContent";
@@ -40,7 +40,13 @@ vi.mock("@/lib/museum/queries", async () => {
 });
 
 vi.mock("@/lib/supabase/browser", () => ({
-  getBrowserClient: () => ({}),
+  getBrowserClient: () => ({
+    auth: {
+      onAuthStateChange: () => ({
+        data: { subscription: { unsubscribe: () => {} } },
+      }),
+    },
+  }),
 }));
 
 const sunrise = makeWork({
@@ -170,8 +176,9 @@ describe("MuseumSection", () => {
       image_url: "https://cdn.test/dusk.webp",
     });
     fetchGalleryCounts.mockResolvedValue({ a: 2, b: 0, c: 0 });
-    fetchGalleryWorks.mockImplementation(async (_client: unknown, id: GalleryId) =>
-      id === "a" ? [sunrise, dusk] : [],
+    fetchGalleryWorks.mockImplementation(
+      async (_client: unknown, id: GalleryId) =>
+        id === "a" ? [sunrise, dusk] : [],
     );
     fetchExhibit.mockImplementation(async (_client: unknown, id: string) =>
       id === "dusk" ? dusk : sunrise,
@@ -229,6 +236,73 @@ describe("MuseumSection", () => {
     fireEvent.click(link);
     fireEvent(window, new Event("museum:enter"));
     expect(loadMuseumCanvas).not.toHaveBeenCalled();
+  });
+});
+
+describe("MuseumSection controls", () => {
+  it("E opens the exhibit in view", async () => {
+    function FacingCanvas({
+      onPlayerMove,
+    }: {
+      onPlayerMove: (player: {
+        x: number;
+        z: number;
+        yaw: number;
+        pitch: number;
+      }) => void;
+    }) {
+      useEffect(() => {
+        onPlayerMove({ x: -3.4, z: -6, yaw: Math.PI / 2, pitch: 0 });
+      }, [onPlayerMove]);
+      return <div data-testid="museum-canvas">hall</div>;
+    }
+    loadMuseumCanvas.mockResolvedValue({ default: FacingCanvas });
+
+    render(<MuseumSection />);
+    fireEvent.click(screen.getByRole("button", { name: /click to enter/i }));
+    await screen.findByTestId("museum-canvas");
+
+    const stage = screen.getByTestId("museum-stage");
+    stage.focus();
+    fireEvent.keyDown(stage, { key: "e" });
+
+    expect(
+      await screen.findByRole("heading", { name: "Sunrise" }),
+    ).toBeTruthy();
+    expect(screen.getByText("Ana Cruz")).toBeTruthy();
+  });
+
+  it("M toggles the minimap", async () => {
+    render(<MuseumSection />);
+    fireEvent.click(screen.getByRole("button", { name: /click to enter/i }));
+    await screen.findByTestId("museum-canvas");
+
+    const stage = screen.getByTestId("museum-stage");
+    expect(screen.getByRole("img", { name: "Museum minimap" })).toBeTruthy();
+    stage.focus();
+    fireEvent.keyDown(stage, { key: "m" });
+    expect(screen.queryByRole("img", { name: "Museum minimap" })).toBeNull();
+    fireEvent.keyDown(stage, { key: "m" });
+    expect(screen.getByRole("img", { name: "Museum minimap" })).toBeTruthy();
+  });
+
+  it("the minimap starts hidden on a phone", async () => {
+    window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+      matches: query === "(max-width: 767px)" || query === "(pointer: coarse)",
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })) as unknown as typeof window.matchMedia;
+
+    render(<MuseumSection />);
+    fireEvent.click(screen.getByRole("button", { name: /click to enter/i }));
+    await screen.findByTestId("museum-canvas");
+
+    expect(screen.queryByRole("img", { name: "Museum minimap" })).toBeNull();
+    const stage = screen.getByTestId("museum-stage");
+    stage.focus();
+    fireEvent.keyDown(stage, { key: "m" });
+    expect(screen.getByRole("img", { name: "Museum minimap" })).toBeTruthy();
   });
 });
 

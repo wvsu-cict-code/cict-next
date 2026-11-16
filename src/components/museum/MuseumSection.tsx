@@ -19,7 +19,11 @@ import { useContent } from "@/lib/cms/useContent";
 import { galleryOf, type GalleryId } from "@/lib/museum/categories";
 import { availableGalleries } from "@/lib/museum/galleries";
 import { layoutHall } from "@/lib/museum/hall";
-import type { Player } from "@/lib/museum/movement";
+import {
+  exhibitInView,
+  orderedSlots,
+  type Player,
+} from "@/lib/museum/movement";
 import {
   fetchExhibit,
   fetchGalleryCounts,
@@ -27,6 +31,8 @@ import {
 } from "@/lib/museum/queries";
 import { DEFAULT_SETTINGS, loadSettings } from "@/lib/museum/settings";
 import type { MuseumSettings } from "@/lib/museum/settings";
+import { useMuseumKeys, type MoveInput } from "./useMuseumKeys";
+import { Overlay } from "./three/Overlay";
 import { hasWebGL } from "@/lib/museum/webgl";
 import { workAspect } from "@/lib/studentWorks/layout";
 import { getBrowserClient } from "@/lib/supabase/browser";
@@ -77,6 +83,18 @@ export function MuseumSection({
   const [preferenceReady, setPreferenceReady] = useState(false);
   const onOpenDetailRef = useRef(onOpenDetail);
   const handedOff = useRef<string | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const [player, setPlayer] = useState<Player>({
+    x: 0,
+    z: -1.5,
+    yaw: 0,
+    pitch: 0,
+  });
+  const [move, setMove] = useState<MoveInput>({ forward: 0, strafe: 0 });
+  const [homeTick, setHomeTick] = useState(0);
+  const [targetToken, setTargetToken] = useState(0);
+  const focusIdRef = useRef(focusId);
 
   const entered = phase === "loading" || phase === "ready";
 
@@ -148,7 +166,6 @@ export function MuseumSection({
     if (!entered || !countsData) return;
     let cancel = false;
     if (!target) {
-      setPreferred(null);
       setPreferenceReady(true);
       return;
     }
@@ -206,9 +223,61 @@ export function MuseumSection({
       ),
     [workList],
   );
+  const layoutRef = useRef(layout);
+  useLayoutEffect(() => {
+    layoutRef.current = layout;
+    focusIdRef.current = focusId;
+  }, [layout, focusId]);
 
-  const onPlayerMove = useCallback((_player: Player) => {}, []);
-  const onFocusExhibit = useCallback((_id: string | null) => {}, []);
+  const onPlayerMove = useCallback((next: Player) => {
+    setPlayer((current) =>
+      current.x === next.x &&
+      current.z === next.z &&
+      current.yaw === next.yaw &&
+      current.pitch === next.pitch
+        ? current
+        : next,
+    );
+  }, []);
+  const onFocusExhibit = useCallback((id: string | null) => {
+    setFocusId(id);
+  }, []);
+  const onSettings = useCallback((next: MuseumSettings) => {
+    setSettings(next);
+  }, []);
+  const onGallery = useCallback((id: GalleryId) => {
+    setPreferred(id);
+    setTarget(null);
+    setFocusId(null);
+    setHomeTick((tick) => tick + 1);
+  }, []);
+  const onExit = useCallback(() => {
+    setTarget(null);
+    setTargetToken((token) => token + 1);
+    setHomeTick((tick) => tick + 1);
+    setFocusId(null);
+  }, []);
+  const onFullscreen = useCallback(() => {
+    const section = sectionRef.current;
+    if (!section || typeof section.requestFullscreen !== "function") return;
+    if (document.fullscreenElement === section) {
+      void document.exitFullscreen?.();
+      return;
+    }
+    void section.requestFullscreen();
+  }, []);
+  const onStep = useCallback((direction: -1 | 1) => {
+    const slots = orderedSlots(layoutRef.current);
+    if (slots.length === 0) return;
+    const index = slots.findIndex((slot) => slot.workId === focusIdRef.current);
+    const next =
+      index === -1
+        ? slots[direction === 1 ? 0 : slots.length - 1]
+        : slots[(index + direction + slots.length) % slots.length];
+    setTarget(next.workId);
+    setTargetToken((token) => token + 1);
+    setFocusId(next.workId);
+  }, []);
 
   const museum = useMemo(
     () => ({ visitExhibit, webgl }),
@@ -227,6 +296,7 @@ export function MuseumSection({
     <MuseumContext.Provider value={museum}>
       {children}
       <section
+        ref={sectionRef}
         id="museum-3d"
         data-theme="dark"
         className="bg-navy relative scroll-mt-24 text-white"
@@ -312,21 +382,166 @@ export function MuseumSection({
           </p>
         ) : null}
 
-        {showCanvas && CanvasView ? (
-          <div className="h-[70vh] min-h-[28rem] w-full">
-            <CanvasView
-              key={galleryId}
-              gallery={galleryId as GalleryId}
-              works={workList as StudentWork[]}
-              layout={layout}
-              target={target}
-              settings={settings}
-              onFocusExhibit={onFocusExhibit}
-              onPlayerMove={onPlayerMove}
-            />
-          </div>
+        {showCanvas && CanvasView && galleryId && workList && countsData ? (
+          <MuseumStage
+            CanvasView={CanvasView}
+            galleryId={galleryId}
+            works={workList}
+            layout={layout}
+            target={target}
+            targetToken={targetToken}
+            homeTick={homeTick}
+            settings={settings}
+            move={move}
+            player={player}
+            focusId={focusId}
+            counts={countsData}
+            onMove={setMove}
+            onPlayerMove={onPlayerMove}
+            onFocusExhibit={onFocusExhibit}
+            onExit={onExit}
+            onFullscreen={onFullscreen}
+            onSettings={onSettings}
+            onGallery={onGallery}
+            onPrev={() => onStep(-1)}
+            onNext={() => onStep(1)}
+            onCloseInfo={() => setFocusId(null)}
+            onOpenDetail={(id) => onOpenDetailRef.current?.(id)}
+          />
         ) : null}
       </section>
     </MuseumContext.Provider>
+  );
+}
+
+function mapStartsOpen(): boolean {
+  if (
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function"
+  ) {
+    return true;
+  }
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  const phone = window.matchMedia("(max-width: 767px)").matches;
+  return !coarse && !phone;
+}
+
+function MuseumStage({
+  CanvasView,
+  galleryId,
+  works,
+  layout,
+  target,
+  targetToken,
+  homeTick,
+  settings,
+  move,
+  player,
+  focusId,
+  counts,
+  onMove,
+  onPlayerMove,
+  onFocusExhibit,
+  onExit,
+  onFullscreen,
+  onSettings,
+  onGallery,
+  onPrev,
+  onNext,
+  onCloseInfo,
+  onOpenDetail,
+}: {
+  CanvasView: ComponentType<MuseumCanvasProps>;
+  galleryId: GalleryId;
+  works: StudentWork[];
+  layout: MuseumCanvasProps["layout"];
+  target: string | null;
+  targetToken: number;
+  homeTick: number;
+  settings: MuseumSettings;
+  move: MoveInput;
+  player: Player;
+  focusId: string | null;
+  counts: Record<GalleryId, number>;
+  onMove(input: MoveInput): void;
+  onPlayerMove(player: Player): void;
+  onFocusExhibit(id: string | null): void;
+  onExit(): void;
+  onFullscreen(): void;
+  onSettings(next: MuseumSettings): void;
+  onGallery(id: GalleryId): void;
+  onPrev(): void;
+  onNext(): void;
+  onCloseInfo(): void;
+  onOpenDetail(id: string): void;
+}) {
+  const stageRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef(layout);
+  const playerRef = useRef(player);
+  useLayoutEffect(() => {
+    layoutRef.current = layout;
+    playerRef.current = player;
+  }, [layout, player]);
+  const [mapOpen, setMapOpen] = useState(mapStartsOpen);
+
+  useMuseumKeys(stageRef, {
+    move: onMove,
+    interact: () => {
+      const id = exhibitInView(playerRef.current, layoutRef.current);
+      if (id) onFocusExhibit(id);
+    },
+    toggleMap: () => setMapOpen((open) => !open),
+  });
+
+  useEffect(() => {
+    stageRef.current?.focus();
+  }, []);
+
+  return (
+    <div
+      ref={stageRef}
+      tabIndex={0}
+      data-testid="museum-stage"
+      aria-label="Museum gallery"
+      className="relative h-[70vh] min-h-[28rem] w-full outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+      onPointerDown={(event) => {
+        const hit = event.target;
+        if (!(hit instanceof Element)) return;
+        if (hit.closest("[data-museum-overlay]")) return;
+        stageRef.current?.focus();
+      }}
+    >
+      <CanvasView
+        key={galleryId}
+        gallery={galleryId}
+        works={works}
+        layout={layout}
+        target={target}
+        targetToken={targetToken}
+        homeTick={homeTick}
+        settings={settings}
+        move={move}
+        onFocusExhibit={onFocusExhibit}
+        onPlayerMove={onPlayerMove}
+      />
+      <Overlay
+        layout={layout}
+        player={player}
+        works={works}
+        focusId={focusId}
+        mapOpen={mapOpen}
+        settings={settings}
+        galleryId={galleryId}
+        counts={counts}
+        onExit={onExit}
+        onFullscreen={onFullscreen}
+        onSettings={onSettings}
+        onGallery={onGallery}
+        onPrev={onPrev}
+        onNext={onNext}
+        onCloseInfo={onCloseInfo}
+        onOpenDetail={onOpenDetail}
+      />
+    </div>
   );
 }
